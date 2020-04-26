@@ -1,0 +1,3 @@
+﻿  Kuvik.cpp
+c:\users\stepa\source\repos\kuvik\kuvik\kuvik.cpp(152): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
+  Kuvik.vcxproj -> C:\Users\stepa\source\repos\Kuvik\x64\Debug\Kuvik.exe

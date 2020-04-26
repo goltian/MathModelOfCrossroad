@@ -1,0 +1,14 @@
+﻿  Kuvik.cpp
+c:\users\stepa\source\repos\kuvik\kuvik\kuvik.cpp(50): warning C4244: =: преобразование "_Ty" в "int", возможна потеря данных
+          with
+          [
+              _Ty=double
+          ]
+c:\users\stepa\source\repos\kuvik\kuvik\kuvik.cpp(18): warning C4101: random: неиспользованная локальная переменная
+c:\users\stepa\source\repos\kuvik\kuvik\kuvik.cpp(69): warning C4305: аргумент: усечение из "double" в "float"
+  Создание кода
+  32 of 42 functions (76.2%) were compiled, the rest were copied from previous compilation.
+    3 functions were new in current compilation
+    1 functions had inline decision re-evaluated but remain unchanged
+  Создание кода завершено
+  Kuvik.vcxproj -> C:\Users\stepa\source\repos\Kuvik\x64\Release\Kuvik.exe

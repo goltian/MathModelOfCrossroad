@@ -1,0 +1,10 @@
+﻿  Kuvik.cpp
+c:\users\stepa\source\repos\kuvik\kuvik\kuvik.cpp(57): warning C4244: =: преобразование "_Ty" в "int", возможна потеря данных
+          with
+          [
+              _Ty=double
+          ]
+c:\users\stepa\source\repos\kuvik\kuvik\kuvik.cpp(14): warning C4101: i: неиспользованная локальная переменная
+c:\users\stepa\source\repos\kuvik\kuvik\kuvik.cpp(20): warning C4101: random: неиспользованная локальная переменная
+c:\users\stepa\source\repos\kuvik\kuvik\kuvik.cpp(77): warning C4305: аргумент: усечение из "double" в "float"
+  Kuvik.vcxproj -> C:\Users\stepa\source\repos\Kuvik\Debug\Kuvik.exe
