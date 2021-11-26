@@ -74,4 +74,3 @@ private:
 	// two places to the right of the decimal point
 	std::string replacePointToComma(std::string str);
 };
-

@@ -84,7 +84,7 @@ protected:
 
 	// Max possible count of requests that 
 	// could be on a crossroad at one time
-	int throughputCapacity;
+	size_t throughputCapacity;
 	
 	// Requests count that could be served 
 	// if their count was infinite
@@ -108,4 +108,3 @@ protected:
 	// could be served if their count was infinite
 	void calculateReqCountOfSaturation();
 };
-

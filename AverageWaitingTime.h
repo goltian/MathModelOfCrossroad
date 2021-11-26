@@ -56,4 +56,3 @@ private:
 	// Method for checking error for gamma and s
 	void checkErrorForGammaAndS();
 };
-
