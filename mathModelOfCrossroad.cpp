@@ -3,12 +3,11 @@
 #include <omp.h>
 #include <sstream>
 #include <fstream>
-
 #include "ServiceDevice.h"
 #include "DataManager.h"
 #include "mathModelOfCrossroad.h"
 
-constexpr auto CONST_REPEATS_OF_ONE_EXPERIMENT = 4;
+constexpr auto CONST_REPEATS_OF_ONE_EXPERIMENT = 1;
 
 constexpr auto CONST_ORIENTATION_MODE = 3;
 
