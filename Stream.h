@@ -3,6 +3,7 @@
 #include <random>
 #include <queue>
 #include "AverageWaitingTime.h"
+#include <boost/random.hpp>
 
 constexpr auto CONST_EXPON_PUAS_AND_BART = 1e-32;
 
@@ -52,8 +53,8 @@ public:
 
 protected:
 
-	std::mt19937 generator;
-	std::uniform_real_distribution<> distribution;
+	boost::random::mt19937 generator;
+    boost::random::uniform_real_distribution<> distribution;
 
 	// Parameters of stream
 	double g;

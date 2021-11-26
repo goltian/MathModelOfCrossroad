@@ -1,8 +1,10 @@
 #include <algorithm>
 #include "Stream.h"
+#include <random>
 
 Stream::Stream() {
-    std::random_device device;
+    //std::random_device device;
+    //generator.seed(device());
     generator.seed(0);
     g = 0.0;
     mathExpect = 1.0;
