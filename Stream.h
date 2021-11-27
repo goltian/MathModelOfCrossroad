@@ -74,6 +74,9 @@ protected:
 	
 	// Array of the calculated exponents for every mode
 	std::vector<double> exponents;
+
+	// Array of the puas dist for every mode
+    std::vector<std::vector<double>> puasDist;
 	
 	// Queue of times of incoming requests that have 
 	// got into storage bunker

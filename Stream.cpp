@@ -90,6 +90,24 @@ void Stream::calculateExponents() {
 
     // 2 modes of orientation after third mode
     exponents[5] = exponents[7] = exp(liamBartlett * modesDuration[5]);
+
+	puasDist.resize(modesDuration.size());
+    for (size_t i = 0; i < modesDuration.size(); ++i) {
+
+        puasDist[i].resize(CONST_FOR_SLOW_REQ_COUNT);
+        puasDist[i][0] = 1.0;
+		double adding = 1.0;
+        double mode = modesDuration[i];
+
+		for (int j = 1; j < CONST_FOR_SLOW_REQ_COUNT; ++j) {
+            adding = adding * liamBartlett * mode / j;
+                    puasDist[i][j] = puasDist[i][j - 1] + adding;
+			if (adding < CONST_EXPON_PUAS_AND_BART) {
+                        puasDist[i][j + 1] = DBL_MAX;
+				break;
+			}
+		}
+	}
 }
 
 void Stream::changeModeDuration(int modeId) {
@@ -162,33 +180,20 @@ void Stream::generateRequests(int modeId) {
 }
 
 int Stream::generatePuasson(int modeId) {
-	
-    // The value of a random variable that the distribution function should approach
+
+	// The value of a random variable that the distribution function should approach
     double randomVariable;
-
-    // The value of a distribution function
-    double distributionFunc = 1.0;
-
-    // Adding for distribution function
-    double adding = 1.0;
-
-    // Counter for slow requests
-    int slowReqCount = 0;
 
     // Generate random value from 0 to 1
     randomVariable = distribution(generator);
 
     // Multiply to exponent (putting it out of the bracket)
-
+    int slowReqCount = 0;
     randomVariable = randomVariable * exponents[modeId];
+
     // Calculate number of slow requests
-    while (distributionFunc < randomVariable) {
+    while (puasDist[modeId][slowReqCount] < randomVariable) {
         slowReqCount++;
-        adding = adding * liamBartlett * modeDuration / slowReqCount;
-        distributionFunc = distributionFunc + adding;
-        if (adding < CONST_EXPON_PUAS_AND_BART) {
-            break;
-        }
     }
 
     return slowReqCount;
