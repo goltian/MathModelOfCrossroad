@@ -2,12 +2,12 @@
 #include <cmath>
 
 AverageWaitingTime::AverageWaitingTime() {
-    gamma = 0.0;
+    gamma = 0.0F;
     reqCountConsideredByGamma = 0;
-    u = 0.0;
-    s = 0.0;
-    gammaWithWave = 0.0;
-    sWithWave = 0.0;
+    u = 0.0F;
+    s = 0.0F;
+    gammaWithWave = 0.0F;
+    sWithWave = 0.0F;
     streamStatus = StreamStatus_IsStabilizing;
 }
 
@@ -15,7 +15,7 @@ void AverageWaitingTime::setStreamStatus(StreamStatus streamStatus_) {
     streamStatus = streamStatus_;
 }
 
-double AverageWaitingTime::getGamma() {
+float AverageWaitingTime::getGamma() {
     return gamma;
 }
 
@@ -35,7 +35,7 @@ bool AverageWaitingTime::isStreamStatusStable() {
     }
 }
 
-void AverageWaitingTime::calculateAvgWaitTime(double inputTime, double outputTime) {
+void AverageWaitingTime::calculateAvgWaitTime(float inputTime, float outputTime) {
     if (reqCountConsideredByGamma == 0) {
         // Go here if it`s first request
 
@@ -70,16 +70,16 @@ void AverageWaitingTime::calculateAvgWaitTime(double inputTime, double outputTim
     }
 }
 
-void AverageWaitingTime::calculateNewGammaAndUValue(double inputTime, double outputTime) {
-    double fraction = 1.0 / (static_cast<double>(reqCountConsideredByGamma) + 1.0);
-    double waitingTime = outputTime - inputTime;
+void AverageWaitingTime::calculateNewGammaAndUValue(float inputTime, float outputTime) {
+    float fraction = 1.0F / (static_cast<float>(reqCountConsideredByGamma) + 1.0F);
+    float waitingTime = outputTime - inputTime;
 
     // Compute new value of average waiting time (gamma)
     gamma =
-        gamma * fraction * static_cast<double>(reqCountConsideredByGamma) + waitingTime * fraction;
+        gamma * fraction * static_cast<float>(reqCountConsideredByGamma) + waitingTime * fraction;
 
     // Compute new value of u (additional variable for calculating)
-    u = u * fraction * static_cast<double>(reqCountConsideredByGamma) +
+    u = u * fraction * static_cast<float>(reqCountConsideredByGamma) +
         waitingTime * waitingTime * fraction;
 
     // Increase requests count that have been considered by gamma
@@ -87,8 +87,8 @@ void AverageWaitingTime::calculateNewGammaAndUValue(double inputTime, double out
 }
 
 void AverageWaitingTime::checkErrorForGammaAndS() {
-    double fraction = static_cast<double>(reqCountConsideredByGamma) /
-                      (static_cast<double>(reqCountConsideredByGamma) - 1.0);
+    float fraction = static_cast<float>(reqCountConsideredByGamma) /
+                      (static_cast<float>(reqCountConsideredByGamma) - 1.0F);
 
     // If gamma and s are stable then stream is stable too
     if (abs(gamma - gammaWithWave) < CONST_EPS_FOR_CHECKING_STABLE) {

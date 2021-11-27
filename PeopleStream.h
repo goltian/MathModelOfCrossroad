@@ -20,13 +20,13 @@ private:
 		Case_Last = 3
 	} casesInServiceRequests;
 	
-	double criticalTimeForPeople;
+	float criticalTimeForPeople;
 
-	bool isRequestCantBeServedAtAll(double outputTime);
+	bool isRequestCantBeServedAtAll(float outputTime);
 
-	double calculateOutputTime(
+	float calculateOutputTime(
 		CasesInServiceRequests casesInServiceRequests, 
-		const std::queue<double> &reqOutputTimes,
-		double inputTime
+		const std::queue<float> &reqOutputTimes,
+		float inputTime
 	);
 };

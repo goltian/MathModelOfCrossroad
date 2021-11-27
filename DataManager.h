@@ -2,7 +2,7 @@
 
 #include <vector>
 
-constexpr auto CONST_CELLS_COUNT = 5;
+constexpr int CONST_CELLS_COUNT = 5;
 
 class DataManager {
 public:
@@ -17,16 +17,16 @@ public:
 	void setPortionOfData(
 		int row, 
 		int column, 
-		std::vector<double> portionOfData, 
+		std::vector<float> portionOfData, 
 		int tid
 	);
 
 	// Write all data into file
 	void writeInfoInFile(
-		double peopleServiceModeDuration, 
-		double liam, 
+		float peopleServiceModeDuration, 
+		float liam, 
 		std::string nameOfFile, 
-		double timeOfWork
+		float timeOfWork
 	);
 
 	// Write all data into table
@@ -46,10 +46,10 @@ private:
 	std::pair<int, int> bestDurationsOfModes;
 
 	// All data
-	std::vector<double> data;
+	std::vector<float> data;
 
 	// Result data
-	std::vector<double> resultMatrix;
+	std::vector<float> resultMatrix;
 
 	// Method that find index in our matrix
 	int findIndex(int i, int j);

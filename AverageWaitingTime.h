@@ -1,6 +1,6 @@
 #pragma once
 
-constexpr auto CONST_EPS_FOR_CHECKING_STABLE = 1.0;
+constexpr float CONST_EPS_FOR_CHECKING_STABLE = 1.0F;
 
 class AverageWaitingTime {
 public:
@@ -17,41 +17,41 @@ public:
 
 	void setStreamStatus(StreamStatus streamStatus_);
 
-	double getGamma();
+	float getGamma();
 
 	bool isStreamStatusNotStable();
 
 	bool isStreamStatusStable();
 
 	// Method for calculating average waiting time of cars
-	void calculateAvgWaitTime(double inputTime, double outputTime);
+	void calculateAvgWaitTime(float inputTime, float outputTime);
 
 private:
 	// Variable for counting average stay time a request in system
-	double gamma;
+	float gamma;
 	
 	// Count of requests that has been considered by gamma 
 	int reqCountConsideredByGamma;
 	
 	// Variable for calculating the second power of stay time a request in system
-	double u;
+	float u;
 	
 	// Variable for calculating the estimate of dispersion of stay time a request in system
-	double s;
+	float s;
 	
 	// Additional gamma variable with a wave for counting average 
 	// stay time a request in system (used for comparing with gamma)
-	double gammaWithWave;
+	float gammaWithWave;
 	
 	// Additional s variable with a wave for calculating the estimate of dispersion of
 	// stay time a request in system (used for comparing with s)
-	double sWithWave;
+	float sWithWave;
 	
 	// Flag for exit from programm (0 - continue, 1 - success end, 2 - fail end)
 	StreamStatus streamStatus;
 
 	// Method for calculating new value for gamma and u
-	void calculateNewGammaAndUValue(double inputTime, double outputTime);
+	void calculateNewGammaAndUValue(float inputTime, float outputTime);
 	
 	// Method for checking error for gamma and s
 	void checkErrorForGammaAndS();

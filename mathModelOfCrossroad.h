@@ -1,8 +1,8 @@
 #pragma once
 
 std::string getNameOfFile(
-	const std::vector<double> parametersForOne,
-	double peopleServiceModeDuration
+	const std::vector<float> parametersForOne,
+	float peopleServiceModeDuration
 );
 
 // The first series of experiments

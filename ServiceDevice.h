@@ -7,13 +7,13 @@ class ServiceDevice {
 public:
 
 	ServiceDevice(
-		std::vector<double> parametersOfSystem,
-		std::vector<double> modesDurations
+		std::vector<float> parametersOfSystem,
+		std::vector<float> modesDurations
 	);
 
 	bool isCrossroadModelWorksStably();
 
-	std::vector<double> getPortionOfData();
+	std::vector<float> getPortionOfData();
 
 	enum Modes {
 		Mode_InvalidFirst = -1,
@@ -49,12 +49,12 @@ private:
 	int minReqCountToStartService;
 
 	// Percent of switching service device into gamma5 and gamma7 modes
-	double percentOfSwitchingIntoG5AndG7;
+	float percentOfSwitchingIntoG5AndG7;
 	
 	// Get average waiting time of all streams
-	double getAvgGammaForAllStreams();
+	float getAvgGammaForAllStreams();
 
-	double getPercentOfSwitchingIntoG5AndG7();
+	float getPercentOfSwitchingIntoG5AndG7();
 
 	void computeNextMode();
 

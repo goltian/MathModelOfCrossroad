@@ -6,13 +6,13 @@ Stream::Stream() {
     //std::random_device device;
     //generator.seed(device());
     generator.seed(0);
-    g = 0.0;
-    mathExpect = 1.0;
-    r = (1.0 - g) * (mathExpect - 1.0);
-    liam = 0.0;
+    g = 0.0F;
+    mathExpect = 1.0F;
+    r = (1.0F - g) * (mathExpect - 1.0F);
+    liam = 0.0F;
     liamBartlett = liam / mathExpect;
-    totalTime = 0.0;
-    modeDuration = 0.0;
+    totalTime = 0.0F;
+    modeDuration = 0.0F;
     exponents.resize(8);
 
     // Use resizing here for not resizing
@@ -22,19 +22,19 @@ Stream::Stream() {
     reqCountOfSaturation = 0;
 }
 
-void Stream::setG(double g_) {
+void Stream::setG(float g_) {
     g = g_;
 }
 
-void Stream::setMathExpect(double mathExpect_) {
+void Stream::setMathExpect(float mathExpect_) {
     mathExpect = mathExpect_;
 }
 
-void Stream::setLiam(double liam_) {
+void Stream::setLiam(float liam_) {
     liam = liam_;
 }
 
-void Stream::setModesDurations(std::vector<double> modesDuration_) {
+void Stream::setModesDurations(std::vector<float> modesDuration_) {
     size_t modesCount = modesDuration_.size();
     modesDuration.resize(modesCount);
 
@@ -44,18 +44,18 @@ void Stream::setModesDurations(std::vector<double> modesDuration_) {
 }
 
 void Stream::calculateR() {
-    r = (1.0 - g) * (mathExpect - 1.0);
+    r = (1.0F - g) * (mathExpect - 1.0F);
 }
 
 void Stream::calculateLiamBartlett() {
     liamBartlett = liam / mathExpect;
 }
 
-double Stream::getLiam() {
+float Stream::getLiam() {
     return liam;
 }
 
-double Stream::getLiamBartlett() {
+float Stream::getLiamBartlett() {
     return liamBartlett;
 }
 
@@ -63,7 +63,7 @@ int Stream::getStorageBunkerSize() {
     return static_cast<int>(storageBunker.size());
 }
 
-double Stream::getGamma() {
+float Stream::getGamma() {
     return avgWaitingTime.getGamma();
 }
 
@@ -98,7 +98,7 @@ void Stream::changeModeDuration(int modeId) {
 
 void Stream::generateRequests(int modeId) {
     // The value of a random variable that the distribution function should approach
-    double randomVariable;
+    //float randomVariable;
 
     // Number of slow requests
     int slowReqCount;
@@ -111,12 +111,13 @@ void Stream::generateRequests(int modeId) {
     }
 
     // Cycle for putting arriving times of slow requests into the array
-    for (int slowReq = 0; slowReq < slowReqCount; slowReq++) {
+#pragma omp simd
+    for (int slowReq = 0; slowReq < slowReqCount; ++slowReq) {
         // Generate random value from 0 to 1
-        randomVariable = distribution(generator);
+        //randomVariable = distribution(generator);
 
         // Calculate the time of arriving a slow request
-        timesOfSlowReq[slowReq] = totalTime + modeDuration * randomVariable;
+        timesOfSlowReq[slowReq] = modeDuration * distribution(generator) + totalTime;
     }
 
     // We need to sort our array
@@ -128,7 +129,7 @@ void Stream::generateRequests(int modeId) {
         int fastReqCount;
 
         // Distance (time) between fast requests
-        double timeBetweenFastReq;
+        float timeBetweenFastReq;
 
         // Cycle for filling fast and slow requests into queue
         for (int slowReq = 0; slowReq < slowReqCount; slowReq++) {
@@ -140,16 +141,16 @@ void Stream::generateRequests(int modeId) {
             // Calculate time (distance) between fast requests
             if (slowReq < slowReqCount - 1) {
                 timeBetweenFastReq = (timesOfSlowReq[slowReq + 1] - timesOfSlowReq[slowReq]) /
-                                     (2.0 * static_cast<double>(fastReqCount));
+                                     (2.0F * static_cast<float>(fastReqCount));
             } else {
                 timeBetweenFastReq = (totalTime + modeDuration - timesOfSlowReq[slowReq]) /
-                                     (2.0 * static_cast<double>(fastReqCount));
+                                     (2.0F * static_cast<float>(fastReqCount));
             }
 
             // Put fast requests into queue
             for (int fastReq = 0; fastReq < fastReqCount; fastReq++) {
                 storageBunker.push(timesOfSlowReq[slowReq] +
-                                   (static_cast<double>(fastReq) + 1.0) * timeBetweenFastReq);
+                                   (static_cast<float>(fastReq) + 1.0F) * timeBetweenFastReq);
             }
         }
     } else {
@@ -165,13 +166,13 @@ void Stream::generateRequests(int modeId) {
 int Stream::generatePuasson(int modeId) {
 	
     // The value of a random variable that the distribution function should approach
-    double randomVariable;
+    float randomVariable;
 
     // The value of a distribution function
-    double distributionFunc = 1.0;
+    float distributionFunc = 1.0F;
 
     // Adding for distribution function
-    double adding = 1.0;
+    float adding = 1.0F;
 
     // Counter for slow requests
     int slowReqCount = 0;
@@ -185,7 +186,7 @@ int Stream::generatePuasson(int modeId) {
     // Calculate number of slow requests
     while (distributionFunc < randomVariable) {
         slowReqCount++;
-        adding = adding * liamBartlett * modeDuration / static_cast<double>(slowReqCount);
+        adding = adding * liamBartlett * modeDuration / static_cast<float>(slowReqCount);
         distributionFunc = distributionFunc + adding;
         if (adding < CONST_EXPON_PUAS_AND_BART) {
             break;
@@ -197,10 +198,10 @@ int Stream::generatePuasson(int modeId) {
 
 int Stream::generateBartlett() {
     // The value of a random variable that the distribution function should approach
-    double randomVariable;
+    float randomVariable;
 
     // The value of a distribution function
-    double distributionFunc = 1.0 - r;
+    float distributionFunc = 1.0F - r;
 
     // Counter for fast requests in a bundle
     int fastReqCount = 0;
@@ -209,7 +210,7 @@ int Stream::generateBartlett() {
     bool isFirstIterPassed = true;
 
     // Adding for distribution function
-    double adding = r * (1.0 - g);
+    float adding = r * (1.0F - g);
 
     // Generate random value from 0 to 1
     randomVariable = distribution(generator);
@@ -234,7 +235,7 @@ int Stream::generateBartlett() {
 }
 
 bool Stream::areThereFastRequests() {
-    return (abs(mathExpect - 1.0) >= CONST_EPS_COMPARISON);
+    return (abs(mathExpect - 1.0F) >= CONST_EPS_COMPARISON);
 }
 
 void Stream::calculateReqCountOfSaturation() {

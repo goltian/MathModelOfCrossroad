@@ -7,19 +7,19 @@
 #include "DataManager.h"
 #include "mathModelOfCrossroad.h"
 
-constexpr auto CONST_REPEATS_OF_ONE_EXPERIMENT = 4;
+constexpr auto CONST_REPEATS_OF_ONE_EXPERIMENT = 1;
 
 constexpr auto CONST_ORIENTATION_MODE = 3;
 
 constexpr auto CONST_COUNT_OF_EXPERIMENTS = 1;
 
 int main() {
-    double start, end;
+    float start, end;
     std::cout.precision(2);
     std::cout.setf(std::ios::fixed);
 
     // Our parameters for all experimnets
-    double parametersForAll[CONST_COUNT_OF_EXPERIMENTS][9] = {
+    float parametersForAll[CONST_COUNT_OF_EXPERIMENTS][9] = {
         //    g  m  g  m  l    l_p  N  pe  H
 
         {0.8, 4.5, 0, 1, 0.1, 0.1, 10, 30, 30},
@@ -31,11 +31,11 @@ int main() {
 
         start = omp_get_wtime();
 
-        double rowCount = parametersForAll[numberOfExp][8];
-        double peopleServiceModeDuration = parametersForAll[numberOfExp][7];
+        float rowCount = parametersForAll[numberOfExp][8];
+        float peopleServiceModeDuration = parametersForAll[numberOfExp][7];
 
         // We need to save parameters of stream for an experimnet
-        std::vector<double> parametersForOne(7);
+        std::vector<float> parametersForOne(7);
         for (int i = 0; i < 7; i++) {
             parametersForOne[i] = parametersForAll[numberOfExp][i];
         }
@@ -50,8 +50,8 @@ int main() {
             int tid = omp_get_thread_num();
 
             // Set duration of cars service modes
-            double firstCarsServiceModeDuration = 1.0;
-            double secondCarsServiceModeDuration = 1.0;
+            float firstCarsServiceModeDuration = 1.0F;
+            float secondCarsServiceModeDuration = 1.0F;
 
             if (tid == 0) {
             std::cout << "Count of threads: " << omp_get_num_threads() << "\n\n";
@@ -59,8 +59,8 @@ int main() {
 
             // Cycle for filling all matrix
             do {
-                double row = firstCarsServiceModeDuration;
-                double column = secondCarsServiceModeDuration;
+                float row = firstCarsServiceModeDuration;
+                float column = secondCarsServiceModeDuration;
 
                 if (tid == 0) {
                 std::cout << "Exp: " << numberOfExp << "\t";
@@ -69,7 +69,7 @@ int main() {
 
                 // Cycle for filling one row
                 do {
-                    std::vector<double> modesDuration = {row,
+                    std::vector<float> modesDuration = {row,
                                                       CONST_ORIENTATION_MODE,
                                                       column,
                                                       CONST_ORIENTATION_MODE,
@@ -85,7 +85,7 @@ int main() {
                     if (crossroadModel.isCrossroadModelWorksStably()) {
 
                         // Get data from model
-                        std::vector<double> data(5);
+                        std::vector<float> data(5);
                         data = crossroadModel.getPortionOfData();
 
                         // Set data into dataManager
@@ -109,7 +109,7 @@ int main() {
         // }
 
         end = omp_get_wtime();
-        double timeOfWork = end - start;
+        float timeOfWork = end - start;
         std::cout << "Time: " << timeOfWork << "\n\n\n\n";
 
         // Get file name
@@ -126,8 +126,8 @@ int main() {
     return 0;
 }
 
-std::string getNameOfFile(const std::vector<double> parametersForOne,
-                          double peopleServiceModeDuration) {
+std::string getNameOfFile(const std::vector<float> parametersForOne,
+                          float peopleServiceModeDuration) {
     std::ostringstream stream;
 
     stream << std::fixed;
@@ -146,7 +146,7 @@ std::string getNameOfFile(const std::vector<double> parametersForOne,
     stream << parametersForOne[0];
     stream << "__";
 
-    double r = (1.0 - parametersForOne[0]) * (parametersForOne[1] - 1.0);
+    float r = (1.0F - parametersForOne[0]) * (parametersForOne[1] - 1.0F);
     stream << "r=";
     stream << r;
     stream << "__";

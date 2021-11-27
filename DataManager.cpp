@@ -14,7 +14,7 @@ DataManager::DataManager(int rowCount_, int repeatsCount_) {
     resultMatrix.resize(sizeOfVector * CONST_CELLS_COUNT, -1);
 }
 
-void DataManager::setPortionOfData(int row, int column, std::vector<double> portionOfData,
+void DataManager::setPortionOfData(int row, int column, std::vector<float> portionOfData,
                                    int tid) {
     int index = findIndex(row - 1, column - 1);
     for (int i = 0; i < CONST_CELLS_COUNT; i++) {
@@ -22,8 +22,8 @@ void DataManager::setPortionOfData(int row, int column, std::vector<double> port
     }
 }
 
-void DataManager::writeInfoInFile(double peopleServiceModeDuration, double liam,
-                                  std::string nameOfFile, double timeOfWork) {
+void DataManager::writeInfoInFile(float peopleServiceModeDuration, float liam,
+                                  std::string nameOfFile, float timeOfWork) {
     std::ofstream reportFile;
     reportFile.precision(2);
     reportFile.setf(std::ios::fixed);
@@ -86,14 +86,14 @@ void DataManager::writeInfoInTable(std::string nameOfFile) {
 int DataManager::findIndex(int row, int column) {
     // It always be an integer number because it`s
     // a summ of an arithmetic progression
-    double index = (((2 * rowCount - (row - 1)) / 2.0) * row + column);
+    float index = (((2 * rowCount - (row - 1)) / 2.0F) * row + column);
     return static_cast<int>(index);
 }
 
 int DataManager::calculateSizeOfVector() {
     // It always be an integer number because it`s
     // a summ of an arithmetic progression
-    double size = (((2 * rowCount - (rowCount - 2)) / 2.0) * (rowCount - 1) + 1);
+    float size = (((2 * rowCount - (rowCount - 2)) / 2.0F) * (rowCount - 1) + 1);
     return static_cast<int>(size);
 }
 
@@ -102,11 +102,11 @@ bool DataManager::areAllRepeatsSuccsess(int index) {
 }
 
 void DataManager::setAvgData(int index) {
-    double avg = 0;
-    double sum = 0;
+    float avg = 0.0F;
+    float sum = 0.0F;
 
     for (int cell = 0; cell < CONST_CELLS_COUNT; cell++) {
-        sum = 0;
+        sum = 0.0F;
         for (int repeat = 0; repeat < repeatsCount; repeat++) {
             sum += data[index + repeat * sizeOfVector * CONST_CELLS_COUNT + cell * sizeOfVector];
         }

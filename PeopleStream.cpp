@@ -3,8 +3,8 @@
 
 PeopleStream::PeopleStream() {
     throughputCapacity = 5;
-    serviceTime = 10.0;
-    criticalTimeForPeople = 7.0;
+    serviceTime = 10.0F;
+    criticalTimeForPeople = 7.0F;
     casesInServiceRequests = Case_OldReqWillBeServedNow;
 }
 
@@ -13,9 +13,9 @@ void PeopleStream::serviseRequests() {
     calculateReqCountOfSaturation();
     int reqCountInBunker = static_cast<int>(storageBunker.size());
     int reqCountOfServed = 0;
-    double inputTime = 0.0;
-    double outputTime = 0.0;
-    std::queue<double> reqOutputTimes;
+    float inputTime = 0.0F;
+    float outputTime = 0.0F;
+    std::queue<float> reqOutputTimes;
     int maxPossibleReqCountToServe = std::min(reqCountOfSaturation, reqCountInBunker);
 
     while (reqCountOfServed < maxPossibleReqCountToServe) {
@@ -89,7 +89,7 @@ void PeopleStream::serviseRequests() {
     totalTime += modeDuration;
 }
 
-bool PeopleStream::isRequestCantBeServedAtAll(double outputTime) {
+bool PeopleStream::isRequestCantBeServedAtAll(float outputTime) {
     if (totalTime + modeDuration - criticalTimeForPeople < outputTime - serviceTime) {
         return true;
     } else {
@@ -97,16 +97,16 @@ bool PeopleStream::isRequestCantBeServedAtAll(double outputTime) {
     }
 }
 
-double PeopleStream::calculateOutputTime(CasesInServiceRequests casesInServiceRequests,
-                                         const std::queue<double> &reqOutputTimes,
-                                         double inputTime) {
-    double outputTime;
+float PeopleStream::calculateOutputTime(CasesInServiceRequests casesInServiceRequests,
+                                         const std::queue<float> &reqOutputTimes,
+                                         float inputTime) {
+    float outputTime;
 
     switch (casesInServiceRequests) {
         case (Case_OldReqWillBeServedNow):
 
             if (!reqOutputTimes.empty()) {
-                double sum = static_cast<double>(totalTime + serviceTime);
+                float sum = static_cast<float>(totalTime + serviceTime);
                 outputTime = std::max(sum, reqOutputTimes.front());
             } else {
                 outputTime = totalTime + serviceTime;

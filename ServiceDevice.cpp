@@ -1,8 +1,8 @@
 #include "ServiceDevice.h"
 #include <iostream>
 
-ServiceDevice::ServiceDevice(std::vector<double> parametersOfSystem,
-                             std::vector<double> modesDuration) {
+ServiceDevice::ServiceDevice(std::vector<float> parametersOfSystem,
+                             std::vector<float> modesDuration) {
     currentMode = Mode_Gamma2;
     switchesCount.IntoGamma1 = 0;
     switchesCount.IntoGamma3 = 0;
@@ -40,7 +40,7 @@ ServiceDevice::ServiceDevice(std::vector<double> parametersOfSystem,
     streamPi2.calculateExponents();
     streamPi3.calculateExponents();
 
-    percentOfSwitchingIntoG5AndG7 = 0.0;
+    percentOfSwitchingIntoG5AndG7 = 0.0F;
 }
 
 bool ServiceDevice::isCrossroadModelWorksStably() {
@@ -57,8 +57,8 @@ bool ServiceDevice::isCrossroadModelWorksStably() {
     }
 }
 
-std::vector<double> ServiceDevice::getPortionOfData() {
-    std::vector<double> portionOfData(5);
+std::vector<float> ServiceDevice::getPortionOfData() {
+    std::vector<float> portionOfData(5);
     portionOfData[0] = getAvgGammaForAllStreams();
     portionOfData[1] = streamPi1.getGamma();
     portionOfData[2] = streamPi2.getGamma();
@@ -68,9 +68,9 @@ std::vector<double> ServiceDevice::getPortionOfData() {
     return portionOfData;
 }
 
-double ServiceDevice::getAvgGammaForAllStreams() {
-    double numenator;
-    double denumenator;
+float ServiceDevice::getAvgGammaForAllStreams() {
+    float numenator;
+    float denumenator;
 
     numenator = streamPi1.getGamma() * streamPi1.getLiam();
     numenator += streamPi2.getGamma() * streamPi2.getLiam();
@@ -81,17 +81,17 @@ double ServiceDevice::getAvgGammaForAllStreams() {
     return (numenator / denumenator);
 }
 
-double ServiceDevice::getPercentOfSwitchingIntoG5AndG7() {
-    double numenator;
-    double denumenator;
-    double percent;
+float ServiceDevice::getPercentOfSwitchingIntoG5AndG7() {
+    float numenator;
+    float denumenator;
+    float percent;
 
     numenator = switchesCount.IntoGamma5 + switchesCount.IntoGamma7;
     denumenator = numenator + switchesCount.IntoGamma1 + switchesCount.IntoGamma3;
 
     percent = numenator / denumenator;
 
-    percent *= 100.0;
+    percent *= 100.0F;
 
     return percent;
 }

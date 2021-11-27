@@ -5,11 +5,11 @@
 #include "AverageWaitingTime.h"
 #include <boost/random.hpp>
 
-constexpr auto CONST_EXPON_PUAS_AND_BART = 1e-32;
+constexpr float CONST_EXPON_PUAS_AND_BART = 1e-32F;
 
-constexpr auto CONST_EPS_COMPARISON = 1e-6;
+constexpr float CONST_EPS_COMPARISON = 1e-6F;
 
-constexpr auto CONST_FOR_SLOW_REQ_COUNT = 150;
+constexpr int CONST_FOR_SLOW_REQ_COUNT = 150;
 
 constexpr size_t CONST_CRITICAL_REQ_COUNT = 1000;
 
@@ -18,25 +18,25 @@ public:
 
 	Stream();
 
-	void setG(double g_);
+	void setG(float g_);
 
-	void setMathExpect(double mathExpect_);
+	void setMathExpect(float mathExpect_);
 
-	void setLiam(double liam_);
+	void setLiam(float liam_);
 
-	void setModesDurations(std::vector<double> modesDuration_);
+	void setModesDurations(std::vector<float> modesDuration_);
 
 	void calculateR();
 
 	void calculateLiamBartlett();
 
-	double getLiam();
+	float getLiam();
 
-	double getLiamBartlett();
+	float getLiamBartlett();
 
 	int getStorageBunkerSize();
 
-	double getGamma();
+	float getGamma();
 
 	bool isStreamNotStable();
 
@@ -54,34 +54,34 @@ public:
 protected:
 
 	boost::random::mt19937 generator;
-    boost::random::uniform_real_distribution<> distribution;
+    boost::random::uniform_real_distribution<float> distribution;
 
 	// Parameters of stream
-	double g;
-	double mathExpect;
-	double r;
-	double liam;
-	double liamBartlett;
+	float g;
+	float mathExpect;
+	float r;
+	float liam;
+	float liamBartlett;
 
 	// Total time of working crossroad
-	double totalTime;
+	float totalTime;
 	
 	// Duration of the mode
-	double modeDuration;
+	float modeDuration;
 	
 	// Durations of every mode
-	std::vector<double> modesDuration;
+	std::vector<float> modesDuration;
 	
 	// Array of the calculated exponents for every mode
-	std::vector<double> exponents;
+	std::vector<float> exponents;
 	
 	// Queue of times of incoming requests that have 
 	// got into storage bunker
-	std::queue <double> storageBunker;
+	std::queue <float> storageBunker;
 	
 	// Array for times of coming slow requests that have 
 	// come during last interval (mode)
-	std::vector <double> timesOfSlowReq;
+	std::vector <float> timesOfSlowReq;
 
 	// Max possible count of requests that 
 	// could be on a crossroad at one time
@@ -92,7 +92,7 @@ protected:
 	int reqCountOfSaturation;
 	
 	// Service time for one request
-	double serviceTime;
+	float serviceTime;
 
 	AverageWaitingTime avgWaitingTime;
 
