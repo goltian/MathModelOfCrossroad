@@ -3,8 +3,8 @@
 
 PeopleStream::PeopleStream() {
     throughputCapacity = 5;
-    serviceTime = 10;
-    criticalTimeForPeople = 7;
+    serviceTime = 10.0;
+    criticalTimeForPeople = 7.0;
     casesInServiceRequests = Case_OldReqWillBeServedNow;
 }
 
@@ -13,8 +13,8 @@ void PeopleStream::serviseRequests() {
     calculateReqCountOfSaturation();
     int reqCountInBunker = static_cast<int>(storageBunker.size());
     int reqCountOfServed = 0;
-    double inputTime = 0;
-    double outputTime = 0;
+    double inputTime = 0.0;
+    double outputTime = 0.0;
     std::queue<double> reqOutputTimes;
     int maxPossibleReqCountToServe = std::min(reqCountOfSaturation, reqCountInBunker);
 

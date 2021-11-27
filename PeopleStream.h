@@ -20,7 +20,7 @@ private:
 		Case_Last = 3
 	} casesInServiceRequests;
 	
-	int criticalTimeForPeople;
+	double criticalTimeForPeople;
 
 	bool isRequestCantBeServedAtAll(double outputTime);
 

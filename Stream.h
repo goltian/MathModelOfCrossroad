@@ -11,7 +11,7 @@ constexpr auto CONST_EPS_COMPARISON = 1e-6;
 
 constexpr auto CONST_FOR_SLOW_REQ_COUNT = 150;
 
-constexpr auto CONST_CRITICAL_REQ_COUNT = 1000;
+constexpr size_t CONST_CRITICAL_REQ_COUNT = 1000;
 
 class Stream {
 public:
@@ -24,7 +24,7 @@ public:
 
 	void setLiam(double liam_);
 
-	void setModesDurations(std::vector<int> modesDuration_);
+	void setModesDurations(std::vector<double> modesDuration_);
 
 	void calculateR();
 
@@ -64,19 +64,16 @@ protected:
 	double liamBartlett;
 
 	// Total time of working crossroad
-	int totalTime;
+	double totalTime;
 	
 	// Duration of the mode
-	int modeDuration;
+	double modeDuration;
 	
 	// Durations of every mode
-	std::vector<int> modesDuration;
+	std::vector<double> modesDuration;
 	
 	// Array of the calculated exponents for every mode
 	std::vector<double> exponents;
-
-	// Array of the puas dist for every mode
-    std::vector<std::vector<double>> puasDist;
 	
 	// Queue of times of incoming requests that have 
 	// got into storage bunker
@@ -95,7 +92,7 @@ protected:
 	int reqCountOfSaturation;
 	
 	// Service time for one request
-	int serviceTime;
+	double serviceTime;
 
 	AverageWaitingTime avgWaitingTime;
 

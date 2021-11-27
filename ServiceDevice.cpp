@@ -2,7 +2,7 @@
 #include <iostream>
 
 ServiceDevice::ServiceDevice(std::vector<double> parametersOfSystem,
-                             std::vector<int> modesDuration) {
+                             std::vector<double> modesDuration) {
     currentMode = Mode_Gamma2;
     switchesCount.IntoGamma1 = 0;
     switchesCount.IntoGamma3 = 0;
@@ -91,7 +91,7 @@ double ServiceDevice::getPercentOfSwitchingIntoG5AndG7() {
 
     percent = numenator / denumenator;
 
-    percent *= 100;
+    percent *= 100.0;
 
     return percent;
 }

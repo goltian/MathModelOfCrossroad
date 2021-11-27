@@ -71,21 +71,24 @@ void AverageWaitingTime::calculateAvgWaitTime(double inputTime, double outputTim
 }
 
 void AverageWaitingTime::calculateNewGammaAndUValue(double inputTime, double outputTime) {
-    double fraction = 1.0 / (reqCountConsideredByGamma + 1.0);
+    double fraction = 1.0 / (static_cast<double>(reqCountConsideredByGamma) + 1.0);
     double waitingTime = outputTime - inputTime;
 
     // Compute new value of average waiting time (gamma)
-    gamma = gamma * fraction * reqCountConsideredByGamma + waitingTime * fraction;
+    gamma =
+        gamma * fraction * static_cast<double>(reqCountConsideredByGamma) + waitingTime * fraction;
 
     // Compute new value of u (additional variable for calculating)
-    u = u * fraction * reqCountConsideredByGamma + waitingTime * waitingTime * fraction;
+    u = u * fraction * static_cast<double>(reqCountConsideredByGamma) +
+        waitingTime * waitingTime * fraction;
 
     // Increase requests count that have been considered by gamma
     reqCountConsideredByGamma++;
 }
 
 void AverageWaitingTime::checkErrorForGammaAndS() {
-    double fraction = reqCountConsideredByGamma / (reqCountConsideredByGamma - 1.0);
+    double fraction = static_cast<double>(reqCountConsideredByGamma) /
+                      (static_cast<double>(reqCountConsideredByGamma) - 1.0);
 
     // If gamma and s are stable then stream is stable too
     if (abs(gamma - gammaWithWave) < CONST_EPS_FOR_CHECKING_STABLE) {

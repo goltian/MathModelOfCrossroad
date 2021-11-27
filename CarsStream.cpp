@@ -2,16 +2,16 @@
 
 CarsStream::CarsStream() {
     throughputCapacity = 1;
-    serviceTime = 1;
+    serviceTime = 1.0;
 }
 
 void CarsStream::serviseRequests() {
-    double timeBeforeStartThisMode = static_cast<double>(totalTime - modeDuration);
+    double timeBeforeStartThisMode = totalTime - modeDuration;
     calculateReqCountOfSaturation();
     int reqCountInBunker = static_cast<int>(storageBunker.size());
     int reqCountOfServed = 0;
-    double inputTime = 0;
-    double outputTime = 0;
+    double inputTime = 0.0;
+    double outputTime = 0.0;
 
     while ((reqCountOfServed < reqCountOfSaturation) && (reqCountOfServed < reqCountInBunker)) {
         // Take first request from queue

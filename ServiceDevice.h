@@ -8,7 +8,7 @@ public:
 
 	ServiceDevice(
 		std::vector<double> parametersOfSystem,
-		std::vector<int> modesDurations
+		std::vector<double> modesDurations
 	);
 
 	bool isCrossroadModelWorksStably();

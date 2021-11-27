@@ -7,7 +7,7 @@
 #include "DataManager.h"
 #include "mathModelOfCrossroad.h"
 
-constexpr auto CONST_REPEATS_OF_ONE_EXPERIMENT = 1;
+constexpr auto CONST_REPEATS_OF_ONE_EXPERIMENT = 4;
 
 constexpr auto CONST_ORIENTATION_MODE = 3;
 
@@ -31,8 +31,8 @@ int main() {
 
         start = omp_get_wtime();
 
-        int rowCount = static_cast<int>(parametersForAll[numberOfExp][8]);
-        int peopleServiceModeDuration = static_cast<int>(parametersForAll[numberOfExp][7]);
+        double rowCount = parametersForAll[numberOfExp][8];
+        double peopleServiceModeDuration = parametersForAll[numberOfExp][7];
 
         // We need to save parameters of stream for an experimnet
         std::vector<double> parametersForOne(7);
@@ -50,8 +50,8 @@ int main() {
             int tid = omp_get_thread_num();
 
             // Set duration of cars service modes
-            int firstCarsServiceModeDuration = 1;
-            int secondCarsServiceModeDuration = 1;
+            double firstCarsServiceModeDuration = 1.0;
+            double secondCarsServiceModeDuration = 1.0;
 
             if (tid == 0) {
             std::cout << "Count of threads: " << omp_get_num_threads() << "\n\n";
@@ -59,8 +59,8 @@ int main() {
 
             // Cycle for filling all matrix
             do {
-                int row = firstCarsServiceModeDuration;
-                int column = secondCarsServiceModeDuration;
+                double row = firstCarsServiceModeDuration;
+                double column = secondCarsServiceModeDuration;
 
                 if (tid == 0) {
                 std::cout << "Exp: " << numberOfExp << "\t";
@@ -69,7 +69,7 @@ int main() {
 
                 // Cycle for filling one row
                 do {
-                    std::vector<int> modesDuration = {row,
+                    std::vector<double> modesDuration = {row,
                                                       CONST_ORIENTATION_MODE,
                                                       column,
                                                       CONST_ORIENTATION_MODE,
