@@ -126,7 +126,7 @@ void Stream::generateRequests(int modeId) {
     // If there are fast requests then we need generate them
     if (areThereFastRequests()) {
         // Number of fast requests for every bundle
-        int fastReqCount;
+        float fastReqCount;
 
         // Distance (time) between fast requests
         float timeBetweenFastReq;
@@ -141,16 +141,16 @@ void Stream::generateRequests(int modeId) {
             // Calculate time (distance) between fast requests
             if (slowReq < slowReqCount - 1) {
                 timeBetweenFastReq = (timesOfSlowReq[slowReq + 1] - timesOfSlowReq[slowReq]) /
-                                     (2.0F * static_cast<float>(fastReqCount));
+                                     (2.0F * fastReqCount);
             } else {
                 timeBetweenFastReq = (totalTime + modeDuration - timesOfSlowReq[slowReq]) /
-                                     (2.0F * static_cast<float>(fastReqCount));
+                                     (2.0F * fastReqCount);
             }
 
             // Put fast requests into queue
             for (int fastReq = 0; fastReq < fastReqCount; fastReq++) {
                 storageBunker.push(timesOfSlowReq[slowReq] +
-                                   (static_cast<float>(fastReq) + 1.0F) * timeBetweenFastReq);
+                                   (fastReq + 1.0F) * timeBetweenFastReq);
             }
         }
     } else {
@@ -196,7 +196,7 @@ int Stream::generatePuasson(int modeId) {
     return slowReqCount;
 }
 
-int Stream::generateBartlett() {
+float Stream::generateBartlett() {
     // The value of a random variable that the distribution function should approach
     float randomVariable;
 
@@ -231,7 +231,7 @@ int Stream::generateBartlett() {
             }
         }
     }
-    return fastReqCount;
+    return static_cast<float>(fastReqCount);
 }
 
 bool Stream::areThereFastRequests() {

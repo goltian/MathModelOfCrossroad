@@ -2,8 +2,8 @@
 
 #include <random>
 #include <queue>
+#include <random>
 #include "AverageWaitingTime.h"
-#include <boost/random.hpp>
 
 constexpr float CONST_EXPON_PUAS_AND_BART = 1e-32F;
 
@@ -53,8 +53,8 @@ public:
 
 protected:
 
-	boost::random::mt19937 generator;
-    boost::random::uniform_real_distribution<float> distribution;
+	std::mt19937 generator;
+    std::uniform_real_distribution<float> distribution;
 
 	// Parameters of stream
 	float g;
@@ -100,7 +100,7 @@ protected:
 	int generatePuasson(int modeId);
 	
 	// Method for generating count of fast requests in every bundle
-	int generateBartlett();
+	float generateBartlett();
 	
 	// Method for checking the need to generate fast requests at all
 	bool areThereFastRequests();
