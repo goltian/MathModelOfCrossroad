@@ -7,11 +7,13 @@
 #include "DataManager.h"
 #include "mathModelOfCrossroad.h"
 
-constexpr auto CONST_REPEATS_OF_ONE_EXPERIMENT = 4;
+constexpr auto CONST_REPEATS_OF_ONE_EXPERIMENT = 1;
 
-constexpr auto CONST_ORIENTATION_MODE = 3;
+constexpr auto CONST_ORIENTATION_MODE = 3.0F;
 
 constexpr auto CONST_COUNT_OF_EXPERIMENTS = 1;
+
+constexpr bool CONST_OF_USING_METHOD_OF_REDUCED_BROOT_FORCE = true;
 
 int main() {
     float start, end;
@@ -54,7 +56,7 @@ int main() {
             float secondCarsServiceModeDuration = 1.0F;
 
             if (tid == 0) {
-            std::cout << "Count of threads: " << omp_get_num_threads() << "\n\n";
+                std::cout << "Count of threads: " << omp_get_num_threads() << "\n\n";
             }
 
             // Cycle for filling all matrix
@@ -63,20 +65,20 @@ int main() {
                 float column = secondCarsServiceModeDuration;
 
                 if (tid == 0) {
-                std::cout << "Exp: " << numberOfExp << "\t";
-                std::cout << "Row: " << firstCarsServiceModeDuration << "\n";
+                    std::cout << "Exp: " << numberOfExp << "\t";
+                    std::cout << "Row: " << firstCarsServiceModeDuration << "\n";
                 }
 
                 // Cycle for filling one row
                 do {
                     std::vector<float> modesDuration = {row,
-                                                      CONST_ORIENTATION_MODE,
-                                                      column,
-                                                      CONST_ORIENTATION_MODE,
-                                                      peopleServiceModeDuration,
-                                                      CONST_ORIENTATION_MODE,
-                                                      peopleServiceModeDuration,
-                                                      CONST_ORIENTATION_MODE};
+                                                        CONST_ORIENTATION_MODE,
+                                                        column,
+                                                        CONST_ORIENTATION_MODE,
+                                                        peopleServiceModeDuration,
+                                                        CONST_ORIENTATION_MODE,
+                                                        peopleServiceModeDuration,
+                                                        CONST_ORIENTATION_MODE};
 
                     // Create crossroad model with the specified parameters
                     ServiceDevice crossroadModel(parametersForOne, modesDuration);
@@ -90,16 +92,27 @@ int main() {
 
                         // Set data into dataManager
                         matrixForOneExp.setPortionOfData((row), (column), data, tid);
-                    }
 
-                    // Increase column index
-                    column++;
+                        bool crossroadIsWorking = true;
+                        computeNextIndexes(crossroadIsWorking, secondCarsServiceModeDuration,
+                                           firstCarsServiceModeDuration, rowCount, row, column);
+
+                    } else {
+                        bool crossroadIsWorking = false;
+                        computeNextIndexes(crossroadIsWorking, secondCarsServiceModeDuration,
+                                           firstCarsServiceModeDuration, rowCount, row, column);
+                    }
 
                     // Fill one row
                 } while (row + column < rowCount);
 
                 // Increase row index
-                firstCarsServiceModeDuration++;
+                if (CONST_OF_USING_METHOD_OF_REDUCED_BROOT_FORCE) {
+                    firstCarsServiceModeDuration++;
+                    secondCarsServiceModeDuration++;
+                } else {
+                    firstCarsServiceModeDuration++;
+                }
 
                 // Fill all matrix
             } while (firstCarsServiceModeDuration + secondCarsServiceModeDuration < rowCount);
@@ -165,4 +178,38 @@ std::string getNameOfFile(const std::vector<float> parametersForOne,
     stream << "__";
 
     return stream.str();
+}
+
+void computeNextIndexes(bool crossroadIsWorking, float secondCarsServiceModeDuration,
+                        float firstCarsServiceModeDuration, float rowCount, float &row,
+                        float &column) {
+    if (CONST_OF_USING_METHOD_OF_REDUCED_BROOT_FORCE) {
+		if (crossroadIsWorking) {
+			if ((row + column + 1 == rowCount) && (column > row)) {
+				column = secondCarsServiceModeDuration;
+				row = firstCarsServiceModeDuration + 1;
+			} else {
+				if (column >= row)
+					// идём вниз, пока не получим аварийный режим
+					column++;
+				else
+					// идём вправо, пока не получим аварийный режим
+					row++;
+			}
+		} else {
+			if (column == row) {
+				column++;
+			}
+
+			if (column > row) {
+				column = secondCarsServiceModeDuration;
+				row = firstCarsServiceModeDuration + 1;
+			} else {
+				row = rowCount;
+			}
+		}
+    } else {
+        // Increase column index
+         column++;
+	}
 }

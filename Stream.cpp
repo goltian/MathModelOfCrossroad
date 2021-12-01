@@ -111,7 +111,6 @@ void Stream::generateRequests(int modeId) {
     }
 
     // Cycle for putting arriving times of slow requests into the array
-#pragma omp simd
     for (int slowReq = 0; slowReq < slowReqCount; ++slowReq) {
         // Generate random value from 0 to 1
         //randomVariable = distribution(generator);

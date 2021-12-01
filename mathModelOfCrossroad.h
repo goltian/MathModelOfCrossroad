@@ -5,6 +5,10 @@ std::string getNameOfFile(
 	float peopleServiceModeDuration
 );
 
+void computeNextIndexes(bool crossroadIsWorking, float secondCarsServiceModeDuration,
+                        float firstCarsServiceModeDuration, float rowCount, float &row,
+                        float &column);
+
 // The first series of experiments
 //{ 0.5, 2, 0, 1, 0.1, 0.1, 0, 30, 180 },
 //{ 0.6, 2, 0, 1, 0.1, 0.1, 0, 30, 180 },
