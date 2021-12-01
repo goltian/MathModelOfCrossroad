@@ -90,6 +90,34 @@ void Stream::calculateExponents() {
 
     // 2 modes of orientation after third mode
     exponents[5] = exponents[7] = exp(liamBartlett * modesDuration[5]);
+
+}
+
+void Stream::calculatePoissonDist() {
+    // Calculate massives of Poisson distribution for every mode
+    int modes_count = static_cast<int>(modesDuration.size());
+    poissonDistribution.resize(modes_count);
+    float modeDur;
+    float adding;
+
+    for (int j = 0; j < modes_count; ++j) {
+        modeDur = modesDuration[j];
+        adding = 1.0L;
+        poissonDistribution[j].resize(CONST_FOR_SLOW_REQ_COUNT);
+        poissonDistribution[j][0] = 1.0L;
+
+        for (int i = 1; i < CONST_FOR_SLOW_REQ_COUNT; ++i) {
+			// Calculate next value of Poisson dist
+            adding *= liamBartlett * modeDur / i;
+            poissonDistribution[j][i] = poissonDistribution[j][i - 1] + adding;
+
+			// If we try to increase last value with zero then leave this method
+            if (adding < CONST_EXPON_PUAS_AND_BART) {
+                poissonDistribution[j][i + 1] = FLT_MAX;
+                break;
+            }
+        }
+    }
 }
 
 void Stream::changeModeDuration(int modeId) {
@@ -104,11 +132,7 @@ void Stream::generateRequests(int modeId) {
     int slowReqCount;
 
     // Generate count of slow requests on the interval
-    slowReqCount = generatePuasson(modeId);
-
-    if (slowReqCount > CONST_FOR_SLOW_REQ_COUNT) {
-        timesOfSlowReq.resize(slowReqCount);
-    }
+    slowReqCount = generatePoisson(modeId);
 
     // Cycle for putting arriving times of slow requests into the array
     for (int slowReq = 0; slowReq < slowReqCount; ++slowReq) {
@@ -162,16 +186,10 @@ void Stream::generateRequests(int modeId) {
     totalTime += modeDuration;
 }
 
-int Stream::generatePuasson(int modeId) {
+int Stream::generatePoisson(int modeId) {
 	
     // The value of a random variable that the distribution function should approach
     float randomVariable;
-
-    // The value of a distribution function
-    float distributionFunc = 1.0F;
-
-    // Adding for distribution function
-    float adding = 1.0F;
 
     // Counter for slow requests
     int slowReqCount = 0;
@@ -182,14 +200,9 @@ int Stream::generatePuasson(int modeId) {
     // Multiply to exponent (putting it out of the bracket)
     randomVariable = randomVariable * exponents[modeId];
 
-    // Calculate number of slow requests
-    while (distributionFunc < randomVariable) {
+	// Calculate number of slow requests
+    while (poissonDistribution[modeId][slowReqCount] < randomVariable) {
         slowReqCount++;
-        adding = adding * liamBartlett * modeDuration / static_cast<float>(slowReqCount);
-        distributionFunc = distributionFunc + adding;
-        if (adding < CONST_EXPON_PUAS_AND_BART) {
-            break;
-        }
     }
 
     return slowReqCount;

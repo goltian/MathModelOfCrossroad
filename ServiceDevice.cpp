@@ -40,6 +40,10 @@ ServiceDevice::ServiceDevice(std::vector<float> parametersOfSystem,
     streamPi2.calculateExponents();
     streamPi3.calculateExponents();
 
+	streamPi1.calculatePoissonDist();
+    streamPi2.calculatePoissonDist();
+    streamPi3.calculatePoissonDist();
+
     percentOfSwitchingIntoG5AndG7 = 0.0F;
 }
 
@@ -135,11 +139,8 @@ void ServiceDevice::computeNextMode() {
             streamPi2.serviseRequests();
             currentMode = Mode_Gamma4;
 
-            break;
-        case Mode_Gamma4:
             // Service no one
-
-            changeModeDurationForAll();
+			changeModeDurationForAll();
             generateRequestsForAll();
 
             // If there are any requests in third stream then we need to serve it
@@ -161,10 +162,7 @@ void ServiceDevice::computeNextMode() {
             streamPi3.serviseRequests();
             currentMode = Mode_Gamma6;
 
-            break;
-        case Mode_Gamma6:
             // Service no one
-
             changeModeDurationForAll();
             generateRequestsForAll();
             currentMode = Mode_Gamma3;
@@ -178,10 +176,7 @@ void ServiceDevice::computeNextMode() {
             streamPi3.serviseRequests();
             currentMode = Mode_Gamma8;
 
-            break;
-        case Mode_Gamma8:
             // Service no one
-
             changeModeDurationForAll();
             generateRequestsForAll();
             currentMode = Mode_Gamma1;

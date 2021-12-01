@@ -45,6 +45,9 @@ public:
 	// Method for calculating the array of the exponents for every mode
 	void calculateExponents();
 
+	// Method for calculating massives of Poisson distriution for every mode
+    void calculatePoissonDist();
+
 	void changeModeDuration(int modeId);
 
 	void generateRequests(int modeId);
@@ -74,7 +77,10 @@ protected:
 	
 	// Array of the calculated exponents for every mode
 	std::vector<float> exponents;
-	
+
+	// Arrays of the calculated Poisson distibution for every mode
+	std::vector<std::vector<float>> poissonDistribution;
+		
 	// Queue of times of incoming requests that have 
 	// got into storage bunker
 	std::queue <float> storageBunker;
@@ -97,7 +103,7 @@ protected:
 	AverageWaitingTime avgWaitingTime;
 
 	// Method for generating count of slow requests on interval
-	int generatePuasson(int modeId);
+	int generatePoisson(int modeId);
 	
 	// Method for generating count of fast requests in every bundle
 	float generateBartlett();
