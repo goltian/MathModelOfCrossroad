@@ -11,7 +11,7 @@ constexpr float CONST_EPS_COMPARISON = 1e-6F;
 
 constexpr int CONST_FOR_SLOW_REQ_COUNT = 150;
 
-constexpr size_t CONST_CRITICAL_REQ_COUNT = 1000;
+constexpr int CONST_CRITICAL_REQ_COUNT = 1000;
 
 class Stream {
 public:
@@ -71,6 +71,14 @@ protected:
 	
 	// Duration of the mode
 	float modeDuration;
+
+	int countInBunker;
+
+	int pointerToStartOfBunker;
+
+	int pointerToEndOfBunker;
+
+	int sizeOfBunker;
 	
 	// Durations of every mode
 	std::vector<float> modesDuration;
@@ -81,9 +89,13 @@ protected:
 	// Arrays of the calculated Poisson distibution for every mode
 	std::vector<std::vector<float>> poissonDistribution;
 		
-	// Queue of times of incoming requests that have 
-	// got into storage bunker
-	std::queue <float> storageBunker;
+	//// Queue of times of incoming requests that have 
+	//// got into storage bunker
+	//std::queue<float> storageBunker;
+
+	// Queue of times of incoming requests that have
+    // got into storage bunker
+    std::vector<float> storageBunker;
 	
 	// Array for times of coming slow requests that have 
 	// come during last interval (mode)

@@ -8,15 +8,37 @@ CarsStream::CarsStream() {
 void CarsStream::serviseRequests() {
     float timeBeforeStartThisMode = totalTime - modeDuration;
     calculateReqCountOfSaturation();
-    int reqCountInBunker = static_cast<int>(storageBunker.size());
+    //int reqCountInBunker = static_cast<int>(storageBunker.size());
+
+	int reqCountInBunker = countInBunker;
+
+	if (countInBunker > CONST_CRITICAL_REQ_COUNT) {
+        avgWaitingTime.setStreamStatus(avgWaitingTime.StreamStatus_NotStable);
+        return;
+    }
+
+
     int reqCountOfServed = 0;
     float inputTime = 0.0F;
     float outputTime = 0.0F;
 
     while ((reqCountOfServed < reqCountOfSaturation) && (reqCountOfServed < reqCountInBunker)) {
         // Take first request from queue
-        inputTime = storageBunker.front();
-        storageBunker.pop();
+        //inputTime = storageBunker.front();
+        //storageBunker.pop();
+        if (pointerToStartOfBunker != pointerToEndOfBunker) {
+            inputTime = storageBunker[pointerToStartOfBunker];
+            storageBunker[pointerToStartOfBunker] = -1.0F;
+            if (pointerToStartOfBunker < sizeOfBunker) {
+                ++pointerToStartOfBunker;
+            } else {
+                pointerToStartOfBunker = 0;
+            }
+            --countInBunker;
+        } else {
+            exit(0);
+		}
+
 
         // Compute the output time for another one request
         if (inputTime < timeBeforeStartThisMode) {
@@ -38,7 +60,7 @@ void CarsStream::serviseRequests() {
         reqCountOfServed++;
     }
 
-    if (storageBunker.size() > CONST_CRITICAL_REQ_COUNT) {
-        avgWaitingTime.setStreamStatus(avgWaitingTime.StreamStatus_NotStable);
-    }
+    //if (storageBunker.size() > CONST_CRITICAL_REQ_COUNT) {
+    //    avgWaitingTime.setStreamStatus(avgWaitingTime.StreamStatus_NotStable);
+    //}
 }

@@ -184,7 +184,7 @@ void ServiceDevice::computeNextMode() {
             break;
         default:
             std::cout << "Smth wrong in switch!!!";
-            break;
+            exit(0);
     }
 }
 
