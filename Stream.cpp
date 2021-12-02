@@ -21,11 +21,13 @@ Stream::Stream() {
     throughputCapacity = 0;
     reqCountOfSaturation = 0;
 
+	// Use vector instead of queue to have sequential memory access
+	// Max size of queue could be 1000
 	storageBunker.resize(CONST_CRITICAL_REQ_COUNT + 1);
+
     pointerToStartOfBunker = 0;
     pointerToEndOfBunker = 0;
-    sizeOfBunker = CONST_CRITICAL_REQ_COUNT;
-    countInBunker = 0;
+    reqCountInBunker = 0;
 }
 
 void Stream::setG(float g_) {
@@ -67,7 +69,7 @@ float Stream::getLiamBartlett() {
 
 int Stream::getStorageBunkerSize() {
     //return static_cast<int>(storageBunker.size());
-    return countInBunker;
+    return reqCountInBunker;
 }
 
 float Stream::getGamma() {
@@ -165,19 +167,17 @@ void Stream::generateRequests(int modeId) {
         for (int slowReq = 0; slowReq < slowReqCount; slowReq++) {
             fastReqCount = generateBartlett();
 
-            //// Put slow request into queue
-            //storageBunker.push(timesOfSlowReq[slowReq]);
-            int i = 0;
-			if (pointerToEndOfBunker < sizeOfBunker) {
-                i = pointerToEndOfBunker + 1;
+            // Put slow request into queue
+			// We can rewrite old times in our vector because in that case req count in bunker
+			// will be over 1000 and we will go out from programm with "not stable stream"
+            storageBunker[pointerToEndOfBunker] = timesOfSlowReq[slowReq];
+            reqCountInBunker++;
+            if (pointerToEndOfBunker < CONST_CRITICAL_REQ_COUNT) {
+                pointerToEndOfBunker = pointerToEndOfBunker + 1;
+            } else {
+                pointerToEndOfBunker = 0;
 			}
-			if (i != pointerToStartOfBunker) {
-				storageBunker[pointerToEndOfBunker] = timesOfSlowReq[slowReq];  
-				pointerToEndOfBunker = i;
-				countInBunker++;
-			} else {
-				countInBunker = 1001;
-			}
+
 
             // Calculate time (distance) between fast requests
             if (slowReq < slowReqCount - 1) {
@@ -192,39 +192,31 @@ void Stream::generateRequests(int modeId) {
             float fastReqInFloat = 0.0F;
             for (int fastReq = 0; fastReq < fastReqCount; fastReq++) {
                 fastReqInFloat += 1.0F;
-                //storageBunker.push(timesOfSlowReq[slowReq] + fastReqInFloat * timeBetweenFastReq);
 
-				int i = 0;
-                if (pointerToEndOfBunker < sizeOfBunker) {
-                    i = pointerToEndOfBunker + 1;
-                }
-                if (i != pointerToStartOfBunker) {
-					storageBunker[pointerToEndOfBunker] =
-						timesOfSlowReq[slowReq] + fastReqInFloat * timeBetweenFastReq;
-					pointerToEndOfBunker = i;
-					countInBunker++;
+                // We can rewrite old times in our vector because in that case req count in bunker
+                // will be over 1000 and we will go out from programm with "not stable stream"
+                storageBunker[pointerToEndOfBunker] =
+                    timesOfSlowReq[slowReq] + fastReqInFloat * timeBetweenFastReq;
+                reqCountInBunker++;
+                if (pointerToEndOfBunker < CONST_CRITICAL_REQ_COUNT) {
+                    pointerToEndOfBunker = pointerToEndOfBunker + 1;
                 } else {
-                    countInBunker = 1001;
-				}
-
+                    pointerToEndOfBunker = 0;
+                }
             }
         }
     } else {
         // If there is no fast requests put all slow requests into queue
         for (int slowReq = 0; slowReq < slowReqCount; slowReq++) {
-            //storageBunker.push(timesOfSlowReq[slowReq]);
-
-            int i = 0;
-            if (pointerToEndOfBunker < sizeOfBunker) {
-                i = pointerToEndOfBunker + 1;
+            // We can rewrite old times in our vector because in that case req count in bunker
+            // will be over 1000 and we will go out from programm with "not stable stream"
+            storageBunker[pointerToEndOfBunker] = timesOfSlowReq[slowReq];
+            reqCountInBunker++;
+            if (pointerToEndOfBunker < CONST_CRITICAL_REQ_COUNT) {
+                pointerToEndOfBunker = pointerToEndOfBunker + 1;
+            } else {
+                pointerToEndOfBunker = 0;
             }
-            if (i != pointerToStartOfBunker) {
-				storageBunker[pointerToEndOfBunker] = timesOfSlowReq[slowReq];
-				pointerToEndOfBunker = i;
-				countInBunker++;
-			} else {
-				countInBunker = 1001;
-			}
         }
     }
 

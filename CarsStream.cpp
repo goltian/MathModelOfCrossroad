@@ -8,11 +8,10 @@ CarsStream::CarsStream() {
 void CarsStream::serviseRequests() {
     float timeBeforeStartThisMode = totalTime - modeDuration;
     calculateReqCountOfSaturation();
-    //int reqCountInBunker = static_cast<int>(storageBunker.size());
 
-	int reqCountInBunker = countInBunker;
+	int reqCountInBunkerBeforeService = reqCountInBunker;
 
-	if (countInBunker > CONST_CRITICAL_REQ_COUNT) {
+	if (reqCountInBunkerBeforeService > CONST_CRITICAL_REQ_COUNT) {
         avgWaitingTime.setStreamStatus(avgWaitingTime.StreamStatus_NotStable);
         return;
     }
@@ -22,23 +21,16 @@ void CarsStream::serviseRequests() {
     float inputTime = 0.0F;
     float outputTime = 0.0F;
 
-    while ((reqCountOfServed < reqCountOfSaturation) && (reqCountOfServed < reqCountInBunker)) {
+    while ((reqCountOfServed < reqCountOfSaturation) && (reqCountOfServed < reqCountInBunkerBeforeService)) {
         // Take first request from queue
-        //inputTime = storageBunker.front();
-        //storageBunker.pop();
-        if (pointerToStartOfBunker != pointerToEndOfBunker) {
-            inputTime = storageBunker[pointerToStartOfBunker];
-            storageBunker[pointerToStartOfBunker] = -1.0F;
-            if (pointerToStartOfBunker < sizeOfBunker) {
-                ++pointerToStartOfBunker;
-            } else {
-                pointerToStartOfBunker = 0;
-            }
-            --countInBunker;
+        inputTime = storageBunker[pointerToStartOfBunker];
+		// We service one request. Move pointer and decrease req count in bunker
+        if (pointerToStartOfBunker < CONST_CRITICAL_REQ_COUNT) {
+            ++pointerToStartOfBunker;
         } else {
-            exit(0);
-		}
-
+            pointerToStartOfBunker = 0;
+        }
+        --reqCountInBunker;
 
         // Compute the output time for another one request
         if (inputTime < timeBeforeStartThisMode) {
@@ -59,8 +51,4 @@ void CarsStream::serviseRequests() {
 
         reqCountOfServed++;
     }
-
-    //if (storageBunker.size() > CONST_CRITICAL_REQ_COUNT) {
-    //    avgWaitingTime.setStreamStatus(avgWaitingTime.StreamStatus_NotStable);
-    //}
 }

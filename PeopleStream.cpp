@@ -11,25 +11,23 @@ PeopleStream::PeopleStream() {
 void PeopleStream::serviseRequests() {
     totalTime -= modeDuration;
     calculateReqCountOfSaturation();
-    //int reqCountInBunker = static_cast<int>(storageBunker.size());
-    int reqCountInBunker = countInBunker;
 
-	if (countInBunker > CONST_CRITICAL_REQ_COUNT) {
+    int reqCountInBunkerBeforeService = reqCountInBunker;
+
+	if (reqCountInBunkerBeforeService > CONST_CRITICAL_REQ_COUNT) {
         avgWaitingTime.setStreamStatus(avgWaitingTime.StreamStatus_NotStable);
         return;
 	}
-
 
     int reqCountOfServed = 0;
     float inputTime = 0.0F;
     float outputTime = 0.0F;
     std::queue<float> reqOutputTimes;
-    int maxPossibleReqCountToServe = std::min(reqCountOfSaturation, reqCountInBunker);
+    int maxPossibleReqCountToServe = std::min(reqCountOfSaturation, reqCountInBunkerBeforeService);
 
     while (reqCountOfServed < maxPossibleReqCountToServe) {
 
         // Take first request from queue
-        //inputTime = storageBunker.front();
         inputTime = storageBunker[pointerToStartOfBunker];
 
         // Compute the output time for another one request
@@ -86,27 +84,17 @@ void PeopleStream::serviseRequests() {
         }
 
         avgWaitingTime.calculateAvgWaitTime(inputTime, outputTime);
-        //storageBunker.pop();
-        if (pointerToStartOfBunker != pointerToEndOfBunker) {
-            inputTime = storageBunker[pointerToStartOfBunker];
-            storageBunker[pointerToStartOfBunker] = -1.0F;
-            if (pointerToStartOfBunker < sizeOfBunker) {
-                ++pointerToStartOfBunker;
-            } else {
-                pointerToStartOfBunker = 0;
-            }
-            --countInBunker;
+
+		// We service one request. Move pointer and decrease req count in bunker
+        if (pointerToStartOfBunker < CONST_CRITICAL_REQ_COUNT) {
+            ++pointerToStartOfBunker;
         } else {
-            exit(0);
+            pointerToStartOfBunker = 0;
         }
+        --reqCountInBunker;
 
-
-        reqCountOfServed++;
+		reqCountOfServed++;
     }
-
-    //if (storageBunker.size() > CONST_CRITICAL_REQ_COUNT) {
-    //    avgWaitingTime.setStreamStatus(avgWaitingTime.StreamStatus_NotStable);
-    //}
 
     totalTime += modeDuration;
 }
