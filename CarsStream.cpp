@@ -9,7 +9,7 @@ void CarsStream::serviseRequests() {
     float timeBeforeStartThisMode = totalTime - modeDuration;
     calculateReqCountOfSaturation();
 
-	int reqCountInBunkerBeforeService = reqCountInBunker;
+	uint16_t reqCountInBunkerBeforeService = reqCountInBunker;
 
 	if (reqCountInBunkerBeforeService > CONST_CRITICAL_REQ_COUNT) {
         avgWaitingTime.setStreamStatus(avgWaitingTime.StreamStatus_NotStable);
@@ -17,11 +17,11 @@ void CarsStream::serviseRequests() {
     }
 
 
-    int reqCountOfServed = 0;
+    uint16_t reqCountOfServed = std::min(reqCountOfSaturation, reqCountInBunkerBeforeService);
     float inputTime = 0.0F;
     float outputTime = 0.0F;
 
-    while ((reqCountOfServed < reqCountOfSaturation) && (reqCountOfServed < reqCountInBunkerBeforeService)) {
+    for (uint16_t curReq = 0; curReq < reqCountOfServed; ++curReq) {
         // Take first request from queue
         inputTime = storageBunker[pointerToStartOfBunker];
 		// We service one request. Move pointer
@@ -47,8 +47,6 @@ void CarsStream::serviseRequests() {
             outputTime = inputTime + serviceTime;
         }
         avgWaitingTime.calculateAvgWaitTime(inputTime, outputTime);
-
-        ++reqCountOfServed;
     }
 	// Decrease req count in bunker
     reqCountInBunker -= reqCountOfServed;

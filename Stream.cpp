@@ -6,6 +6,11 @@ Stream::Stream() {
     //std::random_device device;
     //generator.seed(device());
     generator.seed(0);
+
+	// Fill vector of random values for using in future
+    randomValues.resize(CONST_SIZE_OF_RAND_VALUES_VECTOR);
+    fillVectorOfRandValues();
+
     g = 0.0F;
     mathExpect = 1.0F;
     r = (1.0F - g) * (mathExpect - 1.0F);
@@ -67,7 +72,7 @@ float Stream::getLiamBartlett() {
     return liamBartlett;
 }
 
-int Stream::getStorageBunkerSize() {
+uint16_t Stream::getStorageBunkerSize() {
     //return static_cast<int>(storageBunker.size());
     return reqCountInBunker;
 }
@@ -104,18 +109,18 @@ void Stream::calculateExponents() {
 
 void Stream::calculatePoissonDist() {
     // Calculate massives of Poisson distribution for every mode
-    int modesCount = static_cast<int>(modesDuration.size());
+    uint16_t modesCount = static_cast<int>(modesDuration.size());
     poissonDistribution.resize(modesCount);
     float modeDur;
     float adding;
 
-    for (uint8_t modeId = 0; modeId < modesCount; ++modeId) {
+    for (uint16_t modeId = 0; modeId < modesCount; ++modeId) {
         modeDur = modesDuration[modeId];
         adding = 1.0F;
         poissonDistribution[modeId].resize(CONST_FOR_SLOW_REQ_COUNT);
         poissonDistribution[modeId][0] = 1.0F;
 
-        for (uint8_t curValue = 1; curValue < CONST_FOR_SLOW_REQ_COUNT; ++curValue) {
+        for (uint16_t curValue = 1; curValue < CONST_FOR_SLOW_REQ_COUNT; ++curValue) {
 			// Calculate next value of Poisson dist
             adding *= liamBartlett * modeDur / curValue;
             poissonDistribution[modeId][curValue] =
@@ -139,8 +144,7 @@ void Stream::generateRequests(int modeId) {
     //float randomVariable;
 
     // Number of slow requests
-	// we can use only 256 values because of max count of reqs is 150
-    uint8_t slowReqCount;
+    uint16_t slowReqCount;
 
     // Generate count of slow requests on the interval
     slowReqCount = generatePoisson(modeId);
@@ -148,12 +152,15 @@ void Stream::generateRequests(int modeId) {
     reqCountInBunker += slowReqCount;
 
     // Cycle for putting arriving times of slow requests into the array
-    for (uint8_t slowReq = 0; slowReq < slowReqCount; ++slowReq) {
+    for (uint16_t slowReq = 0; slowReq < slowReqCount; ++slowReq) {
         // Generate random value from 0 to 1
-        //randomVariable = distribution(generator);
 
         // Calculate the time of arriving a slow request
-        timesOfSlowReq[slowReq] = modeDuration * distribution(generator) + totalTime;
+        //timesOfSlowReq[slowReq] = modeDuration * distribution(generator) + totalTime;
+		timesOfSlowReq[slowReq] = modeDuration * randomValues[countOfUsedRandValues++] + totalTime;
+        if ( (CONST_SIZE_OF_RAND_VALUES_VECTOR - 1) < countOfUsedRandValues ) {
+            fillVectorOfRandValues();
+		}
     }
 
     // We need to sort our array
@@ -168,7 +175,7 @@ void Stream::generateRequests(int modeId) {
         float timeBetweenFastReq;
 
         // Cycle for filling fast and slow requests into queue
-        for (int slowReq = 0; slowReq < slowReqCount; ++slowReq) {
+        for (uint16_t slowReq = 0; slowReq < slowReqCount; ++slowReq) {
             fastReqCount = generateBartlett();
 
             // Put slow request into queue
@@ -193,7 +200,7 @@ void Stream::generateRequests(int modeId) {
 
             // Put fast requests into queue
             float fastReqInFloat = 0.0F;
-            for (uint8_t fastReq = 0; fastReq < fastReqCount; ++fastReq) {
+            for (uint16_t fastReq = 0; fastReq < static_cast<uint16_t>(fastReqCount); ++fastReq) {
                 fastReqInFloat += 1.0F;
 
                 // We can rewrite old times in our vector because in that case req count in bunker
@@ -207,11 +214,11 @@ void Stream::generateRequests(int modeId) {
                 }
             }
             // Increase req count that will be in bunker
-            reqCountInBunker += fastReqCount;
+            reqCountInBunker += static_cast<uint16_t>(fastReqCount);
         }
     } else {
         // If there is no fast requests put all slow requests into queue
-        for (int slowReq = 0; slowReq < slowReqCount; ++slowReq) {
+        for (uint16_t slowReq = 0; slowReq < slowReqCount; ++slowReq) {
             // We can rewrite old times in our vector because in that case req count in bunker
             // will be over 1000 and we will go out from programm with "not stable stream"
             storageBunker[pointerToEndOfBunker] = timesOfSlowReq[slowReq];
@@ -226,16 +233,20 @@ void Stream::generateRequests(int modeId) {
     totalTime += modeDuration;
 }
 
-int Stream::generatePoisson(int modeId) {
+uint16_t Stream::generatePoisson(int modeId) {
 	
     // The value of a random variable that the distribution function should approach
     float randomVariable;
 
     // Counter for slow requests
-    int slowReqCount = 0;
+    uint16_t slowReqCount = 0;
 
     // Generate random value from 0 to 1
-    randomVariable = distribution(generator);
+    //randomVariable = distribution(generator);
+    randomVariable = randomValues[countOfUsedRandValues++];
+    if ((CONST_SIZE_OF_RAND_VALUES_VECTOR - 1) < countOfUsedRandValues) {
+        fillVectorOfRandValues();
+    }
 
     // Multiply to exponent (putting it out of the bracket)
     randomVariable = randomVariable * exponents[modeId];
@@ -256,7 +267,7 @@ float Stream::generateBartlett() {
     float distributionFunc = 1.0F - r;
 
     // Counter for fast requests in a bundle
-    int fastReqCount = 0;
+    uint16_t fastReqCount = 0;
 
     // Flag for checking that we have passed first iteration successfully
     bool isFirstIterPassed = true;
@@ -265,7 +276,11 @@ float Stream::generateBartlett() {
     float adding = r * (1.0F - g);
 
     // Generate random value from 0 to 1
-    randomVariable = distribution(generator);
+    // randomVariable = distribution(generator);
+    randomVariable = randomValues[countOfUsedRandValues++];
+    if ((CONST_SIZE_OF_RAND_VALUES_VECTOR - 1) < countOfUsedRandValues) {
+        fillVectorOfRandValues();
+    }
 
     // Make compare first time
     if (distributionFunc >= randomVariable) {
@@ -291,6 +306,13 @@ bool Stream::areThereFastRequests() {
 }
 
 void Stream::calculateReqCountOfSaturation() {
-    reqCountOfSaturation = static_cast<int>(throughputCapacity) * static_cast<int>(modeDuration) /
-                           static_cast<int>(serviceTime);
+    reqCountOfSaturation = static_cast<uint16_t>(throughputCapacity) *
+                           static_cast<uint16_t>(modeDuration) / static_cast<uint16_t>(serviceTime);
+}
+
+inline void Stream::fillVectorOfRandValues() {
+    for (uint16_t cur_value = 0; cur_value < CONST_SIZE_OF_RAND_VALUES_VECTOR; ++cur_value) {
+        randomValues[cur_value] = distribution(generator);
+    }
+    countOfUsedRandValues = 0;
 }

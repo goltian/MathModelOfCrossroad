@@ -9,10 +9,11 @@ constexpr float CONST_EXPON_PUAS_AND_BART = 1e-32F;
 
 constexpr float CONST_EPS_COMPARISON = 1e-6F;
 
-// Attention!!! This value can`t be more than 255
-constexpr size_t CONST_FOR_SLOW_REQ_COUNT = 150;
+constexpr uint16_t CONST_FOR_SLOW_REQ_COUNT = 150;
 
 constexpr int CONST_CRITICAL_REQ_COUNT = 1000;
+
+constexpr uint16_t CONST_SIZE_OF_RAND_VALUES_VECTOR = 1024;
 
 class Stream {
 public:
@@ -35,7 +36,7 @@ public:
 
 	float getLiamBartlett();
 
-	int getStorageBunkerSize();
+	uint16_t getStorageBunkerSize();
 
 	float getGamma();
 
@@ -60,6 +61,12 @@ protected:
 	std::mt19937 generator;
     std::uniform_real_distribution<float> distribution;
 
+	// Vector of random values. We will fill many values at one time
+	// to use it by one in the future
+	std::vector<float> randomValues;
+
+	uint16_t countOfUsedRandValues;
+
 	// Parameters of stream
 	float g;
 	float mathExpect;
@@ -74,7 +81,7 @@ protected:
 	float modeDuration;
 
 	// Real size of queue in storage bunker
-	int reqCountInBunker;
+    uint16_t reqCountInBunker;
 
 	// Pointer to start of queue in storage bunker
 	int pointerToStartOfBunker;
@@ -105,7 +112,7 @@ protected:
 	
 	// Requests count that could be served 
 	// if their count was infinite
-	int reqCountOfSaturation;
+    uint16_t reqCountOfSaturation;
 	
 	// Service time for one request
 	float serviceTime;
@@ -113,7 +120,7 @@ protected:
 	AverageWaitingTime avgWaitingTime;
 
 	// Method for generating count of slow requests on interval
-	int generatePoisson(int modeId);
+    uint16_t generatePoisson(int modeId);
 	
 	// Method for generating count of fast requests in every bundle
 	float generateBartlett();
@@ -124,4 +131,8 @@ protected:
 	// Method for calculating requests count that
 	// could be served if their count was infinite
 	void calculateReqCountOfSaturation();
+
+	// Method for filling massive of random values for using
+	// these values in the future
+	void fillVectorOfRandValues();
 };

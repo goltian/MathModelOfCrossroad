@@ -12,20 +12,21 @@ void PeopleStream::serviseRequests() {
     totalTime -= modeDuration;
     calculateReqCountOfSaturation();
 
-    int reqCountInBunkerBeforeService = reqCountInBunker;
+    uint16_t reqCountInBunkerBeforeService = reqCountInBunker;
 
 	if (reqCountInBunkerBeforeService > CONST_CRITICAL_REQ_COUNT) {
         avgWaitingTime.setStreamStatus(avgWaitingTime.StreamStatus_NotStable);
         return;
 	}
 
-    int reqCountOfServed = 0;
+    uint16_t reqCountOfServed = 0;
     float inputTime = 0.0F;
     float outputTime = 0.0F;
     std::queue<float> reqOutputTimes;
-    int maxPossibleReqCountToServe = std::min(reqCountOfSaturation, reqCountInBunkerBeforeService);
+    uint16_t maxPossibleReqCountToServe =
+        std::min(reqCountOfSaturation, reqCountInBunkerBeforeService);
 
-    while (reqCountOfServed < maxPossibleReqCountToServe) {
+    for (uint16_t curReq = 0; curReq < maxPossibleReqCountToServe; ++curReq) {
 
         // Take first request from queue
         inputTime = storageBunker[pointerToStartOfBunker];
