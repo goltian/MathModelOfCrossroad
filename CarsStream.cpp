@@ -24,13 +24,12 @@ void CarsStream::serviseRequests() {
     while ((reqCountOfServed < reqCountOfSaturation) && (reqCountOfServed < reqCountInBunkerBeforeService)) {
         // Take first request from queue
         inputTime = storageBunker[pointerToStartOfBunker];
-		// We service one request. Move pointer and decrease req count in bunker
+		// We service one request. Move pointer
         if (pointerToStartOfBunker < CONST_CRITICAL_REQ_COUNT) {
             ++pointerToStartOfBunker;
         } else {
             pointerToStartOfBunker = 0;
         }
-        --reqCountInBunker;
 
         // Compute the output time for another one request
         if (inputTime < timeBeforeStartThisMode) {
@@ -49,6 +48,8 @@ void CarsStream::serviseRequests() {
         }
         avgWaitingTime.calculateAvgWaitTime(inputTime, outputTime);
 
-        reqCountOfServed++;
+        ++reqCountOfServed;
     }
+	// Decrease req count in bunker
+    reqCountInBunker -= reqCountOfServed;
 }

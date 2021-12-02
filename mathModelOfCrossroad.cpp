@@ -29,7 +29,7 @@ int main() {
     };
 
     // Cycle for all experiments
-    for (int numberOfExp = 0; numberOfExp < CONST_COUNT_OF_EXPERIMENTS; numberOfExp++) {
+    for (int numberOfExp = 0; numberOfExp < CONST_COUNT_OF_EXPERIMENTS; ++numberOfExp) {
 
         start = omp_get_wtime();
 
@@ -38,7 +38,7 @@ int main() {
 
         // We need to save parameters of stream for an experimnet
         std::vector<float> parametersForOne(7);
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 7; ++i) {
             parametersForOne[i] = parametersForAll[numberOfExp][i];
         }
 
@@ -108,10 +108,10 @@ int main() {
 
                 // Increase row index
                 if (CONST_OF_USING_METHOD_OF_REDUCED_BROOT_FORCE) {
-                    firstCarsServiceModeDuration++;
-                    secondCarsServiceModeDuration++;
+                    ++firstCarsServiceModeDuration;
+                    ++secondCarsServiceModeDuration;
                 } else {
-                    firstCarsServiceModeDuration++;
+                    ++firstCarsServiceModeDuration;
                 }
 
                 // Fill all matrix
@@ -191,14 +191,14 @@ void computeNextIndexes(bool crossroadIsWorking, float secondCarsServiceModeDura
 			} else {
 				if (column >= row)
 					// идём вниз, пока не получим аварийный режим
-					column++;
+					++column;
 				else
 					// идём вправо, пока не получим аварийный режим
-					row++;
+					++row;
 			}
 		} else {
 			if (column == row) {
-				column++;
+				++column;
 			}
 
 			if (column > row) {
@@ -210,6 +210,6 @@ void computeNextIndexes(bool crossroadIsWorking, float secondCarsServiceModeDura
 		}
     } else {
         // Increase column index
-         column++;
+        ++column;
 	}
 }

@@ -123,10 +123,10 @@ void ServiceDevice::computeNextMode() {
             reqCountInThirdBunker = streamPi3.getStorageBunkerSize();
 
             if (reqCountInThirdBunker > minReqCountToStartService) {
-                switchesCount.IntoGamma5++;
+                ++switchesCount.IntoGamma5;
                 currentMode = Mode_Gamma5;
             } else {
-                switchesCount.IntoGamma3++;
+                ++switchesCount.IntoGamma3;
                 currentMode = Mode_Gamma3;
             }
 
@@ -146,10 +146,10 @@ void ServiceDevice::computeNextMode() {
             // If there are any requests in third stream then we need to serve it
             reqCountInThirdBunker = streamPi3.getStorageBunkerSize();
             if (reqCountInThirdBunker > minReqCountToStartService) {
-                switchesCount.IntoGamma7++;
+                ++switchesCount.IntoGamma7;
                 currentMode = Mode_Gamma7;
             } else {
-                switchesCount.IntoGamma1++;
+                ++switchesCount.IntoGamma1;
                 currentMode = Mode_Gamma1;
             }
 

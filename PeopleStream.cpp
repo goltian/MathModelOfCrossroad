@@ -85,16 +85,17 @@ void PeopleStream::serviseRequests() {
 
         avgWaitingTime.calculateAvgWaitTime(inputTime, outputTime);
 
-		// We service one request. Move pointer and decrease req count in bunker
+		// We service one request. Move pointer
         if (pointerToStartOfBunker < CONST_CRITICAL_REQ_COUNT) {
             ++pointerToStartOfBunker;
         } else {
             pointerToStartOfBunker = 0;
         }
-        --reqCountInBunker;
 
-		reqCountOfServed++;
+		++reqCountOfServed;
     }
+    // Decrease req count in bunker
+    reqCountInBunker -= reqCountOfServed;
 
     totalTime += modeDuration;
 }

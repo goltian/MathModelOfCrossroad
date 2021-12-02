@@ -17,7 +17,7 @@ DataManager::DataManager(int rowCount_, int repeatsCount_) {
 void DataManager::setPortionOfData(int row, int column, std::vector<float> portionOfData,
                                    int tid) {
     int index = findIndex(row - 1, column - 1);
-    for (int i = 0; i < CONST_CELLS_COUNT; i++) {
+    for (int i = 0; i < CONST_CELLS_COUNT; ++i) {
         data[index + i * sizeOfVector + tid * CONST_CELLS_COUNT * sizeOfVector] = portionOfData[i];
     }
 }
@@ -43,8 +43,8 @@ void DataManager::writeInfoInFile(float peopleServiceModeDuration, float liam,
         reportFile << "cars2 = " << bestDurationsOfModes.second << "\n";
         reportFile << "people = " << peopleServiceModeDuration << "\t";
         reportFile << "liam = " << liam << "\n";
-        for (int repeatNumber = 0; repeatNumber < repeatsCount; repeatNumber++) {
-            for (int cells = 0; cells < CONST_CELLS_COUNT; cells++) {
+        for (int repeatNumber = 0; repeatNumber < repeatsCount; ++repeatNumber) {
+            for (int cells = 0; cells < CONST_CELLS_COUNT; ++cells) {
                 str = std::to_string(data[minValueIndex + cells * sizeOfVector +
                                           repeatNumber * CONST_CELLS_COUNT * sizeOfVector]);
                 str = replacePointToComma(str);
@@ -53,7 +53,7 @@ void DataManager::writeInfoInFile(float peopleServiceModeDuration, float liam,
             reportFile << "\n";
         }
 
-        for (int cells = 0; cells < CONST_CELLS_COUNT; cells++) {
+        for (int cells = 0; cells < CONST_CELLS_COUNT; ++cells) {
             str = std::to_string(resultMatrix[minValueIndex + cells * sizeOfVector]);
             str = replacePointToComma(str);
             reportFile << str << "\t";
@@ -70,8 +70,8 @@ void DataManager::writeInfoInTable(std::string nameOfFile) {
                      std::ios::trunc);
     std::string str;
 
-    for (int row = 0; row < rowCount; row++) {
-        for (int column = 0; column < rowCount; column++) {
+    for (int row = 0; row < rowCount; ++row) {
+        for (int column = 0; column < rowCount; ++column) {
             if (row + column + 2 < rowCount) {
                 int index = findIndex(row, column);
                 str = std::to_string(resultMatrix[index]);
@@ -105,9 +105,9 @@ void DataManager::setAvgData(int index) {
     float avg = 0.0F;
     float sum = 0.0F;
 
-    for (int cell = 0; cell < CONST_CELLS_COUNT; cell++) {
+    for (int cell = 0; cell < CONST_CELLS_COUNT; ++cell) {
         sum = 0.0F;
-        for (int repeat = 0; repeat < repeatsCount; repeat++) {
+        for (int repeat = 0; repeat < repeatsCount; ++repeat) {
             sum += data[index + repeat * sizeOfVector * CONST_CELLS_COUNT + cell * sizeOfVector];
         }
 
@@ -118,8 +118,8 @@ void DataManager::setAvgData(int index) {
 }
 
 void DataManager::computeResultMatrix() {
-    for (int row = 0; row < rowCount; row++) {
-        for (int column = 0; column < rowCount; column++) {
+    for (int row = 0; row < rowCount; ++row) {
+        for (int column = 0; column < rowCount; ++column) {
             if (row + column < rowCount) {
                 int index = findIndex(row, column);
 
@@ -132,8 +132,8 @@ void DataManager::computeResultMatrix() {
 }
 
 void DataManager::findMinValueIndex() {
-    for (int row = 0; row < rowCount; row++) {
-        for (int column = 0; column < rowCount; column++) {
+    for (int row = 0; row < rowCount; ++row) {
+        for (int column = 0; column < rowCount; ++column) {
             if (row + column < rowCount) {
                 int index = findIndex(row, column);
 
@@ -156,7 +156,7 @@ void DataManager::findMinValueIndex() {
 std::string DataManager::replacePointToComma(std::string str) {
     size_t size = str.length();
     size_t indexOfComma = size;
-    for (size_t i = 0; i < size; i++) {
+    for (size_t i = 0; i < size; ++i) {
         if (str[i] == '.') {
             str[i] = ',';
             indexOfComma = i;

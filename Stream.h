@@ -9,7 +9,8 @@ constexpr float CONST_EXPON_PUAS_AND_BART = 1e-32F;
 
 constexpr float CONST_EPS_COMPARISON = 1e-6F;
 
-constexpr int CONST_FOR_SLOW_REQ_COUNT = 150;
+// Attention!!! This value can`t be more than 255
+constexpr size_t CONST_FOR_SLOW_REQ_COUNT = 150;
 
 constexpr int CONST_CRITICAL_REQ_COUNT = 1000;
 

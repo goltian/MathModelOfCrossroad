@@ -46,7 +46,7 @@ void AverageWaitingTime::calculateAvgWaitTime(float inputTime, float outputTime)
         u = gamma * gamma;
 
         // Increase requests count that have been considered by gamma
-        reqCountConsideredByGamma++;
+        ++reqCountConsideredByGamma;
 
     } else if ((reqCountConsideredByGamma % 1000) != 0) {
         // Go here to process every thousand requests
@@ -71,24 +71,23 @@ void AverageWaitingTime::calculateAvgWaitTime(float inputTime, float outputTime)
 }
 
 void AverageWaitingTime::calculateNewGammaAndUValue(float inputTime, float outputTime) {
-    float fraction = 1.0F / (static_cast<float>(reqCountConsideredByGamma) + 1.0F);
+    float reqCount = static_cast<float>(reqCountConsideredByGamma);
+    float fraction = 1.0F / (reqCount + 1.0F);
     float waitingTime = outputTime - inputTime;
 
     // Compute new value of average waiting time (gamma)
-    gamma =
-        gamma * fraction * static_cast<float>(reqCountConsideredByGamma) + waitingTime * fraction;
+    gamma = gamma * fraction * reqCount + waitingTime * fraction;
 
     // Compute new value of u (additional variable for calculating)
-    u = u * fraction * static_cast<float>(reqCountConsideredByGamma) +
-        waitingTime * waitingTime * fraction;
+    u = u * fraction * reqCount + waitingTime * waitingTime * fraction;
 
     // Increase requests count that have been considered by gamma
-    reqCountConsideredByGamma++;
+    ++reqCountConsideredByGamma;
 }
 
 void AverageWaitingTime::checkErrorForGammaAndS() {
-    float fraction = static_cast<float>(reqCountConsideredByGamma) /
-                      (static_cast<float>(reqCountConsideredByGamma) - 1.0F);
+    float reqCount = static_cast<float>(reqCountConsideredByGamma);
+    float fraction = reqCount / (reqCount - 1.0F);
 
     // If gamma and s are stable then stream is stable too
     if (abs(gamma - gammaWithWave) < CONST_EPS_FOR_CHECKING_STABLE) {

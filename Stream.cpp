@@ -46,7 +46,7 @@ void Stream::setModesDurations(std::vector<float> modesDuration_) {
     size_t modesCount = modesDuration_.size();
     modesDuration.resize(modesCount);
 
-    for (size_t i = 0; i < modesCount; i++) {
+    for (size_t i = 0; i < modesCount; ++i) {
         modesDuration[i] = modesDuration_[i];
     }
 }
@@ -104,25 +104,26 @@ void Stream::calculateExponents() {
 
 void Stream::calculatePoissonDist() {
     // Calculate massives of Poisson distribution for every mode
-    int modes_count = static_cast<int>(modesDuration.size());
-    poissonDistribution.resize(modes_count);
+    int modesCount = static_cast<int>(modesDuration.size());
+    poissonDistribution.resize(modesCount);
     float modeDur;
     float adding;
 
-    for (int j = 0; j < modes_count; ++j) {
-        modeDur = modesDuration[j];
+    for (uint8_t modeId = 0; modeId < modesCount; ++modeId) {
+        modeDur = modesDuration[modeId];
         adding = 1.0F;
-        poissonDistribution[j].resize(CONST_FOR_SLOW_REQ_COUNT);
-        poissonDistribution[j][0] = 1.0F;
+        poissonDistribution[modeId].resize(CONST_FOR_SLOW_REQ_COUNT);
+        poissonDistribution[modeId][0] = 1.0F;
 
-        for (int i = 1; i < CONST_FOR_SLOW_REQ_COUNT; ++i) {
+        for (uint8_t curValue = 1; curValue < CONST_FOR_SLOW_REQ_COUNT; ++curValue) {
 			// Calculate next value of Poisson dist
-            adding *= liamBartlett * modeDur / i;
-            poissonDistribution[j][i] = poissonDistribution[j][i - 1] + adding;
+            adding *= liamBartlett * modeDur / curValue;
+            poissonDistribution[modeId][curValue] =
+                poissonDistribution[modeId][curValue - 1] + adding;
 
 			// If we try to increase last value with zero then leave this method
             if (adding < CONST_EXPON_PUAS_AND_BART) {
-                poissonDistribution[j][i + 1] = FLT_MAX;
+                poissonDistribution[modeId][curValue + 1] = FLT_MAX;
                 break;
             }
         }
@@ -138,13 +139,16 @@ void Stream::generateRequests(int modeId) {
     //float randomVariable;
 
     // Number of slow requests
-    int slowReqCount;
+	// we can use only 256 values because of max count of reqs is 150
+    uint8_t slowReqCount;
 
     // Generate count of slow requests on the interval
     slowReqCount = generatePoisson(modeId);
+	// Increase req count that will be in bunker
+    reqCountInBunker += slowReqCount;
 
     // Cycle for putting arriving times of slow requests into the array
-    for (int slowReq = 0; slowReq < slowReqCount; ++slowReq) {
+    for (uint8_t slowReq = 0; slowReq < slowReqCount; ++slowReq) {
         // Generate random value from 0 to 1
         //randomVariable = distribution(generator);
 
@@ -164,14 +168,13 @@ void Stream::generateRequests(int modeId) {
         float timeBetweenFastReq;
 
         // Cycle for filling fast and slow requests into queue
-        for (int slowReq = 0; slowReq < slowReqCount; slowReq++) {
+        for (int slowReq = 0; slowReq < slowReqCount; ++slowReq) {
             fastReqCount = generateBartlett();
 
             // Put slow request into queue
 			// We can rewrite old times in our vector because in that case req count in bunker
 			// will be over 1000 and we will go out from programm with "not stable stream"
             storageBunker[pointerToEndOfBunker] = timesOfSlowReq[slowReq];
-            reqCountInBunker++;
             if (pointerToEndOfBunker < CONST_CRITICAL_REQ_COUNT) {
                 pointerToEndOfBunker = pointerToEndOfBunker + 1;
             } else {
@@ -190,28 +193,28 @@ void Stream::generateRequests(int modeId) {
 
             // Put fast requests into queue
             float fastReqInFloat = 0.0F;
-            for (int fastReq = 0; fastReq < fastReqCount; fastReq++) {
+            for (uint8_t fastReq = 0; fastReq < fastReqCount; ++fastReq) {
                 fastReqInFloat += 1.0F;
 
                 // We can rewrite old times in our vector because in that case req count in bunker
                 // will be over 1000 and we will go out from programm with "not stable stream"
                 storageBunker[pointerToEndOfBunker] =
                     timesOfSlowReq[slowReq] + fastReqInFloat * timeBetweenFastReq;
-                reqCountInBunker++;
                 if (pointerToEndOfBunker < CONST_CRITICAL_REQ_COUNT) {
                     pointerToEndOfBunker = pointerToEndOfBunker + 1;
                 } else {
                     pointerToEndOfBunker = 0;
                 }
             }
+            // Increase req count that will be in bunker
+            reqCountInBunker += fastReqCount;
         }
     } else {
         // If there is no fast requests put all slow requests into queue
-        for (int slowReq = 0; slowReq < slowReqCount; slowReq++) {
+        for (int slowReq = 0; slowReq < slowReqCount; ++slowReq) {
             // We can rewrite old times in our vector because in that case req count in bunker
             // will be over 1000 and we will go out from programm with "not stable stream"
             storageBunker[pointerToEndOfBunker] = timesOfSlowReq[slowReq];
-            reqCountInBunker++;
             if (pointerToEndOfBunker < CONST_CRITICAL_REQ_COUNT) {
                 pointerToEndOfBunker = pointerToEndOfBunker + 1;
             } else {
@@ -239,7 +242,7 @@ int Stream::generatePoisson(int modeId) {
 
 	// Calculate number of slow requests
     while (poissonDistribution[modeId][slowReqCount] < randomVariable) {
-        slowReqCount++;
+        ++slowReqCount;
     }
 
     return slowReqCount;
@@ -272,7 +275,7 @@ float Stream::generateBartlett() {
     if (isFirstIterPassed) {
         // Calculate number of fast requests
         while (distributionFunc < randomVariable) {
-            fastReqCount++;
+            ++fastReqCount;
             distributionFunc += adding;
             adding *= g;
             if (adding < CONST_EXPON_PUAS_AND_BART) {
