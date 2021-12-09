@@ -217,30 +217,6 @@ void Stream::generateRequests(int modeId) {
             reqCountInBunker += static_cast<uint16_t>(fastReqCount);
         }
     } else {
-  //      if (slowReqCount > 0) {
-		//	int po = (pointerToEndOfBunker + slowReqCount - 1) % (CONST_CRITICAL_REQ_COUNT + 1);
-		//	if (po >= pointerToEndOfBunker) {
-		//		for (uint16_t slowReq = 0; slowReq < slowReqCount; ++slowReq) {
-		//			// We can rewrite old times in our vector because in that case req count in bunker
-		//			// will be over 1000 and we will go out from programm with "not stable stream"
-		//			storageBunker[pointerToEndOfBunker++] = timesOfSlowReq[slowReq];
-		//		}
-		//	} else {
-		//		uint16_t k = (CONST_CRITICAL_REQ_COUNT + 1) - pointerToEndOfBunker;
-		//		for (uint16_t slowReq = 0; slowReq < k; ++slowReq) {
-		//			// We can rewrite old times in our vector because in that case req count in bunker
-		//			// will be over 1000 and we will go out from programm with "not stable stream"
-		//			storageBunker[pointerToEndOfBunker++] = timesOfSlowReq[slowReq];
-		//		}
-		//		pointerToEndOfBunker = 0;
-		//		for (uint16_t slowReq = k; slowReq < slowReqCount; ++slowReq) {
-		//			// We can rewrite old times in our vector because in that case req count in bunker
-		//			// will be over 1000 and we will go out from programm with "not stable stream"
-		//			storageBunker[pointerToEndOfBunker++] = timesOfSlowReq[slowReq];
-		//		}
-		//	}
-		//}
-
         // If there is no fast requests put all slow requests into queue
         for (uint16_t slowReq = 0; slowReq < slowReqCount; ++slowReq) {
             // We can rewrite old times in our vector because in that case req count in bunker

@@ -108,7 +108,7 @@ protected:
 
 	// Max possible count of requests that 
 	// could be on a crossroad at one time
-	size_t throughputCapacity;
+    uint16_t throughputCapacity;
 	
 	// Requests count that could be served 
 	// if their count was infinite

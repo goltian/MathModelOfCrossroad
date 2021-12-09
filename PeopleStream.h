@@ -22,11 +22,21 @@ private:
 	
 	float criticalTimeForPeople;
 
+	// Queue of people output times
+	// (use vector for sec memory access)
+	std::vector<float> reqOutputTimes;
+
+	// Real size of people output times queue
+    uint16_t reqCountInOuputQueue;
+
+    // Pointer to start of people output times queue
+    int pointerToStartOfOutputQueue;
+
+    // Pointer to end of people output times queue
+    int pointerToEndOfOutputQueue;
+
 	bool isRequestCantBeServedAtAll(float outputTime);
 
 	float calculateOutputTime(
-		CasesInServiceRequests casesInServiceRequests, 
-		const std::queue<float> &reqOutputTimes,
-		float inputTime
-	);
+		CasesInServiceRequests casesInServiceRequests, float inputTime);
 };

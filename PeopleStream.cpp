@@ -6,9 +6,17 @@ PeopleStream::PeopleStream() {
     serviceTime = 10.0F;
     criticalTimeForPeople = 7.0F;
     casesInServiceRequests = Case_OldReqWillBeServedNow;
+
+	// Resize our vector one time for using it in the future
+    reqOutputTimes.resize(CONST_CRITICAL_REQ_COUNT + 1);
 }
 
 void PeopleStream::serviseRequests() {
+    // Our queue have to be new every time
+    reqCountInOuputQueue = 0;
+    pointerToStartOfOutputQueue = 0;
+    pointerToEndOfOutputQueue = 0;
+
     totalTime -= modeDuration;
     calculateReqCountOfSaturation();
 
@@ -22,7 +30,6 @@ void PeopleStream::serviseRequests() {
     uint16_t reqCountOfServed = 0;
     float inputTime = 0.0F;
     float outputTime = 0.0F;
-    std::queue<float> reqOutputTimes;
     uint16_t maxPossibleReqCountToServe =
         std::min(reqCountOfSaturation, reqCountInBunkerBeforeService);
 
@@ -32,56 +39,100 @@ void PeopleStream::serviseRequests() {
         inputTime = storageBunker[pointerToStartOfBunker];
 
         // Compute the output time for another one request
-        if ((inputTime < totalTime) && (reqOutputTimes.size() < throughputCapacity)) {
+        if ((inputTime < totalTime) && (reqCountInOuputQueue < throughputCapacity)) {
+
             // Case in which request have got into bunker before
             // current mode starting and it can be served at present
             casesInServiceRequests = Case_OldReqWillBeServedNow;
 
-            outputTime = calculateOutputTime(casesInServiceRequests, reqOutputTimes, inputTime);
+            outputTime = calculateOutputTime(casesInServiceRequests, inputTime);
 
-            reqOutputTimes.push(outputTime);
+            // Put slow request into queue
+            // We can rewrite old times in our vector because in that case req count in bunker
+            // will be over 1000 and we will go out from programm with "not stable stream"
+            reqOutputTimes[pointerToEndOfOutputQueue] = outputTime;
+            if (pointerToEndOfOutputQueue < CONST_CRITICAL_REQ_COUNT) {
+                pointerToEndOfOutputQueue = pointerToEndOfOutputQueue + 1;
+            } else {
+                pointerToEndOfOutputQueue = 0;
+            }
+            ++reqCountInOuputQueue;
 
-        } else if ((inputTime < totalTime) && (throughputCapacity < reqOutputTimes.size())) {
+        } else if ((inputTime < totalTime) && (throughputCapacity < reqCountInOuputQueue)) {
             // Case in which request have got into bunker before
             // current mode starting ant it can`t be served at present
             casesInServiceRequests = Case_OldReqCanNotBeServedNow;
 
-            outputTime = calculateOutputTime(casesInServiceRequests, reqOutputTimes, inputTime);
+            outputTime = calculateOutputTime(casesInServiceRequests, inputTime);
 
-            while (!reqOutputTimes.empty()) {
-                reqOutputTimes.pop();
+			// Previous queue of people is full. We need to pop all req from queue
+			// But we use vector. Just reset it to zero
+            pointerToStartOfOutputQueue = 0;
+            reqCountInOuputQueue = 0;
+
+			// Put slow request into queue
+            // We can rewrite old times in our vector because in that case req count in bunker
+            // will be over 1000 and we will go out from programm with "not stable stream"
+            reqOutputTimes[pointerToEndOfOutputQueue] = outputTime;
+            if (pointerToEndOfOutputQueue < CONST_CRITICAL_REQ_COUNT) {
+                pointerToEndOfOutputQueue = pointerToEndOfOutputQueue + 1;
+            } else {
+                pointerToEndOfOutputQueue = 0;
             }
+            ++reqCountInOuputQueue;
 
-            reqOutputTimes.push(outputTime);
-
-        } else if (reqOutputTimes.size() < throughputCapacity) {
+        } else if (reqCountInOuputQueue < throughputCapacity) {
             // Case in which request have got into bunker after
             // current mode starting ant it can be served at present
             casesInServiceRequests = Case_NewReqWillBeServedNow;
 
-            outputTime = calculateOutputTime(casesInServiceRequests, reqOutputTimes, inputTime);
+            outputTime = calculateOutputTime(casesInServiceRequests, inputTime);
 
             if (isRequestCantBeServedAtAll(outputTime)) {
                 break;
             }
 
-            reqOutputTimes.push(outputTime);
+            // Put slow request into queue
+            // We can rewrite old times in our vector because in that case req count in bunker
+            // will be over 1000 and we will go out from programm with "not stable stream"
+            reqOutputTimes[pointerToEndOfOutputQueue] = outputTime;
+            if (pointerToEndOfOutputQueue < CONST_CRITICAL_REQ_COUNT) {
+                pointerToEndOfOutputQueue = pointerToEndOfOutputQueue + 1;
+            } else {
+                pointerToEndOfOutputQueue = 0;
+            }
+            ++reqCountInOuputQueue;
 
         } else {
             // Case in which request have got into bunker after
             // current mode starting ant it can`t be served at present
             casesInServiceRequests = Case_NewReqCanNotBeServedNow;
 
-            while ((0 < reqOutputTimes.size()) && (reqOutputTimes.size() >= throughputCapacity)) {
-                outputTime = calculateOutputTime(casesInServiceRequests, reqOutputTimes, inputTime);
-                reqOutputTimes.pop();
+            while ((0 < reqCountInOuputQueue) && (reqCountInOuputQueue >= throughputCapacity)) {
+                outputTime = calculateOutputTime(casesInServiceRequests, inputTime);
+                if (pointerToStartOfOutputQueue < CONST_CRITICAL_REQ_COUNT) {
+                    ++pointerToStartOfOutputQueue;
+                } else {
+                    pointerToStartOfOutputQueue = 0;
+                }
+                --reqCountInOuputQueue;
             }
+
 
             if (isRequestCantBeServedAtAll(outputTime)) {
                 break;
             }
 
-            reqOutputTimes.push(outputTime);
+            // Put slow request into queue
+            // We can rewrite old times in our vector because in that case req count in bunker
+            // will be over 1000 and we will go out from programm with "not stable stream"
+            reqOutputTimes[pointerToEndOfOutputQueue] = outputTime;
+            if (pointerToEndOfOutputQueue < CONST_CRITICAL_REQ_COUNT) {
+                pointerToEndOfOutputQueue = pointerToEndOfOutputQueue + 1;
+            } else {
+                pointerToEndOfOutputQueue = 0;
+            }
+            ++reqCountInOuputQueue;
         }
 
         avgWaitingTime.calculateAvgWaitTime(inputTime, outputTime);
@@ -110,16 +161,15 @@ bool PeopleStream::isRequestCantBeServedAtAll(float outputTime) {
 }
 
 float PeopleStream::calculateOutputTime(CasesInServiceRequests casesInServiceRequests,
-                                         const std::queue<float> &reqOutputTimes,
                                          float inputTime) {
     float outputTime;
 
     switch (casesInServiceRequests) {
         case (Case_OldReqWillBeServedNow):
 
-            if (!reqOutputTimes.empty()) {
+			if (reqCountInOuputQueue > 0) {
                 float sum = static_cast<float>(totalTime + serviceTime);
-                outputTime = std::max(sum, reqOutputTimes.front());
+                outputTime = std::max(sum, reqOutputTimes[pointerToStartOfOutputQueue]);
             } else {
                 outputTime = totalTime + serviceTime;
             }
@@ -127,13 +177,14 @@ float PeopleStream::calculateOutputTime(CasesInServiceRequests casesInServiceReq
 
         case (Case_OldReqCanNotBeServedNow):
 
-            outputTime = reqOutputTimes.front() + serviceTime;
+            outputTime = reqOutputTimes[pointerToStartOfOutputQueue] + serviceTime;
             break;
 
         case (Case_NewReqWillBeServedNow):
 
-            if (!reqOutputTimes.empty()) {
-                outputTime = std::max(inputTime + serviceTime, reqOutputTimes.front());
+            if (reqCountInOuputQueue > 0) {
+                outputTime = std::max(inputTime + serviceTime,
+                                      reqOutputTimes[pointerToStartOfOutputQueue]);
             } else {
                 outputTime = inputTime + serviceTime;
             }
@@ -141,7 +192,8 @@ float PeopleStream::calculateOutputTime(CasesInServiceRequests casesInServiceReq
 
         case (Case_NewReqCanNotBeServedNow):
 
-            outputTime = std::max(inputTime, reqOutputTimes.front()) + serviceTime;
+            outputTime =
+                std::max(inputTime, reqOutputTimes[pointerToStartOfOutputQueue]) + serviceTime;
             break;
 
         default:
