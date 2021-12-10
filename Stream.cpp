@@ -5,10 +5,14 @@
 Stream::Stream() {
     //std::random_device device;
     //generator.seed(device());
-    generator.seed(0);
+    //vslNewStream(&cur_stream, VSL_BRNG_MT19937, distribution(generator));
 
+	// Initialize MKL Stream for generating random values
+    vslNewStream(&cur_stream, VSL_BRNG_MT19937, 0);
+    method = VSL_RNG_METHOD_UNIFORM_STD;
+
+	randomValues = (float*)mkl_malloc((CONST_SIZE_OF_RAND_VALUES_VECTOR) * sizeof(float), 64);
 	// Fill vector of random values for using in future
-    randomValues.resize(CONST_SIZE_OF_RAND_VALUES_VECTOR);
     fillVectorOfRandValues();
 
     g = 0.0F;
@@ -33,6 +37,11 @@ Stream::Stream() {
     pointerToStartOfBunker = 0;
     pointerToEndOfBunker = 0;
     reqCountInBunker = 0;
+}
+
+Stream::~Stream() {
+    vslDeleteStream(&cur_stream);
+    mkl_free(randomValues);
 }
 
 void Stream::setG(float g_) {
@@ -73,7 +82,6 @@ float Stream::getLiamBartlett() {
 }
 
 uint16_t Stream::getStorageBunkerSize() {
-    //return static_cast<int>(storageBunker.size());
     return reqCountInBunker;
 }
 
@@ -141,7 +149,6 @@ void Stream::changeModeDuration(int modeId) {
 
 void Stream::generateRequests(int modeId) {
     // The value of a random variable that the distribution function should approach
-    //float randomVariable;
 
     // Number of slow requests
     uint16_t slowReqCount;
@@ -242,7 +249,6 @@ uint16_t Stream::generatePoisson(int modeId) {
     uint16_t slowReqCount = 0;
 
     // Generate random value from 0 to 1
-    //randomVariable = distribution(generator);
     randomVariable = randomValues[countOfUsedRandValues++];
     if ((CONST_SIZE_OF_RAND_VALUES_VECTOR - 1) < countOfUsedRandValues) {
         fillVectorOfRandValues();
@@ -276,7 +282,6 @@ float Stream::generateBartlett() {
     float adding = r * (1.0F - g);
 
     // Generate random value from 0 to 1
-    // randomVariable = distribution(generator);
     randomVariable = randomValues[countOfUsedRandValues++];
     if ((CONST_SIZE_OF_RAND_VALUES_VECTOR - 1) < countOfUsedRandValues) {
         fillVectorOfRandValues();
@@ -311,8 +316,6 @@ void Stream::calculateReqCountOfSaturation() {
 }
 
 inline void Stream::fillVectorOfRandValues() {
-    for (uint16_t cur_value = 0; cur_value < CONST_SIZE_OF_RAND_VALUES_VECTOR; ++cur_value) {
-        randomValues[cur_value] = distribution(generator);
-    }
-    countOfUsedRandValues = 0;
+	vsRngUniform(method, cur_stream, CONST_SIZE_OF_RAND_VALUES_VECTOR, randomValues, 0.0F, 1.0F);
+	countOfUsedRandValues = 0;
 }

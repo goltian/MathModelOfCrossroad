@@ -4,6 +4,7 @@
 #include <queue>
 #include <random>
 #include "AverageWaitingTime.h"
+#include "mkl.h"
 
 constexpr float CONST_EXPON_PUAS_AND_BART = 1e-32F;
 
@@ -19,6 +20,8 @@ class Stream {
 public:
 
 	Stream();
+
+	~Stream();
 
 	void setG(float g_);
 
@@ -59,11 +62,16 @@ public:
 protected:
 
 	std::mt19937 generator;
-    std::uniform_real_distribution<float> distribution;
+    std::uniform_int_distribution<int> distribution;
+
+    MKL_INT method;
+
+    VSLStreamStatePtr cur_stream;
+
 
 	// Vector of random values. We will fill many values at one time
 	// to use it by one in the future
-	std::vector<float> randomValues;
+    float* randomValues;
 
 	uint16_t countOfUsedRandValues;
 
