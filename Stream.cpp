@@ -171,7 +171,9 @@ void Stream::generateRequests(int modeId) {
     }
 
     // We need to sort our array
-    std::sort(timesOfSlowReq.begin(), timesOfSlowReq.begin() + slowReqCount);
+    if (slowReqCount > 1) {
+	    std::sort(timesOfSlowReq.begin(), timesOfSlowReq.begin() + slowReqCount);
+	}
 
     // If there are fast requests then we need generate them
     if (areThereFastRequests()) {

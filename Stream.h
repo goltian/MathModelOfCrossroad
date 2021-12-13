@@ -143,4 +143,5 @@ protected:
 	// Method for filling massive of random values for using
 	// these values in the future
 	void fillVectorOfRandValues();
+
 };

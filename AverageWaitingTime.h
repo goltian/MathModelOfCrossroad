@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 constexpr float CONST_EPS_FOR_CHECKING_STABLE = 1.0F;
 
 class AverageWaitingTime {
@@ -27,6 +29,9 @@ public:
 	void calculateAvgWaitTime(float inputTime, float outputTime);
 
 private:
+    uint16_t counter;
+	std::vector<float> timesInSystemOfRequests;
+
 	// Variable for counting average stay time a request in system
 	float gamma;
 	
