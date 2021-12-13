@@ -9,6 +9,8 @@ AverageWaitingTime::AverageWaitingTime() {
     gammaWithWave = 0.0F;
     sWithWave = 0.0F;
     streamStatus = StreamStatus_IsStabilizing;
+    timesInSystemOfRequests.resize(1000);
+    counter = 0;
 }
 
 void AverageWaitingTime::setStreamStatus(StreamStatus streamStatus_) {
@@ -36,24 +38,28 @@ bool AverageWaitingTime::isStreamStatusStable() {
 }
 
 void AverageWaitingTime::calculateAvgWaitTime(float inputTime, float outputTime) {
-    if (reqCountConsideredByGamma == 0) {
-        // Go here if it`s first request
+    //if (reqCountConsideredByGamma == 0) {
+    //    // Go here if it`s first request
 
-        // Calclulate new value of waiting time
-        gamma = outputTime - inputTime;
+    //    // Calclulate new value of waiting time
+    //    gamma = outputTime - inputTime;
 
-        // Calculate the second power of gamma
-        u = gamma * gamma;
+    //    // Calculate the second power of gamma
+    //    u = gamma * gamma;
 
-        // Increase requests count that have been considered by gamma
-        ++reqCountConsideredByGamma;
+    //    // Increase requests count that have been considered by gamma
+    //    ++reqCountConsideredByGamma;
 
-    } else if ((reqCountConsideredByGamma % 1000) != 0) {
+    //} else if ((reqCountConsideredByGamma % 1000) != 0) {
+    if (counter < 1000) {
         // Go here to process every thousand requests
-        calculateNewGammaAndUValue(inputTime, outputTime);
+        // calculateNewGammaAndUValue(inputTime, outputTime);
+        timesInSystemOfRequests[counter++] = outputTime - inputTime;
 
-    } else if ((reqCountConsideredByGamma % 1000) == 0) {
+    } else if (counter == 1000) {
         // Go here if we have processed another one thousand requests
+
+		calculateNewGammaAndUValue(inputTime, outputTime);
 
         // Check if stream have stabilised
         checkErrorForGammaAndS();
@@ -66,23 +72,27 @@ void AverageWaitingTime::calculateAvgWaitTime(float inputTime, float outputTime)
         // We will be compare it with new value of s
         sWithWave = s;
 
-        calculateNewGammaAndUValue(inputTime, outputTime);
+		counter = 0;
+		timesInSystemOfRequests[counter++] = outputTime - inputTime;
+
+        //calculateNewGammaAndUValue(inputTime, outputTime);
     }
 }
 
 void AverageWaitingTime::calculateNewGammaAndUValue(float inputTime, float outputTime) {
+    float sum = 0;
+    for (uint16_t i = 0; i < 1000; ++i) {
+        sum += timesInSystemOfRequests[i];
+	}
     float reqCount = static_cast<float>(reqCountConsideredByGamma);
-    float fraction = 1.0F / (reqCount + 1.0F);
-    float waitingTime = outputTime - inputTime;
+    
+	gamma = gamma * reqCount + sum;
+    gamma /= (reqCount + 1000.0F);
 
-    // Compute new value of average waiting time (gamma)
-    gamma = gamma * fraction * reqCount + waitingTime * fraction;
+    u = u * reqCount + sum * sum / (1000.0F);
+    u /= (reqCount + 1000.0F);
 
-    // Compute new value of u (additional variable for calculating)
-    u = u * fraction * reqCount + waitingTime * waitingTime * fraction;
-
-    // Increase requests count that have been considered by gamma
-    ++reqCountConsideredByGamma;
+    reqCountConsideredByGamma += 1000;
 }
 
 void AverageWaitingTime::checkErrorForGammaAndS() {
