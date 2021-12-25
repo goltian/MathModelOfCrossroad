@@ -98,7 +98,13 @@ int DataManager::calculateSizeOfVector() {
 }
 
 bool DataManager::areAllRepeatsSuccsess(int index) {
-    return ((data[index] != 0) && (data[index] != 0) && (data[index] != 0) && (data[index] != 0));
+	for (int repeat = 0; repeat < repeatsCount; ++repeat) {
+		if (data[index + repeat * sizeOfVector * CONST_CELLS_COUNT] == 0) {
+            return false;
+		}
+	}
+
+	return true;
 }
 
 void DataManager::setAvgData(int index) {
