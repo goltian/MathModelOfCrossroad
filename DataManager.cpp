@@ -97,14 +97,13 @@ int DataManager::calculateSizeOfVector() {
     return static_cast<int>(size);
 }
 
-bool DataManager::areAllRepeatsSuccsess(int index) {
+void DataManager::findCountOfSuccsessRepeats(int index) {
+    successfulRepeatsCount = 0;
 	for (int repeat = 0; repeat < repeatsCount; ++repeat) {
-		if (data[index + repeat * sizeOfVector * CONST_CELLS_COUNT] == 0) {
-            return false;
+		if (data[index + repeat * sizeOfVector * CONST_CELLS_COUNT] != 0) {
+            ++successfulRepeatsCount;
 		}
 	}
-
-	return true;
 }
 
 void DataManager::setAvgData(int index) {
@@ -113,11 +112,13 @@ void DataManager::setAvgData(int index) {
 
     for (int cell = 0; cell < CONST_CELLS_COUNT; ++cell) {
         sum = 0.0F;
+		// Even if not all repeats were successful we can plus them (plus null)
         for (int repeat = 0; repeat < repeatsCount; ++repeat) {
             sum += data[index + repeat * sizeOfVector * CONST_CELLS_COUNT + cell * sizeOfVector];
         }
 
-        avg = sum / repeatsCount;
+		// Keep it in mind that we have to divide by a number of successful repeats
+        avg = sum / successfulRepeatsCount;
 
         resultMatrix[index + cell * sizeOfVector] = avg;
     }
@@ -129,7 +130,8 @@ void DataManager::computeResultMatrix() {
             if (row + column < rowCount) {
                 int index = findIndex(row, column);
 
-                if (areAllRepeatsSuccsess(index)) {
+				findCountOfSuccsessRepeats(index);
+                if (successfulRepeatsCount > 0) {
                     setAvgData(index);
                 }
             }

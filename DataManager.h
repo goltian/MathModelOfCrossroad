@@ -42,6 +42,8 @@ private:
 
 	int minValueIndex;
 
+	int successfulRepeatsCount;
+
 	// Min (best) durations for g1 and g3 modes
 	std::pair<int, int> bestDurationsOfModes;
 
@@ -57,9 +59,9 @@ private:
 	// Method for calculating size of our matrix
 	int calculateSizeOfVector();
 
-	// Method to find out are all repeates of one
-	// experiment were seccusess
-	bool areAllRepeatsSuccsess(int index);
+	// Method to find out count of
+	// succsess repeates of one experiment
+    void findCountOfSuccsessRepeats(int index);
 
 	// Set part of avg data into cell of result matrix
 	void setAvgData(int index);

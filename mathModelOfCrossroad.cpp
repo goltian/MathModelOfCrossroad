@@ -7,13 +7,13 @@
 #include "DataManager.h"
 #include "mathModelOfCrossroad.h"
 
-constexpr auto CONST_REPEATS_OF_ONE_EXPERIMENT = 4;
+constexpr auto CONST_REPEATS_OF_ONE_EXPERIMENT = 1;
 
 constexpr auto CONST_ORIENTATION_MODE = 3.0F;
 
 constexpr auto CONST_COUNT_OF_EXPERIMENTS = 1;
 
-constexpr bool CONST_OF_USING_METHOD_OF_REDUCED_BROOT_FORCE = true;
+constexpr bool CONST_OF_USING_METHOD_OF_REDUCED_BROOT_FORCE = false;
 
 int main() {
     float start, end;
@@ -24,7 +24,7 @@ int main() {
     float parametersForAll[CONST_COUNT_OF_EXPERIMENTS][9] = {
         //    g  m  g  m  l    l_p  N  pe  H
 
-        {0.8, 4.5, 0, 1, 0.1, 0.1, 10, 30, 90},
+        {0.91, 2, 0, 1, 0.2, 0.1, 0, 30, 90},
 
     };
 
