@@ -9,7 +9,7 @@ AverageWaitingTime::AverageWaitingTime() {
     gammaWithWave = 0.0F;
     sWithWave = 0.0F;
     streamStatus = StreamStatus_IsStabilizing;
-    timesInSystemOfRequests.resize(1000);
+    timesInSystemOfRequests.resize(CONST_SIZE_TIMES_IN_SYSTEM_VECTOR);
     counter = 0;
 }
 
@@ -38,28 +38,14 @@ bool AverageWaitingTime::isStreamStatusStable() {
 }
 
 void AverageWaitingTime::calculateAvgWaitTime(float inputTime, float outputTime) {
-    //if (reqCountConsideredByGamma == 0) {
-    //    // Go here if it`s first request
-
-    //    // Calclulate new value of waiting time
-    //    gamma = outputTime - inputTime;
-
-    //    // Calculate the second power of gamma
-    //    u = gamma * gamma;
-
-    //    // Increase requests count that have been considered by gamma
-    //    ++reqCountConsideredByGamma;
-
-    //} else if ((reqCountConsideredByGamma % 1000) != 0) {
-    if (counter < 1000) {
+    if (counter < CONST_SIZE_TIMES_IN_SYSTEM_VECTOR) {
         // Go here to process every thousand requests
-        // calculateNewGammaAndUValue(inputTime, outputTime);
         timesInSystemOfRequests[counter++] = outputTime - inputTime;
 
-    } else if (counter == 1000) {
+    } else if (counter == CONST_SIZE_TIMES_IN_SYSTEM_VECTOR) {
         // Go here if we have processed another one thousand requests
 
-		calculateNewGammaAndUValue(inputTime, outputTime);
+		calculateNewGammaAndUValue();
 
         // Check if stream have stabilised
         checkErrorForGammaAndS();
@@ -74,25 +60,25 @@ void AverageWaitingTime::calculateAvgWaitTime(float inputTime, float outputTime)
 
 		counter = 0;
 		timesInSystemOfRequests[counter++] = outputTime - inputTime;
-
-        //calculateNewGammaAndUValue(inputTime, outputTime);
     }
 }
 
-void AverageWaitingTime::calculateNewGammaAndUValue(float inputTime, float outputTime) {
+void AverageWaitingTime::calculateNewGammaAndUValue() {
     float sum = 0;
-    for (uint16_t i = 0; i < 1000; ++i) {
+    float sum_square = 0;
+    for (uint16_t i = 0; i < CONST_SIZE_TIMES_IN_SYSTEM_VECTOR; ++i) {
         sum += timesInSystemOfRequests[i];
+        sum_square += timesInSystemOfRequests[i] * timesInSystemOfRequests[i];
 	}
     float reqCount = static_cast<float>(reqCountConsideredByGamma);
     
 	gamma = gamma * reqCount + sum;
-    gamma /= (reqCount + 1000.0F);
+    gamma /= (reqCount + CONST_SIZE_TIMES_IN_SYSTEM_VECTOR_IN_FLOAT);
 
-    u = u * reqCount + sum * sum / (1000.0F);
-    u /= (reqCount + 1000.0F);
+    u = u * reqCount + sum_square;
+    u /= (reqCount + CONST_SIZE_TIMES_IN_SYSTEM_VECTOR_IN_FLOAT);
 
-    reqCountConsideredByGamma += 1000;
+    reqCountConsideredByGamma += CONST_SIZE_TIMES_IN_SYSTEM_VECTOR;
 }
 
 void AverageWaitingTime::checkErrorForGammaAndS() {

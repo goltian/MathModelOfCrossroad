@@ -4,6 +4,10 @@
 
 constexpr float CONST_EPS_FOR_CHECKING_STABLE = 1.0F;
 
+constexpr uint16_t CONST_SIZE_TIMES_IN_SYSTEM_VECTOR = 1000;
+
+constexpr float CONST_SIZE_TIMES_IN_SYSTEM_VECTOR_IN_FLOAT = 1000.0F;
+
 class AverageWaitingTime {
 public:
 	AverageWaitingTime();
@@ -56,7 +60,7 @@ private:
 	StreamStatus streamStatus;
 
 	// Method for calculating new value for gamma and u
-	void calculateNewGammaAndUValue(float inputTime, float outputTime);
+	void calculateNewGammaAndUValue();
 	
 	// Method for checking error for gamma and s
 	void checkErrorForGammaAndS();

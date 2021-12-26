@@ -3,12 +3,12 @@
 #include <random>
 
 Stream::Stream() {
-    std::random_device device;
-    generator.seed(device());
-    vslNewStream(&cur_stream, VSL_BRNG_MT19937, distribution(generator));
+    //std::random_device device;
+    //generator.seed(device());
+    //vslNewStream(&cur_stream, VSL_BRNG_MT19937, distribution(generator));
 
 	// Initialize MKL Stream for generating random values
-    //vslNewStream(&cur_stream, VSL_BRNG_MT19937, 0);
+    vslNewStream(&cur_stream, VSL_BRNG_MT19937, 0);
     method = VSL_RNG_METHOD_UNIFORM_STD;
 
 	randomValues = (float*)mkl_malloc((CONST_SIZE_OF_RAND_VALUES_VECTOR) * sizeof(float), 64);
