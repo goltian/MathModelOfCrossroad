@@ -3,12 +3,12 @@
 #include <random>
 
 Stream::Stream() {
-    //std::random_device device;
-    //generator.seed(device());
-    //vslNewStream(&cur_stream, VSL_BRNG_MT19937, distribution(generator));
+    std::random_device device;
+    generator.seed(device());
+    vslNewStream(&cur_stream, VSL_BRNG_MT19937, distribution(generator));
 
 	// Initialize MKL Stream for generating random values
-    vslNewStream(&cur_stream, VSL_BRNG_MT19937, 0);
+    //vslNewStream(&cur_stream, VSL_BRNG_MT19937, 0);
     method = VSL_RNG_METHOD_UNIFORM_STD;
 
 	randomValues = (float*)mkl_malloc((CONST_SIZE_OF_RAND_VALUES_VECTOR) * sizeof(float), 64);
@@ -37,6 +37,9 @@ Stream::Stream() {
     pointerToStartOfBunker = 0;
     pointerToEndOfBunker = 0;
     reqCountInBunker = 0;
+
+	avgReqCountInBunker = 0;
+    activateServiceModesCount = 0;
 }
 
 Stream::~Stream() {
@@ -242,6 +245,10 @@ void Stream::generateRequests(int modeId) {
     totalTime += modeDuration;
 }
 
+float Stream::getAvgReqCountInBunker() {
+    return avgReqCountInBunker;
+}
+
 uint16_t Stream::generatePoisson(int modeId) {
 	
     // The value of a random variable that the distribution function should approach
@@ -320,4 +327,14 @@ void Stream::calculateReqCountOfSaturation() {
 inline void Stream::fillVectorOfRandValues() {
 	vsRngUniform(method, cur_stream, CONST_SIZE_OF_RAND_VALUES_VECTOR, randomValues, 0.0F, 1.0F);
 	countOfUsedRandValues = 0;
+}
+
+void Stream::updateTheAvgReqCountInBunker() {
+	// Get requests count in storage bunker
+    float countInBunker = static_cast<float>(getStorageBunkerSize());
+
+	// Recalculate the average requests count in bunker
+    avgReqCountInBunker = (avgReqCountInBunker * activateServiceModesCount + countInBunker) /
+                       (activateServiceModesCount + 1.0F);
+    activateServiceModesCount += 1.0F;
 }

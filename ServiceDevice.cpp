@@ -62,12 +62,15 @@ bool ServiceDevice::isCrossroadModelWorksStably() {
 }
 
 std::vector<float> ServiceDevice::getPortionOfData() {
-    std::vector<float> portionOfData(5);
+    std::vector<float> portionOfData(8);
     portionOfData[0] = getAvgGammaForAllStreams();
     portionOfData[1] = streamPi1.getGamma();
     portionOfData[2] = streamPi2.getGamma();
     portionOfData[3] = streamPi3.getGamma();
     portionOfData[4] = getPercentOfSwitchingIntoG5AndG7();
+    portionOfData[5] = streamPi1.getAvgReqCountInBunker();
+    portionOfData[6] = streamPi2.getAvgReqCountInBunker();
+    portionOfData[7] = streamPi3.getAvgReqCountInBunker();
 
     return portionOfData;
 }

@@ -150,6 +150,8 @@ void PeopleStream::serviseRequests() {
     reqCountInBunker -= reqCountOfServed;
 
     totalTime += modeDuration;
+
+	updateTheAvgReqCountInBunker();
 }
 
 bool PeopleStream::isRequestCantBeServedAtAll(float outputTime) {

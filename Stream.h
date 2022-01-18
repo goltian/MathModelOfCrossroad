@@ -59,6 +59,8 @@ public:
 
 	virtual void serviseRequests() = 0;
 
+	float getAvgReqCountInBunker();
+
 protected:
 
 	std::mt19937 generator;
@@ -144,4 +146,13 @@ protected:
 	// these values in the future
 	void fillVectorOfRandValues();
 
+	// Number of activating of service modes
+    float activateServiceModesCount;
+	
+    // The average requests count in storage bunker
+    float avgReqCountInBunker; 
+
+	// Method for updating the average requests count in storage bunker
+    void updateTheAvgReqCountInBunker(); 
+	
 };
