@@ -21,6 +21,10 @@ float AverageWaitingTime::getGamma() {
     return gamma;
 }
 
+uint16_t AverageWaitingTime::getCounter() {
+    return counter;
+}
+
 bool AverageWaitingTime::isStreamStatusNotStable() {
     if (streamStatus == StreamStatus_NotStable) {
         return true;
@@ -35,6 +39,10 @@ bool AverageWaitingTime::isStreamStatusStable() {
     } else {
         return false;
     }
+}
+
+void AverageWaitingTime::calculate(float inputTime, float outputTime) {
+    timesInSystemOfRequests[counter++] = outputTime - inputTime;
 }
 
 void AverageWaitingTime::calculateAvgWaitTime(float inputTime, float outputTime) {

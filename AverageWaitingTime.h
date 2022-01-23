@@ -25,9 +25,13 @@ public:
 
 	float getGamma();
 
+	uint16_t getCounter();
+
 	bool isStreamStatusNotStable();
 
 	bool isStreamStatusStable();
+
+    void calculate(float inputTime, float outputTime);
 
 	// Method for calculating average waiting time of cars
 	void calculateAvgWaitTime(float inputTime, float outputTime);

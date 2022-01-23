@@ -8,4 +8,7 @@ public:
 	CarsStream();
 
 	void serviseRequests();
+
+	float calculateOutputTime(float inputTime, float outputTime, float timeBeforeStartThisMode);
+
 };

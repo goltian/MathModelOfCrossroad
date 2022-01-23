@@ -2,7 +2,7 @@
 
 #include <vector>
 
-constexpr int CONST_CELLS_COUNT = 8;
+constexpr int CONST_CELLS_COUNT = 9;
 
 class DataManager {
 public:
