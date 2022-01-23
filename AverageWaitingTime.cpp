@@ -41,10 +41,6 @@ bool AverageWaitingTime::isStreamStatusStable() {
     }
 }
 
-void AverageWaitingTime::calculate(float inputTime, float outputTime) {
-    timesInSystemOfRequests[counter++] = outputTime - inputTime;
-}
-
 void AverageWaitingTime::calculateAvgWaitTime(float inputTime, float outputTime) {
     if (counter < CONST_SIZE_TIMES_IN_SYSTEM_VECTOR) {
         // Go here to process every thousand requests
