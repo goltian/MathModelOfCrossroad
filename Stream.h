@@ -155,4 +155,6 @@ protected:
 	// Method for updating the average requests count in storage bunker
     void updateTheAvgReqCountInBunker(); 
 	
+	void insertionSort(uint16_t slowReqCount);
+
 };

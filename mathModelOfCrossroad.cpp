@@ -24,7 +24,7 @@ int main() {
     float parametersForAll[CONST_COUNT_OF_EXPERIMENTS][9] = {
         //    g  m  g  m  l    l_p  N  pe  H
 
-        {0.8, 4.5, 0, 1, 0.1, 0.1, 0, 30, 45},
+        {0.8, 4.5, 0, 1, 0.1, 0.1, 0, 30, 180},
 
     };
 

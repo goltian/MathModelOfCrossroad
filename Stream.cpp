@@ -174,12 +174,10 @@ void Stream::generateRequests(int modeId) {
     }
 
     // We need to sort our array
-    if (slowReqCount > 2) {
-	    std::sort(timesOfSlowReq.begin(), timesOfSlowReq.begin() + slowReqCount);
-    } else if (slowReqCount == 2) {
-        if (timesOfSlowReq[0] > timesOfSlowReq[1]) {
-            std::swap(timesOfSlowReq[0], timesOfSlowReq[1]);
-		}
+    if (slowReqCount <= 32) {
+        insertionSort(slowReqCount);
+    } else {
+        std::sort(timesOfSlowReq.begin(), timesOfSlowReq.begin() + slowReqCount);
 	}
 
     // If there are fast requests then we need generate them
@@ -341,4 +339,14 @@ void Stream::updateTheAvgReqCountInBunker() {
     avgReqCountInBunker = (avgReqCountInBunker * activateServiceModesCount + countInBunker) /
                        (activateServiceModesCount + 1.0F);
     activateServiceModesCount += 1.0F;
+}
+
+inline void Stream::insertionSort(uint16_t slowReqCount) {
+	for (int i = 1; i < slowReqCount; ++i) {
+        int j = i;
+        while ((j > 0) && (timesOfSlowReq[j - 1] > timesOfSlowReq[j])) {
+            std::swap(timesOfSlowReq[j - 1], timesOfSlowReq[j]);
+            j--;
+		}
+	}
 }
