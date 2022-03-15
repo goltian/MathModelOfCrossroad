@@ -7,13 +7,15 @@
 #include "DataManager.h"
 #include "mathModelOfCrossroad.h"
 
-constexpr auto CONST_REPEATS_OF_ONE_EXPERIMENT = 1;
+constexpr auto CONST_REPEATS_OF_ONE_EXPERIMENT = 4;
 
 constexpr auto CONST_ORIENTATION_MODE = 3.0F;
 
-constexpr auto CONST_COUNT_OF_EXPERIMENTS = 1;
+constexpr auto CONST_COUNT_OF_EXPERIMENTS = 11;
 
 constexpr bool CONST_OF_USING_METHOD_OF_REDUCED_BROOT_FORCE = true;
+
+constexpr bool CONST_OF_WRITING_INFO_ABOUT_PARAMETER_N_EFFECT = true;
 
 int main() {
     float start, end;
@@ -24,7 +26,17 @@ int main() {
     float parametersForAll[CONST_COUNT_OF_EXPERIMENTS][9] = {
         //    g  m  g  m  l    l_p  N  pe  H
 
-        {0.8, 4.5, 0, 1, 0.1, 0.1, 0, 30, 180},
+        {0.1, 2, 0, 1, 0.1, 0.1, 0, 30, 180},
+        {0.1, 2, 0, 1, 0.1, 0.1, 1, 30, 180},
+        {0.1, 2, 0, 1, 0.1, 0.1, 2, 30, 180},
+        {0.1, 2, 0, 1, 0.1, 0.1, 3, 30, 180},
+        {0.1, 2, 0, 1, 0.1, 0.1, 4, 30, 180}, 
+		{0.1, 2, 0, 1, 0.1, 0.1, 5, 30, 180},
+        {0.1, 2, 0, 1, 0.1, 0.1, 6, 30, 180}, 
+		{0.1, 2, 0, 1, 0.1, 0.1, 7, 30, 180},
+        {0.1, 2, 0, 1, 0.1, 0.1, 8, 30, 180}, 
+		{0.1, 2, 0, 1, 0.1, 0.1, 9, 30, 180},
+        {0.1, 2, 0, 1, 0.1, 0.1, 10, 30, 180}, 
 
     };
 
@@ -133,6 +145,12 @@ int main() {
                                         timeOfWork);
 
         matrixForOneExp.writeInfoInTable(nameOfFile);
+
+		matrixForOneExp.writeQueueInfoInTable(nameOfFile);
+
+		if (CONST_OF_WRITING_INFO_ABOUT_PARAMETER_N_EFFECT) { 
+			matrixForOneExp.writeInfoAboutTheEffectOfParameterN(nameOfFile);
+		}
     }
 
     std::cout << "\nHELLO, IT`S THE END!!!!\n";
@@ -190,10 +208,10 @@ void computeNextIndexes(bool crossroadIsWorking, float secondCarsServiceModeDura
 				row = firstCarsServiceModeDuration + 1;
 			} else {
 				if (column >= row)
-					// идём вниз, пока не получим аварийный режим
+					// Go down while cross road is working
 					++column;
 				else
-					// идём вправо, пока не получим аварийный режим
+					// Go right while cross road is working
 					++row;
 			}
 		} else {

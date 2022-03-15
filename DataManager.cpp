@@ -83,6 +83,44 @@ void DataManager::writeInfoInTable(std::string nameOfFile) {
     }
 }
 
+void DataManager::writeQueueInfoInTable(std::string nameOfFile) {
+    std::ofstream reportTable;
+    reportTable.precision(2);
+    reportTable.setf(std::ios::fixed);
+    reportTable.open("../../tables_26.05/eksps_2021_3_potoks/" + nameOfFile + "queue_table.xls",
+                     std::ios::trunc);
+    std::string str;
+
+    for (int row = 0; row < rowCount; ++row) {
+        for (int column = 0; column < rowCount; ++column) {
+            if (row + column + 2 < rowCount) {
+                int index = findIndex(row, column) + 8 * sizeOfVector;
+                str = std::to_string(resultMatrix[index]);
+                str = replacePointToComma(str);
+                reportTable << str << "\t";
+            }
+        }
+        reportTable << "\n";
+    }
+}
+
+void DataManager::writeInfoAboutTheEffectOfParameterN(std::string nameOfFile) {
+    std::ofstream reportFile;
+    reportFile.precision(2);
+    reportFile.setf(std::ios::fixed);
+    reportFile.open("../../tables_26.05/eksps_2021_3_potoks/InfoAboutN.txt",
+                    std::ios::app);
+    std::string str;
+
+    str = std::to_string(resultMatrix[minValueIndex]);
+    str = replacePointToComma(str);
+    reportFile << str << "\t";
+
+	str = std::to_string(resultMatrix[minValueIndex + (CONST_CELLS_COUNT - 1) * sizeOfVector]);
+    str = replacePointToComma(str);
+    reportFile << str << "\n";
+}
+
 int DataManager::findIndex(int row, int column) {
     // It always be an integer number because it`s
     // a summ of an arithmetic progression

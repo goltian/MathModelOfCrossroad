@@ -32,6 +32,10 @@ public:
 	// Write all data into table
 	void writeInfoInTable(std::string nameOfFile);
 
+	void writeQueueInfoInTable(std::string nameOfFile);
+
+	void writeInfoAboutTheEffectOfParameterN(std::string nameOfFile);
+
 private:
 
 	int rowCount;
