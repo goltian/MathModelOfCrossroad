@@ -11,7 +11,7 @@ constexpr auto CONST_REPEATS_OF_ONE_EXPERIMENT = 4;
 
 constexpr auto CONST_ORIENTATION_MODE = 3.0F;
 
-constexpr auto CONST_COUNT_OF_EXPERIMENTS = 11;
+constexpr auto CONST_COUNT_OF_EXPERIMENTS = 2;
 
 constexpr bool CONST_OF_USING_METHOD_OF_REDUCED_BROOT_FORCE = true;
 
@@ -26,17 +26,8 @@ int main() {
     float parametersForAll[CONST_COUNT_OF_EXPERIMENTS][9] = {
         //    g  m  g  m  l    l_p  N  pe  H
 
-        {0.1, 2, 0, 1, 0.1, 0.1, 0, 30, 180},
-        {0.1, 2, 0, 1, 0.1, 0.1, 1, 30, 180},
-        {0.1, 2, 0, 1, 0.1, 0.1, 2, 30, 180},
-        {0.1, 2, 0, 1, 0.1, 0.1, 3, 30, 180},
-        {0.1, 2, 0, 1, 0.1, 0.1, 4, 30, 180}, 
-		{0.1, 2, 0, 1, 0.1, 0.1, 5, 30, 180},
-        {0.1, 2, 0, 1, 0.1, 0.1, 6, 30, 180}, 
-		{0.1, 2, 0, 1, 0.1, 0.1, 7, 30, 180},
-        {0.1, 2, 0, 1, 0.1, 0.1, 8, 30, 180}, 
-		{0.1, 2, 0, 1, 0.1, 0.1, 9, 30, 180},
-        {0.1, 2, 0, 1, 0.1, 0.1, 10, 30, 180}, 
+        {0.1, 2, 0, 1, 0.1, 0.1, 0, 30, 60},
+        {0.1, 2, 0, 1, 0.1, 0.1, 1, 30, 60},
 
     };
 

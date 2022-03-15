@@ -46,10 +46,15 @@ private:
 
 	int minValueIndex;
 
+	int minQueueValueIndex;
+
 	int successfulRepeatsCount;
 
 	// Min (best) durations for g1 and g3 modes
 	std::pair<int, int> bestDurationsOfModes;
+
+	// Best durations for g1 and g3 modes if we find it by minimazing queue value
+    std::pair<int, int> bestDurationsOfModesByQueueEstimate;
 
 	// All data
 	std::vector<float> data;
@@ -75,6 +80,9 @@ private:
 
 	// Method for fining index for best g1 and g3 modes durations
 	void findMinValueIndex();
+
+	// Method for fining the minimum value of queue in queue table
+    void findMinQueueValueIndex();
 
 	// Method for replacing point to comma and saving 
 	// two places to the right of the decimal point
