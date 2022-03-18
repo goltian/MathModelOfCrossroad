@@ -150,6 +150,21 @@ void DataManager::writeInfoAboutTheEffectOfParameterN(std::string nameOfFile) {
 		// Write minimal queue value
         str = std::to_string(resultMatrix[minQueueValueIndex]);
         str = replacePointToComma(str);
+        reportFile << str << "\t";
+
+		// Write queue value for the first stream
+        str = std::to_string(resultMatrix[minValueIndex + (CONST_CELLS_COUNT - 4) * sizeOfVector]);
+        str = replacePointToComma(str);
+        reportFile << str << "\t";
+
+		// Write queue value for the second stream
+        str = std::to_string(resultMatrix[minValueIndex + (CONST_CELLS_COUNT - 3) * sizeOfVector]);
+        str = replacePointToComma(str);
+        reportFile << str << "\t";
+
+		// Write queue value for the third stream
+        str = std::to_string(resultMatrix[minValueIndex + (CONST_CELLS_COUNT - 2) * sizeOfVector]);
+        str = replacePointToComma(str);
         reportFile << str << "\n";
 	}
 }
