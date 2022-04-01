@@ -20,11 +20,11 @@ private:
 		Case_Last = 3
 	} casesInServiceRequests;
 	
-	float criticalTimeForPeople;
+	double criticalTimeForPeople;
 
 	// Queue of people output times
 	// (use vector for sec memory access)
-	std::vector<float> reqOutputTimes;
+	std::vector<double> reqOutputTimes;
 
 	// Real size of people output times queue
     uint16_t reqCountInOuputQueue;
@@ -35,8 +35,8 @@ private:
     // Pointer to end of people output times queue
     int pointerToEndOfOutputQueue;
 
-	bool isRequestCantBeServedAtAll(float outputTime);
+	bool isRequestCantBeServedAtAll(double outputTime);
 
-	float calculateOutputTime(
-		CasesInServiceRequests casesInServiceRequests, float inputTime);
+	double calculateOutputTime(
+		CasesInServiceRequests casesInServiceRequests, double inputTime);
 };

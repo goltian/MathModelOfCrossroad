@@ -1,13 +1,13 @@
 #pragma once
 
 std::string getNameOfFile(
-	const std::vector<float> parametersForOne,
-	float peopleServiceModeDuration
+	const std::vector<double> parametersForOne,
+	double peopleServiceModeDuration
 );
 
-void computeNextIndexes(bool crossroadIsWorking, float secondCarsServiceModeDuration,
-                        float firstCarsServiceModeDuration, float rowCount, float &row,
-                        float &column);
+void computeNextIndexes(bool crossroadIsWorking, double secondCarsServiceModeDuration,
+                        double firstCarsServiceModeDuration, double rowCount, double &row,
+                        double &column);
 
 // The first series of experiments
 //{ 0.5, 2, 0, 1, 0.1, 0.1, 0, 30, 180 },

@@ -2,11 +2,11 @@
 
 #include <vector>
 
-constexpr float CONST_EPS_FOR_CHECKING_STABLE = 1.0F;
+constexpr double CONST_EPS_FOR_CHECKING_STABLE = 1.0;
 
 constexpr uint16_t CONST_SIZE_TIMES_IN_SYSTEM_VECTOR = 1000;
 
-constexpr float CONST_SIZE_TIMES_IN_SYSTEM_VECTOR_IN_FLOAT = 1000.0F;
+constexpr double CONST_SIZE_TIMES_IN_SYSTEM_VECTOR_IN_DOUBLE = 1000.0;
 
 class AverageWaitingTime {
 public:
@@ -23,40 +23,42 @@ public:
 
 	void setStreamStatus(StreamStatus streamStatus_);
 
-	float getGamma();
+	double getGamma();
 
 	uint16_t getCounter();
+
+	int getReqCountConsideredByGamma();
 
 	bool isStreamStatusNotStable();
 
 	bool isStreamStatusStable();
 
 	// Method for calculating average waiting time of cars
-	void calculateAvgWaitTime(float inputTime, float outputTime);
+	void calculateAvgWaitTime(double inputTime, double outputTime);
 
 private:
     uint16_t counter;
-	std::vector<float> timesInSystemOfRequests;
+	std::vector<double> timesInSystemOfRequests;
 
 	// Variable for counting average stay time a request in system
-	float gamma;
+	double gamma;
 	
 	// Count of requests that has been considered by gamma 
 	int reqCountConsideredByGamma;
 	
 	// Variable for calculating the second power of stay time a request in system
-	float u;
+	double u;
 	
 	// Variable for calculating the estimate of dispersion of stay time a request in system
-	float s;
+	double s;
 	
 	// Additional gamma variable with a wave for counting average 
 	// stay time a request in system (used for comparing with gamma)
-	float gammaWithWave;
+	double gammaWithWave;
 	
 	// Additional s variable with a wave for calculating the estimate of dispersion of
 	// stay time a request in system (used for comparing with s)
-	float sWithWave;
+	double sWithWave;
 	
 	// Flag for exit from programm (0 - continue, 1 - success end, 2 - fail end)
 	StreamStatus streamStatus;

@@ -1,8 +1,8 @@
 #include "ServiceDevice.h"
 #include <iostream>
 
-ServiceDevice::ServiceDevice(std::vector<float> parametersOfSystem,
-                             std::vector<float> modesDuration) {
+ServiceDevice::ServiceDevice(std::vector<double> parametersOfSystem,
+                             std::vector<double> modesDuration) {
     currentMode = Mode_Gamma2;
     switchesCount.IntoGamma1 = 0;
     switchesCount.IntoGamma3 = 0;
@@ -44,7 +44,7 @@ ServiceDevice::ServiceDevice(std::vector<float> parametersOfSystem,
     streamPi2.calculatePoissonDist();
     streamPi3.calculatePoissonDist();
 
-    percentOfSwitchingIntoG5AndG7 = 0.0F;
+    percentOfSwitchingIntoG5AndG7 = 0.0;
 }
 
 bool ServiceDevice::isCrossroadModelWorksStably() {
@@ -61,8 +61,8 @@ bool ServiceDevice::isCrossroadModelWorksStably() {
     }
 }
 
-std::vector<float> ServiceDevice::getPortionOfData() {
-    std::vector<float> portionOfData(9);
+std::vector<double> ServiceDevice::getPortionOfData() {
+    std::vector<double> portionOfData(9);
     portionOfData[0] = getAvgGammaForAllStreams();
     portionOfData[1] = streamPi1.getGamma();
     portionOfData[2] = streamPi2.getGamma();
@@ -73,14 +73,14 @@ std::vector<float> ServiceDevice::getPortionOfData() {
     portionOfData[7] = streamPi3.getAvgReqCountInBunker();
     portionOfData[8] = (streamPi1.getAvgReqCountInBunker() + streamPi2.getAvgReqCountInBunker() +
                         streamPi3.getAvgReqCountInBunker()) /
-                       3.0F;
+                       3.0;
 
     return portionOfData;
 }
 
-float ServiceDevice::getAvgGammaForAllStreams() {
-    float numenator;
-    float denumenator;
+double ServiceDevice::getAvgGammaForAllStreams() {
+    double numenator;
+    double denumenator;
 
     numenator = streamPi1.getGamma() * streamPi1.getLiam();
     numenator += streamPi2.getGamma() * streamPi2.getLiam();
@@ -91,17 +91,17 @@ float ServiceDevice::getAvgGammaForAllStreams() {
     return (numenator / denumenator);
 }
 
-float ServiceDevice::getPercentOfSwitchingIntoG5AndG7() {
-    float numenator;
-    float denumenator;
-    float percent;
+double ServiceDevice::getPercentOfSwitchingIntoG5AndG7() {
+    double numenator;
+    double denumenator;
+    double percent;
 
     numenator = switchesCount.IntoGamma5 + switchesCount.IntoGamma7;
     denumenator = numenator + switchesCount.IntoGamma1 + switchesCount.IntoGamma3;
 
     percent = numenator / denumenator;
 
-    percent *= 100.0F;
+    percent *= 100.0;
 
     return percent;
 }

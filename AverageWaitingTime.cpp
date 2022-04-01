@@ -2,12 +2,12 @@
 #include <cmath>
 
 AverageWaitingTime::AverageWaitingTime() {
-    gamma = 0.0F;
+    gamma = 0.0;
     reqCountConsideredByGamma = 0;
-    u = 0.0F;
-    s = 0.0F;
-    gammaWithWave = 0.0F;
-    sWithWave = 0.0F;
+    u = 0.0;
+    s = 0.0;
+    gammaWithWave = 0.0;
+    sWithWave = 0.0;
     streamStatus = StreamStatus_IsStabilizing;
     timesInSystemOfRequests.resize(CONST_SIZE_TIMES_IN_SYSTEM_VECTOR);
     counter = 0;
@@ -17,7 +17,11 @@ void AverageWaitingTime::setStreamStatus(StreamStatus streamStatus_) {
     streamStatus = streamStatus_;
 }
 
-float AverageWaitingTime::getGamma() {
+int AverageWaitingTime::getReqCountConsideredByGamma() {
+    return reqCountConsideredByGamma;
+}
+
+double AverageWaitingTime::getGamma() {
     return gamma;
 }
 
@@ -41,7 +45,7 @@ bool AverageWaitingTime::isStreamStatusStable() {
     }
 }
 
-void AverageWaitingTime::calculateAvgWaitTime(float inputTime, float outputTime) {
+void AverageWaitingTime::calculateAvgWaitTime(double inputTime, double outputTime) {
     if (counter < CONST_SIZE_TIMES_IN_SYSTEM_VECTOR) {
         // Go here to process every thousand requests
         timesInSystemOfRequests[counter++] = outputTime - inputTime;
@@ -68,26 +72,26 @@ void AverageWaitingTime::calculateAvgWaitTime(float inputTime, float outputTime)
 }
 
 void AverageWaitingTime::calculateNewGammaAndUValue() {
-    float sum = 0;
-    float sum_square = 0;
+    double sum = 0;
+    double sum_square = 0;
     for (uint16_t i = 0; i < CONST_SIZE_TIMES_IN_SYSTEM_VECTOR; ++i) {
         sum += timesInSystemOfRequests[i];
         sum_square += timesInSystemOfRequests[i] * timesInSystemOfRequests[i];
 	}
-    float reqCount = static_cast<float>(reqCountConsideredByGamma);
+    double reqCount = static_cast<double>(reqCountConsideredByGamma);
     
 	gamma = gamma * reqCount + sum;
-    gamma /= (reqCount + CONST_SIZE_TIMES_IN_SYSTEM_VECTOR_IN_FLOAT);
+    gamma /= (reqCount + CONST_SIZE_TIMES_IN_SYSTEM_VECTOR_IN_DOUBLE);
 
     u = u * reqCount + sum_square;
-    u /= (reqCount + CONST_SIZE_TIMES_IN_SYSTEM_VECTOR_IN_FLOAT);
+    u /= (reqCount + CONST_SIZE_TIMES_IN_SYSTEM_VECTOR_IN_DOUBLE);
 
     reqCountConsideredByGamma += CONST_SIZE_TIMES_IN_SYSTEM_VECTOR;
 }
 
 void AverageWaitingTime::checkErrorForGammaAndS() {
-    float reqCount = static_cast<float>(reqCountConsideredByGamma);
-    float fraction = reqCount / (reqCount - 1.0F);
+    double reqCount = static_cast<double>(reqCountConsideredByGamma);
+    double fraction = reqCount / (reqCount - 1.0);
 
     // If gamma and s are stable then stream is stable too
     if (abs(gamma - gammaWithWave) < CONST_EPS_FOR_CHECKING_STABLE) {

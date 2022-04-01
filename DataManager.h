@@ -17,16 +17,16 @@ public:
 	void setPortionOfData(
 		int row, 
 		int column, 
-		std::vector<float> portionOfData, 
+		std::vector<double> portionOfData, 
 		int tid
 	);
 
 	// Write all data into file
 	void writeInfoInFile(
-		float peopleServiceModeDuration, 
-		float liam, 
+		double peopleServiceModeDuration, 
+		double liam, 
 		std::string nameOfFile, 
-		float timeOfWork
+		double timeOfWork
 	);
 
 	// Write all data into table
@@ -57,10 +57,10 @@ private:
     std::pair<int, int> bestDurationsOfModesByQueueEstimate;
 
 	// All data
-	std::vector<float> data;
+	std::vector<double> data;
 
 	// Result data
-	std::vector<float> resultMatrix;
+	std::vector<double> resultMatrix;
 
 	// Method that find index in our matrix
 	int findIndex(int i, int j);

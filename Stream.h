@@ -7,9 +7,9 @@
 #include "AverageWaitingTime.h"
 #include "mkl.h"
 
-constexpr float CONST_EXPON_PUAS_AND_BART = 1e-32F;
+constexpr double CONST_EXPON_PUAS_AND_BART = 1e-16;
 
-constexpr float CONST_EPS_COMPARISON = 1e-6F;
+constexpr double CONST_EPS_COMPARISON = 1e-6;
 
 constexpr uint16_t CONST_FOR_SLOW_REQ_COUNT = 150;
 
@@ -24,25 +24,27 @@ public:
 
 	~Stream();
 
-	void setG(float g_);
+	void setG(double g_);
 
-	void setMathExpect(float mathExpect_);
+	void setMathExpect(double mathExpect_);
 
-	void setLiam(float liam_);
+	void setLiam(double liam_);
 
-	void setModesDurations(std::vector<float> modesDuration_);
+	void setModesDurations(std::vector<double> modesDuration_);
 
 	void calculateR();
 
 	void calculateLiamBartlett();
 
-	float getLiam();
+	double getLiam();
 
-	float getLiamBartlett();
+	double getLiamBartlett();
 
 	uint16_t getStorageBunkerSize();
 
-	float getGamma();
+	double getGamma();
+
+	int getReqCountConsideredByGamma();
 
 	bool isStreamNotStable();
 
@@ -60,7 +62,7 @@ public:
 
 	virtual void serviseRequests() = 0;
 
-	float getAvgReqCountInBunker();
+	double getAvgReqCountInBunker();
 
 protected:
 
@@ -74,22 +76,22 @@ protected:
 
 	// Vector of random values. We will fill many values at one time
 	// to use it by one in the future
-    float* randomValues;
+    double* randomValues;
 
 	uint16_t countOfUsedRandValues;
 
 	// Parameters of stream
-	float g;
-	float mathExpect;
-	float r;
-	float liam;
-	float liamBartlett;
+	double g;
+	double mathExpect;
+	double r;
+	double liam;
+	double liamBartlett;
 
 	// Total time of working crossroad
-	float totalTime;
+	double totalTime;
 	
 	// Duration of the mode
-	float modeDuration;
+	double modeDuration;
 
 	// Real size of queue in storage bunker
     uint16_t reqCountInBunker;
@@ -101,21 +103,21 @@ protected:
 	int pointerToEndOfBunker;
 	
 	// Durations of every mode
-	std::vector<float> modesDuration;
+	std::vector<double> modesDuration;
 	
 	// Array of the calculated exponents for every mode
-	std::vector<float> exponents;
+	std::vector<double> exponents;
 
 	// Arrays of the calculated Poisson distibution for every mode
-	std::vector<std::vector<float>> poissonDistribution;
+	std::vector<std::vector<double>> poissonDistribution;
 
 	// Vector of times of incoming requests that have
     // got into storage bunker
-    std::vector<float> storageBunker;
+    std::vector<double> storageBunker;
 	
 	// Array for times of coming slow requests that have 
 	// come during last interval (mode)
-	std::vector <float> timesOfSlowReq;
+	std::vector <double> timesOfSlowReq;
 
 	// Max possible count of requests that 
 	// could be on a crossroad at one time
@@ -126,7 +128,7 @@ protected:
     uint16_t reqCountOfSaturation;
 	
 	// Service time for one request
-	float serviceTime;
+	double serviceTime;
 
 	AverageWaitingTime avgWaitingTime;
 
@@ -134,7 +136,7 @@ protected:
     uint16_t generatePoisson(int modeId);
 	
 	// Method for generating count of fast requests in every bundle
-	float generateBartlett();
+	double generateBartlett();
 	
 	// Method for checking the need to generate fast requests at all
 	bool areThereFastRequests();
@@ -148,10 +150,10 @@ protected:
 	void fillVectorOfRandValues();
 
 	// Number of activating of service modes
-    float activateServiceModesCount;
+    double activateServiceModesCount;
 	
     // The average requests count in storage bunker
-    float avgReqCountInBunker; 
+    double avgReqCountInBunker; 
 
 	// Method for updating the average requests count in storage bunker
     void updateTheAvgReqCountInBunker(); 

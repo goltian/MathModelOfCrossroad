@@ -2,11 +2,11 @@
 
 CarsStream::CarsStream() {
     throughputCapacity = 1;
-    serviceTime = 1.0F;
+    serviceTime = 1.0;
 }
 
 void CarsStream::serviseRequests() {
-    float timeBeforeStartThisMode = totalTime - modeDuration;
+    double timeBeforeStartThisMode = totalTime - modeDuration;
     calculateReqCountOfSaturation();
 
 	uint16_t reqCountInBunkerBeforeService = reqCountInBunker;
@@ -18,8 +18,8 @@ void CarsStream::serviseRequests() {
 
 
     uint16_t reqCountOfServed = std::min(reqCountOfSaturation, reqCountInBunkerBeforeService);
-    float inputTime = 0.0F;
-    float outputTime = 0.0F;
+    double inputTime = 0.0;
+    double outputTime = 0.0;
 
     for (uint16_t curReq = 0; curReq < reqCountOfServed; ++curReq) {
         // Take first request from queue

@@ -3,8 +3,8 @@
 
 PeopleStream::PeopleStream() {
     throughputCapacity = 5;
-    serviceTime = 10.0F;
-    criticalTimeForPeople = 7.0F;
+    serviceTime = 10.0;
+    criticalTimeForPeople = 7.0;
     casesInServiceRequests = Case_OldReqWillBeServedNow;
 
 	// Resize our vector one time for using it in the future
@@ -28,8 +28,8 @@ void PeopleStream::serviseRequests() {
 	}
 
     uint16_t reqCountOfServed = 0;
-    float inputTime = 0.0F;
-    float outputTime = 0.0F;
+    double inputTime = 0.0;
+    double outputTime = 0.0;
     uint16_t maxPossibleReqCountToServe =
         std::min(reqCountOfSaturation, reqCountInBunkerBeforeService);
 
@@ -154,7 +154,7 @@ void PeopleStream::serviseRequests() {
 	updateTheAvgReqCountInBunker();
 }
 
-bool PeopleStream::isRequestCantBeServedAtAll(float outputTime) {
+bool PeopleStream::isRequestCantBeServedAtAll(double outputTime) {
     if (totalTime + modeDuration - criticalTimeForPeople < outputTime - serviceTime) {
         return true;
     } else {
@@ -162,15 +162,15 @@ bool PeopleStream::isRequestCantBeServedAtAll(float outputTime) {
     }
 }
 
-float PeopleStream::calculateOutputTime(CasesInServiceRequests casesInServiceRequests,
-                                         float inputTime) {
-    float outputTime;
+double PeopleStream::calculateOutputTime(CasesInServiceRequests casesInServiceRequests,
+                                         double inputTime) {
+    double outputTime;
 
     switch (casesInServiceRequests) {
         case (Case_OldReqWillBeServedNow):
 
 			if (reqCountInOuputQueue > 0) {
-                float sum = static_cast<float>(totalTime + serviceTime);
+                double sum = static_cast<double>(totalTime + serviceTime);
                 outputTime = std::max(sum, reqOutputTimes[pointerToStartOfOutputQueue]);
             } else {
                 outputTime = totalTime + serviceTime;

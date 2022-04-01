@@ -9,34 +9,24 @@
 
 constexpr auto CONST_REPEATS_OF_ONE_EXPERIMENT = 4;
 
-constexpr auto CONST_ORIENTATION_MODE = 3.0F;
+constexpr auto CONST_ORIENTATION_MODE = 3.0;
 
-constexpr auto CONST_COUNT_OF_EXPERIMENTS = 11;
+constexpr auto CONST_COUNT_OF_EXPERIMENTS = 1;
 
-constexpr bool CONST_OF_USING_METHOD_OF_REDUCED_BROOT_FORCE = true;
+constexpr bool CONST_OF_USING_METHOD_OF_REDUCED_BROOT_FORCE = false;
 
 constexpr bool CONST_OF_WRITING_INFO_ABOUT_PARAMETER_N_EFFECT = true;
 
 int main() {
-    float start, end;
+    double start, end;
     std::cout.precision(2);
     std::cout.setf(std::ios::fixed);
 
     // Our parameters for all experimnets
-    float parametersForAll[CONST_COUNT_OF_EXPERIMENTS][9] = {
+    double parametersForAll[CONST_COUNT_OF_EXPERIMENTS][9] = {
         //    g  m  g  m  l    l_p  N  pe  H
 
-        {0.9, 5, 0, 1, 0.1, 0.1, 0, 30, 180},
-        {0.9, 5, 0, 1, 0.1, 0.1, 1, 30, 180},
-        {0.9, 5, 0, 1, 0.1, 0.1, 2, 30, 180},
-        {0.9, 5, 0, 1, 0.1, 0.1, 3, 30, 180},
-        {0.9, 5, 0, 1, 0.1, 0.1, 4, 30, 180}, 
-		{0.9, 5, 0, 1, 0.1, 0.1, 5, 30, 180},
-        {0.9, 5, 0, 1, 0.1, 0.1, 6, 30, 180}, 
-		{0.9, 5, 0, 1, 0.1, 0.1, 7, 30, 180},
-        {0.9, 5, 0, 1, 0.1, 0.1, 8, 30, 180}, 
-		{0.9, 5, 0, 1, 0.1, 0.1, 9, 30, 180},
-        {0.9, 5, 0, 1, 0.1, 0.1, 10, 30, 180}, 
+        {0.1, 2, 0, 1, 0.1, 0.1, 0, 30, 180},
 
     };
 
@@ -45,11 +35,11 @@ int main() {
 
         start = omp_get_wtime();
 
-        float rowCount = parametersForAll[numberOfExp][8];
-        float peopleServiceModeDuration = parametersForAll[numberOfExp][7];
+        double rowCount = parametersForAll[numberOfExp][8];
+        double peopleServiceModeDuration = parametersForAll[numberOfExp][7];
 
         // We need to save parameters of stream for an experimnet
-        std::vector<float> parametersForOne(7);
+        std::vector<double> parametersForOne(7);
         for (int i = 0; i < 7; ++i) {
             parametersForOne[i] = parametersForAll[numberOfExp][i];
         }
@@ -64,8 +54,8 @@ int main() {
             int tid = omp_get_thread_num();
 
             // Set duration of cars service modes
-            float firstCarsServiceModeDuration = 1.0F;
-            float secondCarsServiceModeDuration = 1.0F;
+            double firstCarsServiceModeDuration = 1.0;
+            double secondCarsServiceModeDuration = 1.0;
 
             if (tid == 0) {
                 std::cout << "Count of threads: " << omp_get_num_threads() << "\n\n";
@@ -73,8 +63,8 @@ int main() {
 
             // Cycle for filling all matrix
             do {
-                float row = firstCarsServiceModeDuration;
-                float column = secondCarsServiceModeDuration;
+                double row = firstCarsServiceModeDuration;
+                double column = secondCarsServiceModeDuration;
 
                 if (tid == 0) {
                     std::cout << "Exp: " << numberOfExp << "\t";
@@ -83,7 +73,7 @@ int main() {
 
                 // Cycle for filling one row
                 do {
-                    std::vector<float> modesDuration = {row,
+                    std::vector<double> modesDuration = {row,
                                                         CONST_ORIENTATION_MODE,
                                                         column,
                                                         CONST_ORIENTATION_MODE,
@@ -99,7 +89,7 @@ int main() {
                     if (crossroadModel.isCrossroadModelWorksStably()) {
 
                         // Get data from model
-                        std::vector<float> data(9);
+                        std::vector<double> data(9);
                         data = crossroadModel.getPortionOfData();
 
                         // Set data into dataManager
@@ -134,7 +124,7 @@ int main() {
         // }
 
         end = omp_get_wtime();
-        float timeOfWork = end - start;
+        double timeOfWork = end - start;
         std::cout << "Time: " << timeOfWork << "\n\n\n\n";
 
         // Get file name
@@ -157,8 +147,8 @@ int main() {
     return 0;
 }
 
-std::string getNameOfFile(const std::vector<float> parametersForOne,
-                          float peopleServiceModeDuration) {
+std::string getNameOfFile(const std::vector<double> parametersForOne,
+                          double peopleServiceModeDuration) {
     std::ostringstream stream;
 
     stream << std::fixed;
@@ -177,7 +167,7 @@ std::string getNameOfFile(const std::vector<float> parametersForOne,
     stream << parametersForOne[0];
     stream << "__";
 
-    float r = (1.0F - parametersForOne[0]) * (parametersForOne[1] - 1.0F);
+    double r = (1.0 - parametersForOne[0]) * (parametersForOne[1] - 1.0);
     stream << "r=";
     stream << r;
     stream << "__";
@@ -198,9 +188,9 @@ std::string getNameOfFile(const std::vector<float> parametersForOne,
     return stream.str();
 }
 
-void computeNextIndexes(bool crossroadIsWorking, float secondCarsServiceModeDuration,
-                        float firstCarsServiceModeDuration, float rowCount, float &row,
-                        float &column) {
+void computeNextIndexes(bool crossroadIsWorking, double secondCarsServiceModeDuration,
+                        double firstCarsServiceModeDuration, double rowCount, double &row,
+                        double &column) {
     if (CONST_OF_USING_METHOD_OF_REDUCED_BROOT_FORCE) {
 		if (crossroadIsWorking) {
 			if ((row + column + 1 == rowCount) && (column > row)) {

@@ -11,17 +11,17 @@ Stream::Stream() {
     // vslNewStream(&cur_stream, VSL_BRNG_MT19937, 0);
     method = VSL_RNG_METHOD_UNIFORM_STD;
 
-    randomValues = (float*)mkl_malloc((CONST_SIZE_OF_RAND_VALUES_VECTOR) * sizeof(float), 64);
+    randomValues = (double*)mkl_malloc((CONST_SIZE_OF_RAND_VALUES_VECTOR) * sizeof(double), 64);
     // Fill vector of random values for using in future
     fillVectorOfRandValues();
 
-    g = 0.0F;
-    mathExpect = 1.0F;
+    g = 0.0;
+    mathExpect = 1.0;
 
-    liam = 0.0F;
+    liam = 0.0;
     liamBartlett = liam / mathExpect;
-    totalTime = 0.0F;
-    modeDuration = 0.0F;
+    totalTime = 0.0;
+    modeDuration = 0.0;
     exponents.resize(8);
 
     // Use resizing here for not resizing
@@ -47,19 +47,19 @@ Stream::~Stream() {
     mkl_free(randomValues);
 }
 
-void Stream::setG(float g_) {
+void Stream::setG(double g_) {
     g = g_;
 }
 
-void Stream::setMathExpect(float mathExpect_) {
+void Stream::setMathExpect(double mathExpect_) {
     mathExpect = mathExpect_;
 }
 
-void Stream::setLiam(float liam_) {
+void Stream::setLiam(double liam_) {
     liam = liam_;
 }
 
-void Stream::setModesDurations(std::vector<float> modesDuration_) {
+void Stream::setModesDurations(std::vector<double> modesDuration_) {
     size_t modesCount = modesDuration_.size();
     modesDuration.resize(modesCount);
 
@@ -69,9 +69,9 @@ void Stream::setModesDurations(std::vector<float> modesDuration_) {
 }
 
 void Stream::calculateR() {
-    r = (1.0F - g) * (mathExpect - 1.0F);
+    r = (1.0 - g) * (mathExpect - 1.0);
 
-	if (r > 1.0F) {
+	if (r > 1.0) {
         std::cout << "Parameters are not correct. r must be less than 1\n";
         exit(0);
     }
@@ -81,11 +81,11 @@ void Stream::calculateLiamBartlett() {
     liamBartlett = liam / mathExpect;
 }
 
-float Stream::getLiam() {
+double Stream::getLiam() {
     return liam;
 }
 
-float Stream::getLiamBartlett() {
+double Stream::getLiamBartlett() {
     return liamBartlett;
 }
 
@@ -93,8 +93,12 @@ uint16_t Stream::getStorageBunkerSize() {
     return reqCountInBunker;
 }
 
-float Stream::getGamma() {
+double Stream::getGamma() {
     return avgWaitingTime.getGamma();
+}
+
+int Stream::getReqCountConsideredByGamma() {
+    return avgWaitingTime.getReqCountConsideredByGamma();
 }
 
 bool Stream::isStreamNotStable() {
@@ -126,14 +130,14 @@ void Stream::calculatePoissonDist() {
     // Calculate massives of Poisson distribution for every mode
     uint16_t modesCount = static_cast<int>(modesDuration.size());
     poissonDistribution.resize(modesCount);
-    float modeDur;
-    float adding;
+    double modeDur;
+    double adding;
 
     for (uint16_t modeId = 0; modeId < modesCount; ++modeId) {
         modeDur = modesDuration[modeId];
-        adding = 1.0F;
+        adding = 1.0;
         poissonDistribution[modeId].resize(CONST_FOR_SLOW_REQ_COUNT);
-        poissonDistribution[modeId][0] = 1.0F;
+        poissonDistribution[modeId][0] = 1.0;
 
         for (uint16_t curValue = 1; curValue < CONST_FOR_SLOW_REQ_COUNT; ++curValue) {
             // Calculate next value of Poisson dist
@@ -143,7 +147,7 @@ void Stream::calculatePoissonDist() {
 
             // If we try to increase last value with zero then leave this method
             if (adding < CONST_EXPON_PUAS_AND_BART) {
-                poissonDistribution[modeId][curValue + 1] = FLT_MAX;
+                poissonDistribution[modeId][curValue + 1] = DBL_MAX;
                 break;
             }
         }
@@ -187,10 +191,10 @@ void Stream::generateRequests(int modeId) {
     // If there are fast requests then we need generate them
     if (areThereFastRequests()) {
         // Number of fast requests for every bundle
-        float fastReqCount;
+        double fastReqCount;
 
         // Distance (time) between fast requests
-        float timeBetweenFastReq;
+        double timeBetweenFastReq;
 
         // Cycle for filling fast and slow requests into queue
         for (uint16_t slowReq = 0; slowReq < slowReqCount; ++slowReq) {
@@ -209,21 +213,21 @@ void Stream::generateRequests(int modeId) {
             // Calculate time (distance) between fast requests
             if (slowReq < slowReqCount - 1) {
                 timeBetweenFastReq =
-                    (timesOfSlowReq[slowReq + 1] - timesOfSlowReq[slowReq]) / (2.0F * fastReqCount);
+                    (timesOfSlowReq[slowReq + 1] - timesOfSlowReq[slowReq]) / (2.0 * fastReqCount);
             } else {
                 timeBetweenFastReq =
-                    (totalTime + modeDuration - timesOfSlowReq[slowReq]) / (2.0F * fastReqCount);
+                    (totalTime + modeDuration - timesOfSlowReq[slowReq]) / (2.0 * fastReqCount);
             }
 
             // Put fast requests into queue
-            float fastReqInFloat = 0.0F;
+            double fastReqInDouble = 0.0;
             for (uint16_t fastReq = 0; fastReq < static_cast<uint16_t>(fastReqCount); ++fastReq) {
-                fastReqInFloat += 1.0F;
+                fastReqInDouble += 1.0;
 
                 // We can rewrite old times in our vector because in that case req count in bunker
                 // will be over 1000 and we will go out from programm with "not stable stream"
                 storageBunker[pointerToEndOfBunker] =
-                    timesOfSlowReq[slowReq] + fastReqInFloat * timeBetweenFastReq;
+                    timesOfSlowReq[slowReq] + fastReqInDouble * timeBetweenFastReq;
                 if (pointerToEndOfBunker < CONST_CRITICAL_REQ_COUNT) {
                     pointerToEndOfBunker = pointerToEndOfBunker + 1;
                 } else {
@@ -250,14 +254,14 @@ void Stream::generateRequests(int modeId) {
     totalTime += modeDuration;
 }
 
-float Stream::getAvgReqCountInBunker() {
+double Stream::getAvgReqCountInBunker() {
     return avgReqCountInBunker;
 }
 
 uint16_t Stream::generatePoisson(int modeId) {
 
     // The value of a random variable that the distribution function should approach
-    float randomVariable;
+    double randomVariable;
 
     // Counter for slow requests
     uint16_t slowReqCount = 0;
@@ -279,12 +283,12 @@ uint16_t Stream::generatePoisson(int modeId) {
     return slowReqCount;
 }
 
-float Stream::generateBartlett() {
+double Stream::generateBartlett() {
     // The value of a random variable that the distribution function should approach
-    float randomVariable;
+    double randomVariable;
 
     // The value of a distribution function
-    float distributionFunc = 1.0F - r;
+    double distributionFunc = 1.0 - r;
 
     // Counter for fast requests in a bundle
     uint16_t fastReqCount = 0;
@@ -293,7 +297,7 @@ float Stream::generateBartlett() {
     bool isFirstIterPassed = true;
 
     // Adding for distribution function
-    float adding = r * (1.0F - g);
+    double adding = r * (1.0 - g);
 
     // Generate random value from 0 to 1
     randomVariable = randomValues[countOfUsedRandValues++];
@@ -312,16 +316,18 @@ float Stream::generateBartlett() {
             ++fastReqCount;
             distributionFunc += adding;
             adding *= g;
+
             if (adding < CONST_EXPON_PUAS_AND_BART) {
                 break;
             }
         }
     }
-    return static_cast<float>(fastReqCount);
+
+    return static_cast<double>(fastReqCount);
 }
 
 bool Stream::areThereFastRequests() {
-    return (abs(mathExpect - 1.0F) >= CONST_EPS_COMPARISON);
+    return (abs(mathExpect - 1.0) >= CONST_EPS_COMPARISON);
 }
 
 void Stream::calculateReqCountOfSaturation() {
@@ -330,18 +336,18 @@ void Stream::calculateReqCountOfSaturation() {
 }
 
 inline void Stream::fillVectorOfRandValues() {
-    vsRngUniform(method, cur_stream, CONST_SIZE_OF_RAND_VALUES_VECTOR, randomValues, 0.0F, 1.0F);
+    vdRngUniform(method, cur_stream, CONST_SIZE_OF_RAND_VALUES_VECTOR, randomValues, 0.0, 1.0);
     countOfUsedRandValues = 0;
 }
 
 void Stream::updateTheAvgReqCountInBunker() {
     // Get requests count in storage bunker
-    float countInBunker = static_cast<float>(getStorageBunkerSize());
+    double countInBunker = static_cast<double>(getStorageBunkerSize());
 
     // Recalculate the average requests count in bunker
     avgReqCountInBunker = (avgReqCountInBunker * activateServiceModesCount + countInBunker) /
-                          (activateServiceModesCount + 1.0F);
-    activateServiceModesCount += 1.0F;
+                          (activateServiceModesCount + 1.0);
+    activateServiceModesCount += 1.0;
 }
 
 inline void Stream::insertionSort(uint16_t slowReqCount) {
