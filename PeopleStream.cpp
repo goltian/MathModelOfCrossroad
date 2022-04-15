@@ -1,5 +1,5 @@
-#include "PeopleStream.h"
 #include <iostream>
+#include "PeopleStream.h"
 
 PeopleStream::PeopleStream() {
     throughputCapacity = 5;

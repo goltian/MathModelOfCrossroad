@@ -1,5 +1,5 @@
-#include "ServiceDevice.h"
 #include <iostream>
+#include "ServiceDevice.h"
 
 ServiceDevice::ServiceDevice(std::vector<double> parametersOfSystem,
                              std::vector<double> modesDuration) {

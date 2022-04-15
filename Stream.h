@@ -2,10 +2,8 @@
 
 #include <iostream>
 #include <random>
-#include <queue>
-#include <random>
-#include "AverageWaitingTime.h"
 #include "mkl.h"
+#include "AverageWaitingTime.h"
 
 constexpr double CONST_EXPON_PUAS_AND_BART = 1e-16;
 

@@ -1,5 +1,5 @@
-#include "AverageWaitingTime.h"
 #include <cmath>
+#include "AverageWaitingTime.h"
 
 AverageWaitingTime::AverageWaitingTime() {
     gamma = 0.0;
