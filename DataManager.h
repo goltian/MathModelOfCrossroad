@@ -2,7 +2,7 @@
 
 #include <vector>
 
-constexpr int CONST_CELLS_COUNT = 9;
+constexpr int CONST_CELLS_COUNT = 10;
 
 class DataManager {
 public:
@@ -33,6 +33,8 @@ public:
 	void writeInfoInTable(std::string nameOfFile);
 
 	void writeQueueInfoInTable(std::string nameOfFile);
+
+	void writeDowntimeInfoInTable(std::string nameOfFile);
 
 	void writeInfoAboutTheEffectOfParameterN(std::string nameOfFile);
 

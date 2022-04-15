@@ -7,7 +7,7 @@
 #include "DataManager.h"
 #include "mathModelOfCrossroad.h"
 
-constexpr auto CONST_REPEATS_OF_ONE_EXPERIMENT = 1;
+constexpr auto CONST_REPEATS_OF_ONE_EXPERIMENT = 4;
 
 constexpr auto CONST_ORIENTATION_MODE = 3.0;
 
@@ -89,7 +89,7 @@ int main() {
                     if (crossroadModel.isCrossroadModelWorksStably()) {
 
                         // Get data from model
-                        std::vector<double> data(9);
+                        std::vector<double> data(10);
                         data = crossroadModel.getPortionOfData();
 
                         // Set data into dataManager
@@ -138,6 +138,8 @@ int main() {
         matrixForOneExp.writeInfoInTable(nameOfFile);
 
         matrixForOneExp.writeQueueInfoInTable(nameOfFile);
+
+		matrixForOneExp.writeDowntimeInfoInTable(nameOfFile);
 
         if (CONST_OF_WRITING_INFO_ABOUT_PARAMETER_N_EFFECT) {
             matrixForOneExp.writeInfoAboutTheEffectOfParameterN(nameOfFile);

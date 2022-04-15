@@ -54,6 +54,10 @@ private:
 	// Get average waiting time of all streams
 	double getAvgGammaForAllStreams();
 
+	double getAvgReqCountInBunkerForAllStreams();
+
+	double getAvgDowntimeForAllStreams();
+
 	double getPercentOfSwitchingIntoG5AndG7();
 
 	void computeNextMode();

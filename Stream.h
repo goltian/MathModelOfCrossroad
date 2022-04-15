@@ -62,6 +62,8 @@ public:
 
 	double getAvgReqCountInBunker();
 
+	double getAvgDowntime();
+
 protected:
 
 	std::mt19937 generator;

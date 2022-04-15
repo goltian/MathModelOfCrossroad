@@ -257,6 +257,10 @@ double Stream::getAvgReqCountInBunker() {
     return avgReqCountInBunker;
 }
 
+double Stream::getAvgDowntime() {
+    return avgDowntime;
+}
+
 uint16_t Stream::generatePoisson(int modeId) {
 
     // The value of a random variable that the distribution function should approach

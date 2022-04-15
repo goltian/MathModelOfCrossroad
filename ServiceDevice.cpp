@@ -62,7 +62,7 @@ bool ServiceDevice::isCrossroadModelWorksStably() {
 }
 
 std::vector<double> ServiceDevice::getPortionOfData() {
-    std::vector<double> portionOfData(9);
+    std::vector<double> portionOfData(10);
     portionOfData[0] = getAvgGammaForAllStreams();
     portionOfData[1] = streamPi1.getGamma();
     portionOfData[2] = streamPi2.getGamma();
@@ -71,9 +71,8 @@ std::vector<double> ServiceDevice::getPortionOfData() {
     portionOfData[5] = streamPi1.getAvgReqCountInBunker();
     portionOfData[6] = streamPi2.getAvgReqCountInBunker();
     portionOfData[7] = streamPi3.getAvgReqCountInBunker();
-    portionOfData[8] = (streamPi1.getAvgReqCountInBunker() + streamPi2.getAvgReqCountInBunker() +
-                        streamPi3.getAvgReqCountInBunker()) /
-                       3.0;
+    portionOfData[8] = getAvgReqCountInBunkerForAllStreams();
+    portionOfData[9] = getAvgDowntimeForAllStreams();
 
     return portionOfData;
 }
@@ -89,6 +88,27 @@ double ServiceDevice::getAvgGammaForAllStreams() {
     denumenator = streamPi1.getLiam() + streamPi2.getLiam() + streamPi3.getLiam();
 
     return (numenator / denumenator);
+}
+
+double ServiceDevice::getAvgReqCountInBunkerForAllStreams() {
+    double answer;
+
+    answer = streamPi1.getAvgReqCountInBunker() + streamPi2.getAvgReqCountInBunker() +
+             streamPi3.getAvgReqCountInBunker();
+
+	answer /= 3.0;
+
+    return answer;
+}
+
+double ServiceDevice::getAvgDowntimeForAllStreams() {
+    double answer;
+
+    answer = streamPi1.getAvgDowntime() + streamPi2.getAvgDowntime() + streamPi3.getAvgDowntime();
+
+    answer /= 3.0;
+
+    return answer;
 }
 
 double ServiceDevice::getPercentOfSwitchingIntoG5AndG7() {
