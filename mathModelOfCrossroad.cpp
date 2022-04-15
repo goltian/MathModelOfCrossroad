@@ -7,7 +7,7 @@
 #include "DataManager.h"
 #include "mathModelOfCrossroad.h"
 
-constexpr auto CONST_REPEATS_OF_ONE_EXPERIMENT = 4;
+constexpr auto CONST_REPEATS_OF_ONE_EXPERIMENT = 1;
 
 constexpr auto CONST_ORIENTATION_MODE = 3.0;
 
@@ -54,8 +54,8 @@ int main() {
             int tid = omp_get_thread_num();
 
             // Set duration of cars service modes
-            double firstCarsServiceModeDuration = 1.0;
-            double secondCarsServiceModeDuration = 1.0;
+            double firstCarsServiceModeDuration = 20.0;
+            double secondCarsServiceModeDuration = 20.0;
 
             if (tid == 0) {
                 std::cout << "Count of threads: " << omp_get_num_threads() << "\n\n";

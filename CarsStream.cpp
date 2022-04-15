@@ -7,24 +7,26 @@ CarsStream::CarsStream() {
 
 void CarsStream::serviseRequests() {
     double timeBeforeStartThisMode = totalTime - modeDuration;
+    bool TheServiceIsOver = false;
+
     calculateReqCountOfSaturation();
 
-	uint16_t reqCountInBunkerBeforeService = reqCountInBunker;
+    uint16_t reqCountInBunkerBeforeService = reqCountInBunker;
 
-	if (reqCountInBunkerBeforeService > CONST_CRITICAL_REQ_COUNT) {
+    if (reqCountInBunkerBeforeService > CONST_CRITICAL_REQ_COUNT) {
         avgWaitingTime.setStreamStatus(avgWaitingTime.StreamStatus_NotStable);
         return;
     }
 
-
     uint16_t reqCountOfServed = std::min(reqCountOfSaturation, reqCountInBunkerBeforeService);
     double inputTime = 0.0;
     double outputTime = 0.0;
+    double previosoutputTime = 0.0;
 
     for (uint16_t curReq = 0; curReq < reqCountOfServed; ++curReq) {
         // Take first request from queue
         inputTime = storageBunker[pointerToStartOfBunker];
-		// We service one request. Move pointer
+        // We service one request. Move pointer
         if (pointerToStartOfBunker < CONST_CRITICAL_REQ_COUNT) {
             ++pointerToStartOfBunker;
         } else {
@@ -36,20 +38,34 @@ void CarsStream::serviseRequests() {
             // Case in which request have got into bunker before current mode starting
 
             outputTime = std::max(timeBeforeStartThisMode, outputTime) + serviceTime;
-        } else if (inputTime <= timeBeforeStartThisMode + modeDuration - serviceTime) {
+        } else if (inputTime <= totalTime - serviceTime) {
             // Case in which request have got into bunker after current mode starting
 
             outputTime = std::max(inputTime, outputTime) + serviceTime;
+
+			// Current mode is finishing. In this case we can`t serve requests after that one
+			if (outputTime > totalTime) {
+                TheServiceIsOver = true;
+			}
+
         } else {
-            // Case in which current mode finishing and the request is accelerating
-            // and does`t waiting another requests
+            // Case in which current mode is finishing and the request is accelerating
+            // and is`t waiting another requests
 
             outputTime = inputTime + serviceTime;
         }
         avgWaitingTime.calculateAvgWaitTime(inputTime, outputTime);
+
+		previosoutputTime = outputTime;
+
+		if (TheServiceIsOver) {
+            reqCountOfServed = curReq + 1;
+            break;
+		}
+
     }
-	// Decrease req count in bunker
+    // Decrease req count in bunker
     reqCountInBunker -= reqCountOfServed;
 
-	updateTheAvgReqCountInBunker();
+    updateTheAvgReqCountInBunker();
 }
