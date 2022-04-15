@@ -15,7 +15,7 @@ constexpr auto CONST_COUNT_OF_EXPERIMENTS = 1;
 
 constexpr bool CONST_OF_USING_METHOD_OF_REDUCED_BROOT_FORCE = false;
 
-constexpr bool CONST_OF_WRITING_INFO_ABOUT_PARAMETER_N_EFFECT = true;
+constexpr bool CONST_OF_WRITING_INFO_ABOUT_PARAMETER_N_EFFECT = false;
 
 int main() {
     double start, end;
@@ -26,7 +26,7 @@ int main() {
     double parametersForAll[CONST_COUNT_OF_EXPERIMENTS][9] = {
         //    g  m  g  m  l    l_p  N  pe  H
 
-        {0.1, 2, 0, 1, 0.1, 0.1, 0, 30, 180},
+        {0.8, 4.5, 0, 1, 0.1, 0.1, 0, 30, 180},
 
     };
 
@@ -45,7 +45,7 @@ int main() {
         }
 
         // Create matrix using DataManager class
-        DataManager matrixForOneExp(rowCount, CONST_REPEATS_OF_ONE_EXPERIMENT);
+        DataManager matrixForOneExp(static_cast<int>(rowCount), CONST_REPEATS_OF_ONE_EXPERIMENT);
         // for (int tid = 0; tid < 4; tid++) {
         // Every repeat of experiment will be done by different threads
 #pragma omp parallel num_threads(CONST_REPEATS_OF_ONE_EXPERIMENT) shared(matrixForOneExp)
@@ -74,13 +74,13 @@ int main() {
                 // Cycle for filling one row
                 do {
                     std::vector<double> modesDuration = {row,
-                                                        CONST_ORIENTATION_MODE,
-                                                        column,
-                                                        CONST_ORIENTATION_MODE,
-                                                        peopleServiceModeDuration,
-                                                        CONST_ORIENTATION_MODE,
-                                                        peopleServiceModeDuration,
-                                                        CONST_ORIENTATION_MODE};
+                                                         CONST_ORIENTATION_MODE,
+                                                         column,
+                                                         CONST_ORIENTATION_MODE,
+                                                         peopleServiceModeDuration,
+                                                         CONST_ORIENTATION_MODE,
+                                                         peopleServiceModeDuration,
+                                                         CONST_ORIENTATION_MODE};
 
                     // Create crossroad model with the specified parameters
                     ServiceDevice crossroadModel(parametersForOne, modesDuration);
@@ -93,7 +93,8 @@ int main() {
                         data = crossroadModel.getPortionOfData();
 
                         // Set data into dataManager
-                        matrixForOneExp.setPortionOfData((row), (column), data, tid);
+                        matrixForOneExp.setPortionOfData(static_cast<int>(row),
+                                                         static_cast<int>(column), data, tid);
 
                         bool crossroadIsWorking = true;
                         computeNextIndexes(crossroadIsWorking, secondCarsServiceModeDuration,
@@ -136,11 +137,11 @@ int main() {
 
         matrixForOneExp.writeInfoInTable(nameOfFile);
 
-		matrixForOneExp.writeQueueInfoInTable(nameOfFile);
+        matrixForOneExp.writeQueueInfoInTable(nameOfFile);
 
-		if (CONST_OF_WRITING_INFO_ABOUT_PARAMETER_N_EFFECT) { 
-			matrixForOneExp.writeInfoAboutTheEffectOfParameterN(nameOfFile);
-		}
+        if (CONST_OF_WRITING_INFO_ABOUT_PARAMETER_N_EFFECT) {
+            matrixForOneExp.writeInfoAboutTheEffectOfParameterN(nameOfFile);
+        }
     }
 
     std::cout << "\nHELLO, IT`S THE END!!!!\n";
@@ -192,32 +193,32 @@ void computeNextIndexes(bool crossroadIsWorking, double secondCarsServiceModeDur
                         double firstCarsServiceModeDuration, double rowCount, double &row,
                         double &column) {
     if (CONST_OF_USING_METHOD_OF_REDUCED_BROOT_FORCE) {
-		if (crossroadIsWorking) {
-			if ((row + column + 1 == rowCount) && (column > row)) {
-				column = secondCarsServiceModeDuration;
-				row = firstCarsServiceModeDuration + 1;
-			} else {
-				if (column >= row)
-					// Go down while cross road is working
-					++column;
-				else
-					// Go right while cross road is working
-					++row;
-			}
-		} else {
-			if (column == row) {
-				++column;
-			}
+        if (crossroadIsWorking) {
+            if ((row + column + 1 == rowCount) && (column > row)) {
+                column = secondCarsServiceModeDuration;
+                row = firstCarsServiceModeDuration + 1;
+            } else {
+                if (column >= row)
+                    // Go down while cross road is working
+                    ++column;
+                else
+                    // Go right while cross road is working
+                    ++row;
+            }
+        } else {
+            if (column == row) {
+                ++column;
+            }
 
-			if (column > row) {
-				column = secondCarsServiceModeDuration;
-				row = firstCarsServiceModeDuration + 1;
-			} else {
-				row = rowCount;
-			}
-		}
+            if (column > row) {
+                column = secondCarsServiceModeDuration;
+                row = firstCarsServiceModeDuration + 1;
+            } else {
+                row = rowCount;
+            }
+        }
     } else {
         // Increase column index
         ++column;
-	}
+    }
 }

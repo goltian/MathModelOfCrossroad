@@ -3,9 +3,9 @@
 #include <random>
 
 Stream::Stream() {
-    std::random_device device;
-    generator.seed(device());
-    vslNewStream(&cur_stream, VSL_BRNG_MT19937, distribution(generator));
+     std::random_device device;
+     generator.seed(device());
+     vslNewStream(&cur_stream, VSL_BRNG_MT19937, distribution(generator));
 
     // Initialize MKL Stream for generating random values
     // vslNewStream(&cur_stream, VSL_BRNG_MT19937, 0);
@@ -71,7 +71,7 @@ void Stream::setModesDurations(std::vector<double> modesDuration_) {
 void Stream::calculateR() {
     r = (1.0 - g) * (mathExpect - 1.0);
 
-	if (r > 1.0) {
+    if (r > 1.0) {
         std::cout << "Parameters are not correct. r must be less than 1\n";
         exit(0);
     }
@@ -128,7 +128,7 @@ void Stream::calculateExponents() {
 
 void Stream::calculatePoissonDist() {
     // Calculate massives of Poisson distribution for every mode
-    uint16_t modesCount = static_cast<int>(modesDuration.size());
+    uint16_t modesCount = static_cast<uint16_t>(modesDuration.size());
     poissonDistribution.resize(modesCount);
     double modeDur;
     double adding;
@@ -169,14 +169,13 @@ void Stream::generateRequests(int modeId) {
     // Increase req count that will be in bunker
     reqCountInBunker += slowReqCount;
 
-    // Cycle for putting arriving times of slow requests into the array
-    for (uint16_t slowReq = 0; slowReq < slowReqCount; ++slowReq) {
+     // Cycle for putting arriving times of slow requests into the array
+     for (uint16_t slowReq = 0; slowReq < slowReqCount; ++slowReq) {
         // Generate random value from 0 to 1
 
         // Calculate the time of arriving a slow request
-        // timesOfSlowReq[slowReq] = modeDuration * distribution(generator) + totalTime;
-        timesOfSlowReq[slowReq] = modeDuration * randomValues[countOfUsedRandValues++] + totalTime;
-        if ((CONST_SIZE_OF_RAND_VALUES_VECTOR - 1) < countOfUsedRandValues) {
+        timesOfSlowReq[slowReq] = modeDuration * randomValues[countOfUsedRandValues++] +
+        totalTime; if ((CONST_SIZE_OF_RAND_VALUES_VECTOR - 1) < countOfUsedRandValues) {
             fillVectorOfRandValues();
         }
     }
@@ -336,8 +335,8 @@ void Stream::calculateReqCountOfSaturation() {
 }
 
 inline void Stream::fillVectorOfRandValues() {
-    vdRngUniform(method, cur_stream, CONST_SIZE_OF_RAND_VALUES_VECTOR, randomValues, 0.0, 1.0);
-    countOfUsedRandValues = 0;
+	vdRngUniform(method, cur_stream, CONST_SIZE_OF_RAND_VALUES_VECTOR, randomValues, 0.0, 1.0);
+	countOfUsedRandValues = 0;
 }
 
 void Stream::updateTheAvgReqCountInBunker() {

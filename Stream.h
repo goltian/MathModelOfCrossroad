@@ -22,7 +22,7 @@ public:
 
 	Stream();
 
-	~Stream();
+	virtual ~Stream();
 
 	void setG(double g_);
 
