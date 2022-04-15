@@ -18,12 +18,13 @@ void CarsStream::serviseRequests() {
         return;
     }
 
-    uint16_t reqCountOfServed = std::min(reqCountOfSaturation, reqCountInBunkerBeforeService);
+	uint16_t reqCountOfServed = 0;
+    uint16_t maxPossibleReqCountToServe =
+        std::min(reqCountOfSaturation, reqCountInBunkerBeforeService);
     double inputTime = 0.0;
     double outputTime = 0.0;
-    double previosoutputTime = 0.0;
 
-    for (uint16_t curReq = 0; curReq < reqCountOfServed; ++curReq) {
+    for (uint16_t curReq = 0; curReq < maxPossibleReqCountToServe; ++curReq) {
         // Take first request from queue
         inputTime = storageBunker[pointerToStartOfBunker];
         // We service one request. Move pointer
@@ -55,11 +56,9 @@ void CarsStream::serviseRequests() {
             outputTime = inputTime + serviceTime;
         }
         avgWaitingTime.calculateAvgWaitTime(inputTime, outputTime);
-
-		previosoutputTime = outputTime;
+        ++reqCountOfServed;
 
 		if (TheServiceIsOver) {
-            reqCountOfServed = curReq + 1;
             break;
 		}
 
