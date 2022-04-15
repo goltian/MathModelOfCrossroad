@@ -58,11 +58,11 @@ void AverageWaitingTime::calculateAvgWaitTime(double inputTime, double outputTim
         // Check if stream have stabilised
         checkErrorForGammaAndS();
 
-        // Don`t forget the value of gamma, save it in gammaWithWave.
+        // Don't forget the value of gamma, save it in gammaWithWave.
         // We will be compare it with new value of gamma
         gammaWithWave = gamma;
 
-        // Don`t forget the value of s, save it in sWithWave.
+        // Don't forget the value of s, save it in sWithWave.
         // We will be compare it with new value of s
         sWithWave = s;
 

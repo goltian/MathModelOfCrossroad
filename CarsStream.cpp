@@ -44,14 +44,14 @@ void CarsStream::serviseRequests() {
 
             outputTime = std::max(inputTime, outputTime) + serviceTime;
 
-			// Current mode is finishing. In this case we can`t serve requests after that one
+			// Current mode is finishing. In this case we can't serve requests after that one
 			if (outputTime > totalTime) {
                 TheServiceIsOver = true;
 			}
 
         } else {
             // Case in which current mode is finishing and the request is accelerating
-            // and is`t waiting another requests
+            // and isn't waiting another requests
 
             outputTime = inputTime + serviceTime;
         }
@@ -67,4 +67,6 @@ void CarsStream::serviseRequests() {
     reqCountInBunker -= reqCountOfServed;
 
     updateTheAvgReqCountInBunker();
+    updateTheAvgDowntime(outputTime);
+    updateActivateServiceModesCount();
 }

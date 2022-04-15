@@ -30,6 +30,7 @@ void PeopleStream::serviseRequests() {
     uint16_t reqCountOfServed = 0;
     double inputTime = 0.0;
     double outputTime = 0.0;
+    double lastRealOutputTime = 0.0;
     uint16_t maxPossibleReqCountToServe =
         std::min(reqCountOfSaturation, reqCountInBunkerBeforeService);
 
@@ -60,7 +61,7 @@ void PeopleStream::serviseRequests() {
 
         } else if ((inputTime < totalTime) && (throughputCapacity < reqCountInOuputQueue)) {
             // Case in which request have got into bunker before
-            // current mode starting ant it can`t be served at present
+            // current mode starting ant it can't be served at present
             casesInServiceRequests = Case_OldReqCanNotBeServedNow;
 
             outputTime = calculateOutputTime(casesInServiceRequests, inputTime);
@@ -105,7 +106,7 @@ void PeopleStream::serviseRequests() {
 
         } else {
             // Case in which request have got into bunker after
-            // current mode starting ant it can`t be served at present
+            // current mode starting ant it can't be served at present
             casesInServiceRequests = Case_NewReqCanNotBeServedNow;
 
             while ((0 < reqCountInOuputQueue) && (reqCountInOuputQueue >= throughputCapacity)) {
@@ -136,6 +137,7 @@ void PeopleStream::serviseRequests() {
         }
 
         avgWaitingTime.calculateAvgWaitTime(inputTime, outputTime);
+        lastRealOutputTime = outputTime;
 
 		// We service one request. Move pointer
         if (pointerToStartOfBunker < CONST_CRITICAL_REQ_COUNT) {
@@ -152,6 +154,8 @@ void PeopleStream::serviseRequests() {
     totalTime += modeDuration;
 
 	updateTheAvgReqCountInBunker();
+    updateTheAvgDowntime(lastRealOutputTime);
+    updateActivateServiceModesCount();
 }
 
 bool PeopleStream::isRequestCantBeServedAtAll(double outputTime) {

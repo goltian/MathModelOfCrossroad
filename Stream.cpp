@@ -37,8 +37,9 @@ Stream::Stream() {
     pointerToEndOfBunker = 0;
     reqCountInBunker = 0;
 
-    avgReqCountInBunker = 0;
-    activateServiceModesCount = 0;
+    avgReqCountInBunker = 0.0;
+    avgDowntime = 0.0;
+    activateServiceModesCount = 0.0;
 }
 
 Stream::~Stream() {
@@ -338,6 +339,11 @@ inline void Stream::fillVectorOfRandValues() {
 	countOfUsedRandValues = 0;
 }
 
+
+void Stream::updateActivateServiceModesCount() {
+    activateServiceModesCount += 1.0;
+}
+
 void Stream::updateTheAvgReqCountInBunker() {
     // Get requests count in storage bunker
     double countInBunker = static_cast<double>(getStorageBunkerSize());
@@ -345,7 +351,30 @@ void Stream::updateTheAvgReqCountInBunker() {
     // Recalculate the average requests count in bunker
     avgReqCountInBunker = (avgReqCountInBunker * activateServiceModesCount + countInBunker) /
                           (activateServiceModesCount + 1.0);
-    activateServiceModesCount += 1.0;
+}
+
+void Stream::updateTheAvgDowntime(double outputTime) {
+    double curDowntime = 0.0;
+
+    if ((totalTime - outputTime) > 0.0) {
+		// Case then requests weren't served during all the mode
+
+		if (outputTime > 0.0) {
+			curDowntime = (totalTime - outputTime) / modeDuration;
+        } else {
+            // If there are no requests at all when ouputTime = 0.
+            // In that case curDowntime = 1
+
+            curDowntime = 1.0;
+		}
+
+    } else {
+        // Case then requests were served during all the mode
+		// In that case curDowntime = 0.0
+	}
+
+	avgDowntime = (avgDowntime * activateServiceModesCount + curDowntime) /
+                  (activateServiceModesCount + 1.0);
 }
 
 inline void Stream::insertionSort(uint16_t slowReqCount) {

@@ -153,8 +153,17 @@ protected:
     // The average requests count in storage bunker
     double avgReqCountInBunker; 
 
+	// The average requests count in storage bunker
+    double avgDowntime; 
+
+	void updateActivateServiceModesCount();
+
 	// Method for updating the average requests count in storage bunker
     void updateTheAvgReqCountInBunker(); 
+
+	// Method for updating the average downtime (Time when where are
+	// no requests in stream but mode of its service is working)
+    void updateTheAvgDowntime(double outputTime);
 	
 	void insertionSort(uint16_t slowReqCount);
 

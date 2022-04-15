@@ -170,14 +170,14 @@ void DataManager::writeInfoAboutTheEffectOfParameterN(std::string nameOfFile) {
 }
 
 int DataManager::findIndex(int row, int column) {
-    // It always be an integer number because it`s
+    // It always be an integer number because it's
     // a summ of an arithmetic progression
     double index = (((2 * rowCount - (row - 1)) / 2.0) * row + column);
     return static_cast<int>(index);
 }
 
 int DataManager::calculateSizeOfVector() {
-    // It always be an integer number because it`s
+    // It always be an integer number because it's
     // a summ of an arithmetic progression
     double size = (((2 * rowCount - (rowCount - 2)) / 2.0) * (rowCount - 1) + 1);
     return static_cast<int>(size);

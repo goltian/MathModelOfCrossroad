@@ -13,7 +13,7 @@ constexpr auto CONST_ORIENTATION_MODE = 3.0;
 
 constexpr auto CONST_COUNT_OF_EXPERIMENTS = 1;
 
-constexpr bool CONST_OF_USING_METHOD_OF_REDUCED_BROOT_FORCE = false;
+constexpr bool CONST_OF_USING_METHOD_OF_REDUCED_BROOT_FORCE = true;
 
 constexpr bool CONST_OF_WRITING_INFO_ABOUT_PARAMETER_N_EFFECT = false;
 
@@ -50,7 +50,7 @@ int main() {
         // Every repeat of experiment will be done by different threads
 #pragma omp parallel num_threads(CONST_REPEATS_OF_ONE_EXPERIMENT) shared(matrixForOneExp)
         {
-            // Thread get it`s ID
+            // Thread get it's ID
             int tid = omp_get_thread_num();
 
             // Set duration of cars service modes
@@ -144,7 +144,7 @@ int main() {
         }
     }
 
-    std::cout << "\nHELLO, IT`S THE END!!!!\n";
+    std::cout << "\nHELLO, IT'S THE END!!!!\n";
     return 0;
 }
 
