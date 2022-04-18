@@ -4,6 +4,8 @@
 
 constexpr int CONST_CELLS_COUNT = 10;
 
+constexpr size_t CONST_DECIMAL_POINTS_SAVE_COUNT = 2;
+
 class DataManager {
 public:
 
@@ -86,7 +88,8 @@ private:
 	// Method for fining the minimum value of queue in queue table
     void findMinQueueValueIndex();
 
-	// Method for replacing point to comma and saving 
-	// two places to the right of the decimal point
-	std::string replacePointToComma(std::string str);
+	// Method for replacing point to comma and 
+	// for saving needed places to the right of the decimal point
+    std::string replacePointToComma(std::string str,
+                                    size_t save_count = CONST_DECIMAL_POINTS_SAVE_COUNT);
 };

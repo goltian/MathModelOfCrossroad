@@ -138,13 +138,14 @@ void DataManager::writeDowntimeInfoInTable(std::string nameOfFile) {
     reportTable.open("../../tables_26.05/eksps_2021_3_potoks/" + nameOfFile + "downtime_table.xls",
                      std::ios::trunc);
     std::string str;
+    size_t neededDecimalPointsCount = 3;
 
     for (int row = 0; row < rowCount; ++row) {
         for (int column = 0; column < rowCount; ++column) {
             if (row + column + 2 < rowCount) {
                 int index = findIndex(row, column) + (CONST_CELLS_COUNT - 1) * sizeOfVector;
                 str = std::to_string(resultMatrix[index]);
-                str = replacePointToComma(str);
+                str = replacePointToComma(str, neededDecimalPointsCount);
                 reportTable << str << "\t";
             }
         }
@@ -304,7 +305,7 @@ void DataManager::findMinQueueValueIndex() {
     }
 }
 
-std::string DataManager::replacePointToComma(std::string str) {
+std::string DataManager::replacePointToComma(std::string str, size_t save_count) {
     size_t size = str.length();
     size_t indexOfComma = size;
     for (size_t i = 0; i < size; ++i) {
@@ -313,7 +314,8 @@ std::string DataManager::replacePointToComma(std::string str) {
             indexOfComma = i;
         }
     }
-    for (size_t i = size; i > indexOfComma + 3; i--) {
+
+    for (size_t i = size; i > indexOfComma + save_count + 1; i--) {
         str.pop_back();
     }
 
