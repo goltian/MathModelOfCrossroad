@@ -40,9 +40,6 @@ Stream::Stream() {
     avgReqCountInBunker = 0.0;
     avgDowntime = 0.0;
     activateServiceModesCount = 0.0;
-
-	downtime = 0;
-    noDowntime = 0;
 }
 
 Stream::~Stream() {
@@ -261,13 +258,7 @@ double Stream::getAvgReqCountInBunker() {
 }
 
 double Stream::getAvgDowntime() {
-	// 1 variant of calculating
     return avgDowntime;
-
-	// 2 variant of calculating
-    //double answer = static_cast<double>(downtime);
-    //answer /= (static_cast<double>(downtime) + static_cast<double>(noDowntime));
-    //return answer;
 }
 
 uint16_t Stream::generatePoisson(int modeId) {
@@ -367,20 +358,23 @@ void Stream::updateTheAvgReqCountInBunker() {
 }
 
 void Stream::updateTheAvgDowntime(double outputTime) {
-	// 1 variant of calculating
     double curDowntime = 0.0;
-    double check = 0.0;
-    if (modeDuration > 20.0) {
-        check = 20.0;
+    double checkDuration = 0.0;
+
+	// We don't calculate a part of time when there isn't request service during all the mode.
+	// We look only for the end of servicing. So it's better to calculate the downtime porition
+	// for the last 10 seconds and not for the entire duration of the mode
+    if (modeDuration > 10.0) {
+        checkDuration = 10.0;
     } else {
-        check = modeDuration;
+        checkDuration = modeDuration;
 	}
 
     if ((totalTime - outputTime) > 0.0) {
 		// Case then requests weren't served during all the mode
 
 		if (outputTime > 0.0) {
-            curDowntime = (totalTime - outputTime) / check;
+            curDowntime = (totalTime - outputTime) / checkDuration;
         } else {
             // If there are no requests at all when ouputTime = 0.
             // In that case curDowntime = 1
@@ -393,19 +387,13 @@ void Stream::updateTheAvgDowntime(double outputTime) {
 		// In that case curDowntime = 0.0
 	}
 
+	// Case when last request was served more than 10 seconds ago
 	if (curDowntime > 1.0) {
         curDowntime = 1.0;
 	}
 
 	avgDowntime = (avgDowntime * activateServiceModesCount + curDowntime) /
                   (activateServiceModesCount + 1.0);
-
-	// 2 variant of calculating
- //   if ((totalTime - outputTime) > 0.0) {
- //       ++downtime;
- //   } else {
- //       ++noDowntime;
-	//}
 }
 
 inline void Stream::insertionSort(uint16_t slowReqCount) {

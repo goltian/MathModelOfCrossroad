@@ -7,7 +7,7 @@ CarsStream::CarsStream() {
 
 void CarsStream::serviseRequests() {
     double timeBeforeStartThisMode = totalTime - modeDuration;
-    bool TheServiceIsOver = false;
+    bool theServiceIsOver = false;
 
     calculateReqCountOfSaturation();
 
@@ -46,7 +46,7 @@ void CarsStream::serviseRequests() {
 
 			// Current mode is finishing. In this case we can't serve requests after that one
 			if (outputTime > totalTime) {
-                TheServiceIsOver = true;
+                theServiceIsOver = true;
 			}
 
         } else {
@@ -58,7 +58,7 @@ void CarsStream::serviseRequests() {
         avgWaitingTime.calculateAvgWaitTime(inputTime, outputTime);
         ++reqCountOfServed;
 
-		if (TheServiceIsOver) {
+		if (theServiceIsOver) {
             break;
 		}
 
