@@ -104,7 +104,8 @@ double ServiceDevice::getAvgReqCountInBunkerForAllStreams() {
 double ServiceDevice::getAvgDowntimeForAllStreams() {
     double answer;
 
-    answer = streamPi1.getAvgDowntime() + streamPi2.getAvgDowntime() + streamPi3.getAvgDowntime();
+    answer =
+        streamPi1.getAvgDowntime() + streamPi2.getAvgDowntime() + streamPi3.getAvgDowntime();
 
     answer /= 3.0;
 

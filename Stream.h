@@ -158,6 +158,9 @@ protected:
 	// The average requests count in storage bunker
     double avgDowntime; 
 
+	int downtime;
+    int noDowntime;
+
 	void updateActivateServiceModesCount();
 
 	// Method for updating the average requests count in storage bunker

@@ -2,12 +2,12 @@
 #include "Stream.h"
 
 Stream::Stream() {
-     //std::random_device device;
-     //generator.seed(device());
-     //vslNewStream(&cur_stream, VSL_BRNG_MT19937, distribution(generator));
+	std::random_device device;
+	generator.seed(device());
+	vslNewStream(&cur_stream, VSL_BRNG_MT19937, distribution(generator));
 
     // Initialize MKL Stream for generating random values
-    vslNewStream(&cur_stream, VSL_BRNG_MT19937, 0);
+    // vslNewStream(&cur_stream, VSL_BRNG_MT19937, 0);
     method = VSL_RNG_METHOD_UNIFORM_STD;
 
     randomValues = (double*)mkl_malloc((CONST_SIZE_OF_RAND_VALUES_VECTOR) * sizeof(double), 64);
@@ -40,6 +40,9 @@ Stream::Stream() {
     avgReqCountInBunker = 0.0;
     avgDowntime = 0.0;
     activateServiceModesCount = 0.0;
+
+	downtime = 0;
+    noDowntime = 0;
 }
 
 Stream::~Stream() {
@@ -258,7 +261,13 @@ double Stream::getAvgReqCountInBunker() {
 }
 
 double Stream::getAvgDowntime() {
+	// 1 variant of calculating
     return avgDowntime;
+
+	// 2 variant of calculating
+    //double answer = static_cast<double>(downtime);
+    //answer /= (static_cast<double>(downtime) + static_cast<double>(noDowntime));
+    //return answer;
 }
 
 uint16_t Stream::generatePoisson(int modeId) {
@@ -358,13 +367,20 @@ void Stream::updateTheAvgReqCountInBunker() {
 }
 
 void Stream::updateTheAvgDowntime(double outputTime) {
+	// 1 variant of calculating
     double curDowntime = 0.0;
+    double check = 0.0;
+    if (modeDuration > 20.0) {
+        check = 20.0;
+    } else {
+        check = modeDuration;
+	}
 
     if ((totalTime - outputTime) > 0.0) {
 		// Case then requests weren't served during all the mode
 
 		if (outputTime > 0.0) {
-			curDowntime = (totalTime - outputTime) / modeDuration;
+            curDowntime = (totalTime - outputTime) / check;
         } else {
             // If there are no requests at all when ouputTime = 0.
             // In that case curDowntime = 1
@@ -377,8 +393,19 @@ void Stream::updateTheAvgDowntime(double outputTime) {
 		// In that case curDowntime = 0.0
 	}
 
+	if (curDowntime > 1.0) {
+        curDowntime = 1.0;
+	}
+
 	avgDowntime = (avgDowntime * activateServiceModesCount + curDowntime) /
                   (activateServiceModesCount + 1.0);
+
+	// 2 variant of calculating
+ //   if ((totalTime - outputTime) > 0.0) {
+ //       ++downtime;
+ //   } else {
+ //       ++noDowntime;
+	//}
 }
 
 inline void Stream::insertionSort(uint16_t slowReqCount) {
