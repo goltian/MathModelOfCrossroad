@@ -28,11 +28,10 @@ void PeopleStream::serviseRequests() {
 	}
 
     uint16_t reqCountOfServed = 0;
+	uint16_t maxPossibleReqCountToServe =
+        std::min(reqCountOfSaturation, reqCountInBunkerBeforeService);
     double inputTime = 0.0;
     double outputTime = 0.0;
-    double lastRealOutputTime = 0.0;
-    uint16_t maxPossibleReqCountToServe =
-        std::min(reqCountOfSaturation, reqCountInBunkerBeforeService);
 
     for (uint16_t curReq = 0; curReq < maxPossibleReqCountToServe; ++curReq) {
 
@@ -137,7 +136,6 @@ void PeopleStream::serviseRequests() {
         }
 
         avgWaitingTime.calculateAvgWaitTime(inputTime, outputTime);
-        lastRealOutputTime = outputTime;
 
 		// We service one request. Move pointer
         if (pointerToStartOfBunker < CONST_CRITICAL_REQ_COUNT) {
@@ -154,7 +152,7 @@ void PeopleStream::serviseRequests() {
     totalTime += modeDuration;
 
 	updateTheAvgReqCountInBunker();
-    updateTheAvgDowntime(lastRealOutputTime);
+    updateTheAvgDowntime(reqCountOfServed);
     updateActivateServiceModesCount();
 }
 

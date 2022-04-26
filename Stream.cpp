@@ -4,10 +4,10 @@
 Stream::Stream() {
 	std::random_device device;
 	generator.seed(device());
-	vslNewStream(&cur_stream, VSL_BRNG_MT19937, distribution(generator));
+	vslNewStream(&curStream, VSL_BRNG_MT19937, distribution(generator));
 
     // Initialize MKL Stream for generating random values
-    // vslNewStream(&cur_stream, VSL_BRNG_MT19937, 0);
+    // vslNewStream(&curStream, VSL_BRNG_MT19937, 0);
     method = VSL_RNG_METHOD_UNIFORM_STD;
 
     randomValues = (double*)mkl_malloc((CONST_SIZE_OF_RAND_VALUES_VECTOR) * sizeof(double), 64);
@@ -43,7 +43,7 @@ Stream::Stream() {
 }
 
 Stream::~Stream() {
-    vslDeleteStream(&cur_stream);
+    vslDeleteStream(&curStream);
     mkl_free(randomValues);
 }
 
@@ -339,7 +339,7 @@ void Stream::calculateReqCountOfSaturation() {
 }
 
 inline void Stream::fillVectorOfRandValues() {
-	vdRngUniform(method, cur_stream, CONST_SIZE_OF_RAND_VALUES_VECTOR, randomValues, 0.0, 1.0);
+	vdRngUniform(method, curStream, CONST_SIZE_OF_RAND_VALUES_VECTOR, randomValues, 0.0, 1.0);
 	countOfUsedRandValues = 0;
 }
 
@@ -357,43 +357,22 @@ void Stream::updateTheAvgReqCountInBunker() {
                           (activateServiceModesCount + 1.0);
 }
 
-void Stream::updateTheAvgDowntime(double outputTime) {
-    double curDowntime = 0.0;
-    double checkDuration = 0.0;
+void Stream::updateTheAvgDowntime(uint16_t serviceReqCount) {
+	// At first we need to know how many batches of requests were served during the mode
+	// (If only one request could be on the crossroad at one time
+	// then this value is equal to serviceReqCount)
+    double serviceBatchCount =
+        static_cast<double>(serviceReqCount) / static_cast<double>(throughputCapacity);
 
-	// We don't calculate a part of time when there isn't request service during all the mode.
-	// We look only for the end of servicing. So it's better to calculate the downtime porition
-	// for the last 10 seconds and not for the entire duration of the mode
-    if (modeDuration > 10.0) {
-        checkDuration = 10.0;
-    } else {
-        checkDuration = modeDuration;
-	}
+	// Calculate absolute downtime
+    double curDowntime = modeDuration - serviceBatchCount * serviceTime;
+	
+	// Calculate relative downtime
+    curDowntime /= modeDuration;
 
-    if ((totalTime - outputTime) > 0.0) {
-		// Case then requests weren't served during all the mode
-
-		if (outputTime > 0.0) {
-            curDowntime = (totalTime - outputTime) / checkDuration;
-        } else {
-            // If there are no requests at all when ouputTime = 0.
-            // In that case curDowntime = 1
-
-            curDowntime = 1.0;
-		}
-
-    } else {
-        // Case then requests were served during all the mode
-		// In that case curDowntime = 0.0
-	}
-
-	// Case when last request was served more than 10 seconds ago
-	if (curDowntime > 1.0) {
-        curDowntime = 1.0;
-	}
-
-	avgDowntime = (avgDowntime * activateServiceModesCount + curDowntime) /
-                  (activateServiceModesCount + 1.0);
+	// Recalculate the average downtime
+    avgDowntime =
+        (avgDowntime * activateServiceModesCount + curDowntime) / (activateServiceModesCount + 1.0);
 }
 
 inline void Stream::insertionSort(uint16_t slowReqCount) {

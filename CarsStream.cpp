@@ -67,6 +67,6 @@ void CarsStream::serviseRequests() {
     reqCountInBunker -= reqCountOfServed;
 
     updateTheAvgReqCountInBunker();
-    updateTheAvgDowntime(outputTime);
+    updateTheAvgDowntime(reqCountOfServed);
     updateActivateServiceModesCount();
 }

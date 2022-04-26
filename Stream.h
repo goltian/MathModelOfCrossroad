@@ -71,8 +71,7 @@ protected:
 
     MKL_INT method;
 
-    VSLStreamStatePtr cur_stream;
-
+    VSLStreamStatePtr curStream;
 
 	// Vector of random values. We will fill many values at one time
 	// to use it by one in the future
@@ -120,7 +119,7 @@ protected:
 	std::vector <double> timesOfSlowReq;
 
 	// Max possible count of requests that 
-	// could be on a crossroad at one time
+	// could be on the crossroad at one time
     uint16_t throughputCapacity;
 	
 	// Requests count that could be served 
@@ -155,11 +154,9 @@ protected:
     // The average requests count in storage bunker
     double avgReqCountInBunker; 
 
-	// The average requests count in storage bunker
-    double avgDowntime; 
-
-	int downtime;
-    int noDowntime;
+	// The average downtime of the system (Time when where are
+	// no requests in stream but mode of its service is working)
+    double avgDowntime;
 
 	void updateActivateServiceModesCount();
 
@@ -168,7 +165,7 @@ protected:
 
 	// Method for updating the average downtime (Time when where are
 	// no requests in stream but mode of its service is working)
-    void updateTheAvgDowntime(double outputTime);
+    void updateTheAvgDowntime(uint16_t serviceReqCount);
 	
 	void insertionSort(uint16_t slowReqCount);
 
