@@ -66,7 +66,10 @@ void CarsStream::serviseRequests() {
     // Decrease req count in bunker
     reqCountInBunker -= reqCountOfServed;
 
-    updateTheAvgReqCountInBunker();
+    updateTheAvgReqCountInBunkerForAllModes();
+    updateActivateAllModesCount();
+
     updateTheAvgDowntime(reqCountOfServed);
     updateActivateServiceModesCount();
+
 }

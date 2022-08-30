@@ -151,7 +151,9 @@ void PeopleStream::serviseRequests() {
 
     totalTime += modeDuration;
 
-	updateTheAvgReqCountInBunker();
+	updateTheAvgReqCountInBunkerForAllModes();
+    updateActivateAllModesCount();
+
     updateTheAvgDowntime(reqCountOfServed);
     updateActivateServiceModesCount();
 }

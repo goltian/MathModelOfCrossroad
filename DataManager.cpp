@@ -204,6 +204,36 @@ void DataManager::writeInfoAboutTheEffectOfParameterN(std::string nameOfFile) {
 	}
 }
 
+void DataManager::writeInfoAboutGammaAndQueueIntoFile() {
+    std::ofstream reportFile;
+    reportFile.precision(2);
+    reportFile.setf(std::ios::fixed);
+    reportFile.open("../../tables_26.05/eksps_2021_3_potoks/GammaAndQueueInfo.txt",
+        std::ios::app);
+    std::string str;
+
+    if (minValueIndex == -1) {
+        reportFile << "\n";
+    } else {
+		// Write avg min gamma value
+		str = std::to_string(resultMatrix[minValueIndex]);
+        str = replacePointToComma(str);
+        reportFile << str << "\t";
+
+        // Write avg min queue value
+        str = std::to_string(resultMatrix[minQueueValueIndex]);
+        str = replacePointToComma(str);
+        reportFile << str << "\t";
+
+		reportFile << bestDurationsOfModes.first << "\t";
+        reportFile << bestDurationsOfModes.second << "\t";
+
+		reportFile << bestDurationsOfModesByQueueEstimate.first << "\t";
+        reportFile << bestDurationsOfModesByQueueEstimate.second << "\n";
+    }
+    reportFile.close();
+}
+
 int DataManager::findIndex(int row, int column) {
     // It always be an integer number because it's
     // a summ of an arithmetic progression

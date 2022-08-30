@@ -40,6 +40,7 @@ Stream::Stream() {
     avgReqCountInBunker = 0.0;
     avgDowntime = 0.0;
     activateServiceModesCount = 0.0;
+    activateAllModesCount = 0.0;
 }
 
 Stream::~Stream() {
@@ -72,6 +73,7 @@ void Stream::calculateR() {
     r = (1.0 - g) * (mathExpect - 1.0);
 
     if (r > 1.0) {
+        std::cout << "r = " << r << "\n";
         std::cout << "Parameters are not correct. r must be less than 1\n";
         exit(0);
     }
@@ -251,6 +253,9 @@ void Stream::generateRequests(int modeId) {
     }
 
     totalTime += modeDuration;
+
+	updateTheAvgReqCountInBunkerForAllModes();
+    updateActivateAllModesCount();
 }
 
 double Stream::getAvgReqCountInBunker() {
@@ -348,13 +353,17 @@ void Stream::updateActivateServiceModesCount() {
     activateServiceModesCount += 1.0;
 }
 
-void Stream::updateTheAvgReqCountInBunker() {
+void Stream::updateActivateAllModesCount() {
+    activateAllModesCount += 1.0;
+}
+
+void Stream::updateTheAvgReqCountInBunkerForAllModes() {
     // Get requests count in storage bunker
     double countInBunker = static_cast<double>(getStorageBunkerSize());
 
     // Recalculate the average requests count in bunker
-    avgReqCountInBunker = (avgReqCountInBunker * activateServiceModesCount + countInBunker) /
-                          (activateServiceModesCount + 1.0);
+    avgReqCountInBunker = (avgReqCountInBunker * activateAllModesCount + countInBunker) /
+                          (activateAllModesCount + 1.0);
 }
 
 void Stream::updateTheAvgDowntime(uint16_t serviceReqCount) {

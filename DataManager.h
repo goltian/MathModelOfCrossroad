@@ -40,6 +40,8 @@ public:
 
 	void writeInfoAboutTheEffectOfParameterN(std::string nameOfFile);
 
+	void writeInfoAboutGammaAndQueueIntoFile();
+
 private:
 
 	int rowCount;

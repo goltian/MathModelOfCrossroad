@@ -150,6 +150,9 @@ protected:
 
 	// Number of activating of service modes
     double activateServiceModesCount;
+
+	// Number of activating of all modes
+	double activateAllModesCount;
 	
     // The average requests count in storage bunker
     double avgReqCountInBunker; 
@@ -160,8 +163,10 @@ protected:
 
 	void updateActivateServiceModesCount();
 
+	void updateActivateAllModesCount();
+
 	// Method for updating the average requests count in storage bunker
-    void updateTheAvgReqCountInBunker(); 
+    void updateTheAvgReqCountInBunkerForAllModes(); 
 
 	// Method for updating the average downtime (Time when where are
 	// no requests in stream but mode of its service is working)

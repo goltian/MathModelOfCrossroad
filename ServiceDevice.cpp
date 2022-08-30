@@ -91,14 +91,16 @@ double ServiceDevice::getAvgGammaForAllStreams() {
 }
 
 double ServiceDevice::getAvgReqCountInBunkerForAllStreams() {
-    double answer;
+	double numenator;
+    double denumenator;
 
-    answer = streamPi1.getAvgReqCountInBunker() + streamPi2.getAvgReqCountInBunker() +
-             streamPi3.getAvgReqCountInBunker();
+    numenator = streamPi1.getAvgReqCountInBunker() * streamPi1.getLiam();
+    numenator += streamPi2.getAvgReqCountInBunker() * streamPi2.getLiam();
+    numenator += streamPi3.getAvgReqCountInBunker() * streamPi3.getLiam();
 
-	answer /= 3.0;
+    denumenator = streamPi1.getLiam() + streamPi2.getLiam() + streamPi3.getLiam();
 
-    return answer;
+    return (numenator / denumenator);
 }
 
 double ServiceDevice::getAvgDowntimeForAllStreams() {

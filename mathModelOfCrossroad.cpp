@@ -11,11 +11,13 @@ constexpr auto CONST_REPEATS_OF_ONE_EXPERIMENT = 4;
 
 constexpr auto CONST_ORIENTATION_MODE = 3.0;
 
-constexpr auto CONST_COUNT_OF_EXPERIMENTS = 3;
+constexpr auto CONST_COUNT_OF_EXPERIMENTS = 1;
 
 constexpr bool CONST_OF_USING_METHOD_OF_REDUCED_BROOT_FORCE = true;
 
 constexpr bool CONST_OF_WRITING_INFO_ABOUT_PARAMETER_N_EFFECT = false;
+
+constexpr bool CONST_OF_WRITING_INFO_ABOUT_GAMMA_AND_QUEUE = false;
 
 int main() {
     double start, end;
@@ -26,9 +28,7 @@ int main() {
     double parametersForAll[CONST_COUNT_OF_EXPERIMENTS][9] = {
         //    g  m  g  m  l    l_p  N  pe  H
 
-        {0.1, 2, 0, 1, 0.1, 0.1, 0, 30, 180},
-        {0.5, 2, 0, 1, 0.1, 0.1, 0, 30, 180},
-        {0.95, 2, 0, 1, 0.1, 0.1, 0, 30, 180},
+		{0, 1, 0, 1, 0.1, 0.1, 0, 30, 180},
 
     };
 
@@ -69,7 +69,7 @@ int main() {
                 double column = secondCarsServiceModeDuration;
 
                 if (tid == 0) {
-                    std::cout << "Exp: " << numberOfExp << "\t";
+                    std::cout << "Exp: " << (numberOfExp + 1) << "\t";
                     std::cout << "Row: " << firstCarsServiceModeDuration << "\n";
                 }
 
@@ -146,6 +146,10 @@ int main() {
         if (CONST_OF_WRITING_INFO_ABOUT_PARAMETER_N_EFFECT) {
             matrixForOneExp.writeInfoAboutTheEffectOfParameterN(nameOfFile);
         }
+
+		if (CONST_OF_WRITING_INFO_ABOUT_GAMMA_AND_QUEUE) {
+			matrixForOneExp.writeInfoAboutGammaAndQueueIntoFile();
+		}
     }
 
     std::cout << "\nHELLO, IT'S THE END!!!!\n";
@@ -158,11 +162,12 @@ std::string getNameOfFile(const std::vector<double> parametersForOne,
 
     stream << std::fixed;
     //    g  m  g  m  l    l_p  N  pe  H
-    stream << std::setprecision(1);
+    stream << std::setprecision(2);
     stream << "l=";
     stream << parametersForOne[4];
     stream << "__";
 
+	stream << std::setprecision(2);
     stream << "l_p=";
     stream << parametersForOne[5];
     stream << "__";
