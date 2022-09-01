@@ -2,12 +2,12 @@
 #include "Stream.h"
 
 Stream::Stream() {
-	//std::random_device device;
-	//generator.seed(device());
-	//vslNewStream(&curStream, VSL_BRNG_MT19937, distribution(generator));
+	std::random_device device;
+	generator.seed(device());
+	vslNewStream(&curStream, VSL_BRNG_MT19937, distribution(generator));
 
     // Initialize MKL Stream for generating random values
-     vslNewStream(&curStream, VSL_BRNG_MT19937, 0);
+    // vslNewStream(&curStream, VSL_BRNG_MT19937, 0);
     method = VSL_RNG_METHOD_UNIFORM_STD;
 
     randomValues = (double*)mkl_malloc((CONST_SIZE_OF_RAND_VALUES_VECTOR) * sizeof(double), 64);
