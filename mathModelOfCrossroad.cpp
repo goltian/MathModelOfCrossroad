@@ -15,9 +15,9 @@ constexpr auto CONST_COUNT_OF_EXPERIMENTS = 1;
 
 constexpr bool CONST_OF_USING_METHOD_OF_REDUCED_BROOT_FORCE = true;
 
-constexpr bool CONST_OF_WRITING_INFO_ABOUT_PARAMETER_N_EFFECT = false;
+constexpr bool CONST_OF_WRITING_INFO_ABOUT_PARAMETER_N_EFFECT = true;
 
-constexpr bool CONST_OF_WRITING_INFO_ABOUT_GAMMA_AND_QUEUE = false;
+constexpr bool CONST_OF_WRITING_INFO_ABOUT_GAMMA_AND_QUEUE = true;
 
 int main() {
     double start, end;
@@ -28,7 +28,7 @@ int main() {
     double parametersForAll[CONST_COUNT_OF_EXPERIMENTS][9] = {
         //    g  m  g  m  l    l_p  N  pe  H
 
-		{0, 1, 0, 1, 0.1, 0.1, 0, 30, 180},
+		{0.5, 2, 0, 1, 0.1, 0.1, 0, 30, 180},
 
     };
 

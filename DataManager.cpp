@@ -35,7 +35,7 @@ void DataManager::writeInfoInFile(double peopleServiceModeDuration, double liam,
     std::ofstream reportFile;
     reportFile.precision(2);
     reportFile.setf(std::ios::fixed);
-    reportFile.open("../../tables_26.05/eksps_2021_3_potoks/" + nameOfFile + "newTable.txt",
+    reportFile.open("../../tables_26.05/eksps_2021_3_potoks/" + nameOfFile + "table.txt",
                     std::ios::trunc);
     std::string str;
 
@@ -153,7 +153,7 @@ void DataManager::writeInfoInTable(std::string nameOfFile) {
     std::ofstream reportTable;
     reportTable.precision(2);
     reportTable.setf(std::ios::fixed);
-    reportTable.open("../../tables_26.05/eksps_2021_3_potoks/" + nameOfFile + "newTable.xls",
+    reportTable.open("../../tables_26.05/eksps_2021_3_potoks/" + nameOfFile + "table.xls",
                      std::ios::trunc);
     std::string str;
 
