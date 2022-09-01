@@ -10,16 +10,23 @@ DataManager::DataManager(int rowCount_, int repeatsCount_) {
     minQueueValueIndex = -1;
 
     sizeOfVector = calculateSizeOfVector();
-    data.resize(sizeOfVector * CONST_CELLS_COUNT * repeatsCount);
 
-    resultMatrix.resize(sizeOfVector * CONST_CELLS_COUNT, -1);
+	data.resize(CONST_CELLS_COUNT);
+	for (int i = 0; i < CONST_CELLS_COUNT; ++i) {
+		data[i].resize(sizeOfVector * repeatsCount);
+	}
+
+	resultMatrix.resize(CONST_CELLS_COUNT);
+    for (int i = 0; i < CONST_CELLS_COUNT; ++i) {
+        resultMatrix[i].resize(sizeOfVector, -1);
+    }
 }
 
 void DataManager::setPortionOfData(int row, int column, std::vector<double> portionOfData,
                                    int tid) {
     int index = findIndex(row - 1, column - 1);
     for (int i = 0; i < CONST_CELLS_COUNT; ++i) {
-        data[index + i * sizeOfVector + tid * CONST_CELLS_COUNT * sizeOfVector] = portionOfData[i];
+        data[i][index + tid * sizeOfVector] = portionOfData[i];
     }
 }
 
@@ -28,7 +35,7 @@ void DataManager::writeInfoInFile(double peopleServiceModeDuration, double liam,
     std::ofstream reportFile;
     reportFile.precision(2);
     reportFile.setf(std::ios::fixed);
-    reportFile.open("../../tables_26.05/eksps_2021_3_potoks/" + nameOfFile + "table.txt",
+    reportFile.open("../../tables_26.05/eksps_2021_3_potoks/" + nameOfFile + "newTable.txt",
                     std::ios::trunc);
     std::string str;
 
@@ -44,56 +51,109 @@ void DataManager::writeInfoInFile(double peopleServiceModeDuration, double liam,
         reportFile << "cars1 = " << bestDurationsOfModes.first << "\t";
         reportFile << "cars2 = " << bestDurationsOfModes.second << "\n";
 
-		reportFile << "cars1minQueue = " << bestDurationsOfModesByQueueEstimate.first << "\t";
+        reportFile << "cars1minQueue = " << bestDurationsOfModesByQueueEstimate.first << "\t";
         reportFile << "cars2minQueue = " << bestDurationsOfModesByQueueEstimate.second << "\n";
         reportFile << "people = " << peopleServiceModeDuration << "\t";
         reportFile << "liam = " << liam << "\n";
-        reportFile << "AvgG" << "\t" << "Gam1" << "\t" << "Gam2" << "\t" << "Gam3" << "\t"
-                   << "Percent" << "\t" << "Req1" << "\t" << "Req2" << "\t" << "Req3"
-				   << "\t" << "AvgReq" << "\t" << "MinReq" << "\n";
+        reportFile << "AvgG"
+                   << "\t"
+                   << "Gam1"
+                   << "\t"
+                   << "Gam2"
+                   << "\t"
+                   << "Gam3"
+                   << "\t"
+                   << "Percent"
+                   << "\t"
+                   << "Req1"
+                   << "\t"
+                   << "Req2"
+                   << "\t"
+                   << "Req3"
+                   << "\t"
+                   << "AvgReq"
+                   << "\t"
+                   << "MinReq"
+                   << "\n";
         for (int repeatNumber = 0; repeatNumber < repeatsCount; ++repeatNumber) {
-            for (int cells = 0; cells < CONST_CELLS_COUNT - 1; ++cells) {
-                str = std::to_string(data[minValueIndex + cells * sizeOfVector +
-                                          repeatNumber * CONST_CELLS_COUNT * sizeOfVector]);
-                str = replacePointToComma(str);
-                reportFile << str << "\t";
+            for (int cell = Cell_First; cell < Cell_Last; ++cell) {
+				writePartOfInfo(reportFile, cell, minValueIndex + repeatNumber * sizeOfVector,
+                                MatrixOrData_Data, TauOrN_Tau);
             }
 
-			// Write min queue value of the every repeat
-			str = std::to_string(data[minQueueValueIndex + repeatNumber * CONST_CELLS_COUNT * sizeOfVector]);
-            str = replacePointToComma(str);
-            reportFile << str << "\n";
+            // Write min queue value of the every repeat
+            writePartOfInfo(reportFile, Cell_AvgReq,
+                            minQueueValueIndex + repeatNumber * sizeOfVector,
+                            MatrixOrData_Data, TauOrN_N);
         }
 
-        for (int cells = 0; cells < CONST_CELLS_COUNT - 1; ++cells) {
-            str = std::to_string(resultMatrix[minValueIndex + cells * sizeOfVector]);
-            str = replacePointToComma(str);
-            reportFile << str << "\t";
+        for (int cell = Cell_First; cell < Cell_Last; ++cell) {
+            writePartOfInfo(reportFile, cell, minValueIndex, MatrixOrData_Matrix,
+                            TauOrN_Tau);
         }
 
         // Write avg min queue value
-		str = std::to_string(resultMatrix[minQueueValueIndex]);
-        str = replacePointToComma(str);
-        reportFile << str << "\n\n";
+        writePartOfInfo(reportFile, Cell_AvgReq, minQueueValueIndex, MatrixOrData_Matrix,
+                        TauOrN_N);
 
-		reportFile << "DtimeG" << "\t" << "DtimeQ" << "\n";
-		str = std::to_string(resultMatrix[minValueIndex + (CONST_CELLS_COUNT - 1) * sizeOfVector]);
-        str = replacePointToComma(str);
-        reportFile << str << "\t";
 
-		str = std::to_string(
-            resultMatrix[minQueueValueIndex + sizeOfVector]);
-        str = replacePointToComma(str);
-        reportFile << str;
+        reportFile << "\n"
+				   << "DtimeG"
+                   << "\t"
+                   << "DtimeQ"
+                   << "\n";
+
+		writePartOfInfo(reportFile, Cell_MinReq, minValueIndex, MatrixOrData_Matrix,
+                TauOrN_Tau);
+
+		writePartOfInfo(reportFile, Cell_MinReq, minQueueValueIndex, MatrixOrData_Matrix,
+                        TauOrN_N);
     }
     reportFile.close();
+}
+
+void DataManager::writePartOfInfo(std::ofstream &reportFile,
+								  int cell, int index,
+                                  MatrixOrData matrixOrData, TauOrN tauOrN,
+                                  size_t save_count) {
+    std::string str;
+
+	switch (matrixOrData) {
+        case (MatrixOrData_Matrix):
+            str = std::to_string(resultMatrix[cell][index]);
+            str = replacePointToComma(str, save_count);
+            break;
+
+        case (MatrixOrData_Data):
+            str = std::to_string(data[cell][index]);
+            str = replacePointToComma(str, save_count);
+            break;
+
+        default:
+            std::cout << "Method 'writePartOfInfo' is not working correctly\n";
+            exit(0);
+    }
+
+	switch (tauOrN) {
+		case (TauOrN_Tau):
+			reportFile << str << "\t";
+			break;
+
+		case (TauOrN_N):
+			reportFile << str << "\n";
+			break;
+
+		default:
+			std::cout << "Method 'writePartOfInfo' is not working correctly\n";
+			exit(0);
+	}
 }
 
 void DataManager::writeInfoInTable(std::string nameOfFile) {
     std::ofstream reportTable;
     reportTable.precision(2);
     reportTable.setf(std::ios::fixed);
-    reportTable.open("../../tables_26.05/eksps_2021_3_potoks/" + nameOfFile + "table.xls",
+    reportTable.open("../../tables_26.05/eksps_2021_3_potoks/" + nameOfFile + "newTable.xls",
                      std::ios::trunc);
     std::string str;
 
@@ -101,9 +161,7 @@ void DataManager::writeInfoInTable(std::string nameOfFile) {
         for (int column = 0; column < rowCount; ++column) {
             if (row + column + 2 < rowCount) {
                 int index = findIndex(row, column);
-                str = std::to_string(resultMatrix[index]);
-                str = replacePointToComma(str);
-                reportTable << str << "\t";
+                writePartOfInfo(reportTable, Cell_First, index, MatrixOrData_Matrix, TauOrN_Tau);
             }
         }
         reportTable << "\n";
@@ -121,10 +179,8 @@ void DataManager::writeQueueInfoInTable(std::string nameOfFile) {
     for (int row = 0; row < rowCount; ++row) {
         for (int column = 0; column < rowCount; ++column) {
             if (row + column + 2 < rowCount) {
-                int index = findIndex(row, column) + (CONST_CELLS_COUNT - 2) *sizeOfVector;
-                str = std::to_string(resultMatrix[index]);
-                str = replacePointToComma(str);
-                reportTable << str << "\t";
+                int index = findIndex(row, column);
+                writePartOfInfo(reportTable, Cell_AvgReq, index, MatrixOrData_Matrix, TauOrN_Tau);
             }
         }
         reportTable << "\n";
@@ -143,10 +199,9 @@ void DataManager::writeDowntimeInfoInTable(std::string nameOfFile) {
     for (int row = 0; row < rowCount; ++row) {
         for (int column = 0; column < rowCount; ++column) {
             if (row + column + 2 < rowCount) {
-                int index = findIndex(row, column) + (CONST_CELLS_COUNT - 1) * sizeOfVector;
-                str = std::to_string(resultMatrix[index]);
-                str = replacePointToComma(str, neededDecimalPointsCount);
-                reportTable << str << "\t";
+                int index = findIndex(row, column);
+                writePartOfInfo(reportTable, Cell_MinReq, index, MatrixOrData_Matrix, TauOrN_Tau,
+                                neededDecimalPointsCount);
             }
         }
         reportTable << "\n";
@@ -165,42 +220,31 @@ void DataManager::writeInfoAboutTheEffectOfParameterN(std::string nameOfFile) {
         reportFile << "-\t-\t-\n";
     } else {
 		// Write minimal value of the avg sojourn (waiting) time
-		str = std::to_string(resultMatrix[minValueIndex]);
-		str = replacePointToComma(str);
-		reportFile << str << "\t";
+        writePartOfInfo(reportFile, Cell_AvgG, minValueIndex, MatrixOrData_Matrix,
+                        TauOrN_Tau);
 
-		// Write queue value with g1 and g3 params 
+		// Write queue value with T1 and T3 params 
 		// of the minimal value of the avg sojourn (waiting) time
-		str = std::to_string(resultMatrix[minValueIndex + (CONST_CELLS_COUNT - 2) * sizeOfVector]);
-		str = replacePointToComma(str);
-		reportFile << str << "\t";
+        writePartOfInfo(reportFile, Cell_AvgReq, minValueIndex, MatrixOrData_Matrix,
+                        TauOrN_Tau);
 
-		// Write value of the avg sojourn (waiting) time with g1 and g3 params
+		// Write value of the avg sojourn (waiting) time with T1 and T3 params
 		// of the minimal queue value
-        str = std::to_string(
-            resultMatrix[minQueueValueIndex - (CONST_CELLS_COUNT - 2) * sizeOfVector]);
-        str = replacePointToComma(str);
-        reportFile << str << "\t";
+        writePartOfInfo(reportFile, Cell_AvgG, minQueueValueIndex, MatrixOrData_Matrix,
+                        TauOrN_Tau);
 
 		// Write minimal queue value
-        str = std::to_string(resultMatrix[minQueueValueIndex]);
-        str = replacePointToComma(str);
-        reportFile << str << "\t";
+        writePartOfInfo(reportFile, Cell_AvgReq, minQueueValueIndex, MatrixOrData_Matrix,
+                        TauOrN_Tau);
 
 		// Write queue value for the first stream
-        str = std::to_string(resultMatrix[minValueIndex + (CONST_CELLS_COUNT - 5) * sizeOfVector]);
-        str = replacePointToComma(str);
-        reportFile << str << "\t";
+        writePartOfInfo(reportFile, Cell_Req1, minValueIndex, MatrixOrData_Matrix, TauOrN_Tau);
 
 		// Write queue value for the second stream
-        str = std::to_string(resultMatrix[minValueIndex + (CONST_CELLS_COUNT - 4) * sizeOfVector]);
-        str = replacePointToComma(str);
-        reportFile << str << "\t";
+        writePartOfInfo(reportFile, Cell_Req2, minValueIndex, MatrixOrData_Matrix, TauOrN_Tau);
 
 		// Write queue value for the third stream
-        str = std::to_string(resultMatrix[minValueIndex + (CONST_CELLS_COUNT - 3) * sizeOfVector]);
-        str = replacePointToComma(str);
-        reportFile << str << "\n";
+        writePartOfInfo(reportFile, Cell_Req3, minValueIndex, MatrixOrData_Matrix, TauOrN_N);
 	}
 }
 
@@ -216,14 +260,10 @@ void DataManager::writeInfoAboutGammaAndQueueIntoFile() {
         reportFile << "\n";
     } else {
 		// Write avg min gamma value
-		str = std::to_string(resultMatrix[minValueIndex]);
-        str = replacePointToComma(str);
-        reportFile << str << "\t";
+        writePartOfInfo(reportFile, Cell_AvgG, minValueIndex, MatrixOrData_Matrix, TauOrN_Tau);
 
         // Write avg min queue value
-        str = std::to_string(resultMatrix[minQueueValueIndex]);
-        str = replacePointToComma(str);
-        reportFile << str << "\t";
+        writePartOfInfo(reportFile, Cell_AvgReq, minQueueValueIndex, MatrixOrData_Matrix, TauOrN_Tau);
 
 		reportFile << bestDurationsOfModes.first << "\t";
         reportFile << bestDurationsOfModes.second << "\t";
@@ -250,11 +290,11 @@ int DataManager::calculateSizeOfVector() {
 
 void DataManager::findCountOfSuccsessRepeats(int index) {
     successfulRepeatsCount = 0;
-	for (int repeat = 0; repeat < repeatsCount; ++repeat) {
-		if (data[index + repeat * sizeOfVector * CONST_CELLS_COUNT] != 0) {
+    for (int repeat = 0; repeat < repeatsCount; ++repeat) {
+        if (data[0][index + repeat * sizeOfVector] != 0) {
             ++successfulRepeatsCount;
-		}
-	}
+        }
+    }
 }
 
 void DataManager::setAvgData(int index) {
@@ -263,15 +303,15 @@ void DataManager::setAvgData(int index) {
 
     for (int cell = 0; cell < CONST_CELLS_COUNT; ++cell) {
         sum = 0.0;
-		// Even if not all repeats were successful we can plus them (plus null)
+        // Even if not all repeats were successful we can plus them (plus null)
         for (int repeat = 0; repeat < repeatsCount; ++repeat) {
-            sum += data[index + repeat * sizeOfVector * CONST_CELLS_COUNT + cell * sizeOfVector];
+            sum += data[cell][index + repeat * sizeOfVector];
         }
 
-		// Keep it in mind that we have to divide by a number of successful repeats
+        // Keep it in mind that we have to divide by a number of successful repeats
         avg = sum / successfulRepeatsCount;
 
-        resultMatrix[index + cell * sizeOfVector] = avg;
+        resultMatrix[cell][index] = avg;
     }
 }
 
@@ -297,13 +337,13 @@ void DataManager::findMinValueIndex() {
                 int index = findIndex(row, column);
 
                 if (minValueIndex == -1) {
-                    if (resultMatrix[index] > 0) {
+                    if (resultMatrix[0][index] > 0) {
                         minValueIndex = index;
                         bestDurationsOfModes = std::make_pair(row + 1, column + 1);
                         break;
                     }
-                } else if ((resultMatrix[index] > 0) &&
-                           (resultMatrix[index] < resultMatrix[minValueIndex])) {
+                } else if ((resultMatrix[0][index] > 0) &&
+                           (resultMatrix[0][index] < resultMatrix[0][minValueIndex])) {
                     minValueIndex = index;
                     bestDurationsOfModes = std::make_pair(row + 1, column + 1);
                 }
@@ -317,16 +357,17 @@ void DataManager::findMinQueueValueIndex() {
     for (int row = 0; row < rowCount; ++row) {
         for (int column = 0; column < rowCount; ++column) {
             if (row + column < rowCount) {
-                int index = findIndex(row, column) + (CONST_CELLS_COUNT - 2) * sizeOfVector;
-                
+                int index = findIndex(row, column);
+
                 if (minQueueValueIndex == -1) {
-                    if (resultMatrix[index] > 0) {
+                    if (resultMatrix[8][index] > 0) {
                         minQueueValueIndex = index;
                         bestDurationsOfModesByQueueEstimate = std::make_pair(row + 1, column + 1);
                         break;
                     }
-                } else if ((resultMatrix[index] > 0) &&
-                           (resultMatrix[index] < resultMatrix[minQueueValueIndex])) {
+                } else if ((resultMatrix[8][index] > 0) &&
+                           (resultMatrix[8][index] <
+                            resultMatrix[8][minQueueValueIndex])) {
                     minQueueValueIndex = index;
                     bestDurationsOfModesByQueueEstimate = std::make_pair(row + 1, column + 1);
                 }

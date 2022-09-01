@@ -44,6 +44,36 @@ public:
 
 private:
 
+	enum CellsInResultData {
+        Cell_InvalidFirst = -1,
+        Cell_First = 0,
+        Cell_AvgG = 0,
+        Cell_Gam1 = 1,
+        Cell_Gam2 = 2,
+        Cell_Gam3 = 3,
+        Cell_Percent = 4,
+        Cell_Req1 = 5,
+        Cell_Req2 = 6,
+        Cell_Req3 = 7,
+        Cell_AvgReq = 8,
+        Cell_MinReq = 9,
+        Cell_Last = 9
+    };
+
+	enum MatrixOrData {
+        MatrixOrData_Matrix = 0,
+        MatrixOrData_Data = 1
+    };
+
+	enum TauOrN { 
+		TauOrN_Tau = 0, 
+		TauOrN_N = 1 
+	};
+
+	void writePartOfInfo(std::ofstream &reportFile, int cell, int index,
+                             MatrixOrData matrixOrData, TauOrN tauOrN,
+                             size_t save_count = CONST_DECIMAL_POINTS_SAVE_COUNT);
+
 	int rowCount;
 
 	int sizeOfVector;
@@ -63,10 +93,10 @@ private:
     std::pair<int, int> bestDurationsOfModesByQueueEstimate;
 
 	// All data
-	std::vector<double> data;
+	std::vector<std::vector<double>> data;
 
 	// Result data
-	std::vector<double> resultMatrix;
+    std::vector<std::vector<double>> resultMatrix;
 
 	// Method that find index in our matrix
 	int findIndex(int i, int j);
@@ -84,7 +114,7 @@ private:
 	// Method for computing result matrix
 	void computeResultMatrix();
 
-	// Method for fining index for best g1 and g3 modes durations
+	// Method for fining index for best T1 and T3 modes durations
 	void findMinValueIndex();
 
 	// Method for fining the minimum value of queue in queue table
