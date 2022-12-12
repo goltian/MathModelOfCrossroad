@@ -274,6 +274,22 @@ void DataManager::writeInfoAboutGammaAndQueueIntoFile() {
     reportFile.close();
 }
 
+void DataManager::writeInfoAboutT1AndT2Durations() {
+    std::ofstream reportFile;
+    reportFile.open("../../tables_26.05/eksps_2021_3_potoks/T1AndT2Durations.txt", std::ios::app);
+    std::string str;
+
+    if (minValueIndex == -1) {
+        reportFile << "\n";
+    } else {
+        // Write best durations of T1 and T2 modes
+        reportFile << bestDurationsOfModes.first << "\t";
+        reportFile << bestDurationsOfModes.second << "\t";
+        reportFile << (bestDurationsOfModes.second - bestDurationsOfModes.first) << "\n";
+    }
+    reportFile.close();
+}
+
 int DataManager::findIndex(int row, int column) {
     // It always be an integer number because it's
     // a summ of an arithmetic progression

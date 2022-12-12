@@ -7,7 +7,7 @@
 #include "DataManager.h"
 #include "mathModelOfCrossroad.h"
 
-constexpr auto CONST_REPEATS_OF_ONE_EXPERIMENT = 4;
+constexpr auto CONST_REPEATS_OF_ONE_EXPERIMENT = 1;
 
 constexpr auto CONST_ORIENTATION_MODE = 3.0;
 
@@ -19,6 +19,8 @@ constexpr bool CONST_OF_WRITING_INFO_ABOUT_PARAMETER_N_EFFECT = false;
 
 constexpr bool CONST_OF_WRITING_INFO_ABOUT_GAMMA_AND_QUEUE = false;
 
+constexpr bool CONST_OF_WRITING_INFO_ABOUT_T1_T2_DURATIONS = true;
+
 int main() {
     double start, end;
     std::cout.precision(2);
@@ -28,8 +30,7 @@ int main() {
     double parametersForAll[CONST_COUNT_OF_EXPERIMENTS][9] = {
         //    g  m  g  m  l    l_p  N  pe  H
 
-		{0, 1, 0, 1, 0.1, 0.1, 0, 30, 180},
-
+		{0, 1, 0, 1, 0.1, 0.1, 0, 30, 40},
     };
 
     // Cycle for all experiments
@@ -56,8 +57,8 @@ int main() {
             int tid = omp_get_thread_num();
 
             // Set duration of cars service modes
-            double firstCarsServiceModeDuration = 1.0;
-            double secondCarsServiceModeDuration = 1.0;
+            double firstCarsServiceModeDuration = 12.0;
+            double secondCarsServiceModeDuration = 12.0;
 
             if (tid == 0) {
                 std::cout << "Count of threads: " << omp_get_num_threads() << "\n\n";
@@ -149,6 +150,10 @@ int main() {
 
 		if (CONST_OF_WRITING_INFO_ABOUT_GAMMA_AND_QUEUE) {
 			matrixForOneExp.writeInfoAboutGammaAndQueueIntoFile();
+		}
+
+		if (CONST_OF_WRITING_INFO_ABOUT_T1_T2_DURATIONS) {
+            matrixForOneExp.writeInfoAboutT1AndT2Durations();
 		}
     }
 

@@ -42,6 +42,8 @@ public:
 
 	void writeInfoAboutGammaAndQueueIntoFile();
 
+	void writeInfoAboutT1AndT2Durations();
+
 private:
 
 	enum CellsInResultData {
