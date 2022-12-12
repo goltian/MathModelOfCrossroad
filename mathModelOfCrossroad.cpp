@@ -7,7 +7,7 @@
 #include "DataManager.h"
 #include "mathModelOfCrossroad.h"
 
-constexpr auto CONST_REPEATS_OF_ONE_EXPERIMENT = 1;
+constexpr auto CONST_REPEATS_OF_ONE_EXPERIMENT = 4;
 
 constexpr auto CONST_ORIENTATION_MODE = 3.0;
 
@@ -19,7 +19,7 @@ constexpr bool CONST_OF_WRITING_INFO_ABOUT_PARAMETER_N_EFFECT = false;
 
 constexpr bool CONST_OF_WRITING_INFO_ABOUT_GAMMA_AND_QUEUE = false;
 
-constexpr bool CONST_OF_WRITING_INFO_ABOUT_T1_T2_DURATIONS = true;
+constexpr bool CONST_OF_WRITING_INFO_ABOUT_T1_T2_DURATIONS = false;
 
 int main() {
     double start, end;

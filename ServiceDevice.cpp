@@ -167,8 +167,6 @@ void ServiceDevice::computeNextMode() {
             streamPi2.serviseRequests();
             currentMode = Mode_Gamma4;
 
-            break;
-        case Mode_Gamma4:
             // Service no one
 			changeModeDurationForAll();
             generateRequestsForAll();
