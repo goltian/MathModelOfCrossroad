@@ -15,6 +15,9 @@ constexpr int CONST_CRITICAL_REQ_COUNT = 1000;
 
 constexpr uint16_t CONST_SIZE_OF_RAND_VALUES_VECTOR = 1024;
 
+constexpr bool CONST_OF_WRITING_INFO_FOR_VISUALISATION = true;
+constexpr uint16_t CONST_SIZE_OF_VECTOR_FOR_VISUALIZATION = 2000;
+
 class Stream {
 public:
 
@@ -63,6 +66,9 @@ public:
 	double getAvgReqCountInBunker();
 
 	double getAvgDowntime();
+
+	// Method for writing info about input and output times
+    void writeInfoForVisualisation(std::string nameOfFile);
 
 protected:
 
@@ -173,5 +179,14 @@ protected:
     void updateTheAvgDowntime(uint16_t serviceReqCount);
 	
 	void insertionSort(uint16_t slowReqCount);
+
+	// Vector of input and output times for visualisation
+    std::vector<double> inputAndOutputTimesVector;
+
+	// Count of filling values in visualisation vector
+    uint16_t inputOutputTimesVectorCounter;
+
+	// Method for updating vector of input and output times for visualisation
+	void updateInputAndOutputTimesVector(double inputTime, double outputTime);
 
 };

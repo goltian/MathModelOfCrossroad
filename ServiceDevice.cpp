@@ -77,6 +77,12 @@ std::vector<double> ServiceDevice::getPortionOfData() {
     return portionOfData;
 }
 
+void ServiceDevice::writeInfoForVisualisationForAll() {
+    streamPi1.writeInfoForVisualisation("pi_1_times");
+    streamPi2.writeInfoForVisualisation("pi_2_times");
+    streamPi3.writeInfoForVisualisation("pi_3_times");
+}
+
 double ServiceDevice::getAvgGammaForAllStreams() {
     double numenator;
     double denumenator;

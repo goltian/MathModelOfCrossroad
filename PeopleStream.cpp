@@ -137,6 +137,13 @@ void PeopleStream::serviseRequests() {
 
         avgWaitingTime.calculateAvgWaitTime(inputTime, outputTime);
 
+		// Write info about input and output times for visualisation
+		// Need "+ 1" because we write two values
+        if (CONST_OF_WRITING_INFO_FOR_VISUALISATION
+			&& (inputOutputTimesVectorCounter + 1 < CONST_SIZE_OF_VECTOR_FOR_VISUALIZATION)) {
+            updateInputAndOutputTimesVector(inputTime, outputTime);
+		}
+
 		// We service one request. Move pointer
         if (pointerToStartOfBunker < CONST_CRITICAL_REQ_COUNT) {
             ++pointerToStartOfBunker;

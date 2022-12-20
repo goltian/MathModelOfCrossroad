@@ -15,6 +15,8 @@ public:
 
 	std::vector<double> getPortionOfData();
 
+	void writeInfoForVisualisationForAll();
+
 	enum Modes {
 		Mode_InvalidFirst = -1,
 		Mode_First = 0,
@@ -65,5 +67,4 @@ private:
 	void generateRequestsForAll();
 
 	void changeModeDurationForAll();
-
 };

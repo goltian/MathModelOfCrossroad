@@ -56,6 +56,14 @@ void CarsStream::serviseRequests() {
             outputTime = inputTime + serviceTime;
         }
         avgWaitingTime.calculateAvgWaitTime(inputTime, outputTime);
+
+		// Write info about input and output times for visualisation
+        // Need "+ 1" because we write two values
+        if (CONST_OF_WRITING_INFO_FOR_VISUALISATION &&
+            (inputOutputTimesVectorCounter + 1 < CONST_SIZE_OF_VECTOR_FOR_VISUALIZATION)) {
+            updateInputAndOutputTimesVector(inputTime, outputTime);
+        }
+
         ++reqCountOfServed;
 
 		if (theServiceIsOver) {

@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <fstream>
 #include "Stream.h"
 
 Stream::Stream() {
@@ -41,6 +42,10 @@ Stream::Stream() {
     avgDowntime = 0.0;
     activateServiceModesCount = 0.0;
     activateAllModesCount = 0.0;
+
+	// Update size of our vector of input and output times for viualisation
+    inputAndOutputTimesVector.resize(CONST_SIZE_OF_VECTOR_FOR_VISUALIZATION);
+    inputOutputTimesVectorCounter = 0;
 }
 
 Stream::~Stream() {
@@ -266,6 +271,20 @@ double Stream::getAvgDowntime() {
     return avgDowntime;
 }
 
+void Stream::writeInfoForVisualisation(std::string nameOfFile) {
+    std::ofstream VisualisationInfo;
+    VisualisationInfo.precision(2);
+    VisualisationInfo.setf(std::ios::fixed);
+    VisualisationInfo.open("../../tables_26.05/eksps_2021_3_potoks/" + nameOfFile + ".txt",
+                           std::ios::trunc);
+
+	uint16_t counter = 0;
+    while (counter + 1 < CONST_SIZE_OF_VECTOR_FOR_VISUALIZATION) {
+        VisualisationInfo << inputAndOutputTimesVector[counter++] << " ";
+        VisualisationInfo << inputAndOutputTimesVector[counter++] << "\n";
+    }
+}
+
 uint16_t Stream::generatePoisson(int modeId) {
 
     // The value of a random variable that the distribution function should approach
@@ -392,4 +411,9 @@ inline void Stream::insertionSort(uint16_t slowReqCount) {
             j--;
         }
     }
+}
+
+void Stream::updateInputAndOutputTimesVector(double inputTime, double outputTime) {
+    inputAndOutputTimesVector[inputOutputTimesVectorCounter++] = inputTime;
+    inputAndOutputTimesVector[inputOutputTimesVectorCounter++] = outputTime;
 }
