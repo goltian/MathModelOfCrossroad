@@ -16,7 +16,7 @@ constexpr int CONST_CRITICAL_REQ_COUNT = 1000;
 constexpr uint16_t CONST_SIZE_OF_RAND_VALUES_VECTOR = 1024;
 
 constexpr bool CONST_OF_WRITING_INFO_FOR_VISUALISATION = true;
-constexpr uint16_t CONST_SIZE_OF_VECTOR_FOR_VISUALIZATION = 2000;
+constexpr double CONST_MAX_TIME_FOR_VISUALIZATION = 600.0;
 
 class Stream {
 public:
@@ -183,10 +183,17 @@ protected:
 	// Vector of input and output times for visualisation
     std::vector<double> inputAndOutputTimesVector;
 
-	// Count of filling values in visualisation vector
+	// Count of filling values in input and output times vector
     uint16_t inputOutputTimesVectorCounter;
 
-	// Method for updating vector of input and output times for visualisation
-	void updateInputAndOutputTimesVector(double inputTime, double outputTime);
+	// Vector of input and output times for visualisation
+    std::vector<double> greenLightTimeVector;
 
+	// Count of filling values in green light time vector
+    uint16_t greenLightTimeVectorCounter;
+
+	// Methods for updating vector of input and output times for visualisation
+	// and green color lights time
+	void updateInputAndOutputTimesVector(double inputTime, double outputTime);
+    void updateGreenLightTimeVector();
 };

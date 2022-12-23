@@ -60,7 +60,7 @@ void CarsStream::serviseRequests() {
 		// Write info about input and output times for visualisation
         // Need "+ 1" because we write two values
         if (CONST_OF_WRITING_INFO_FOR_VISUALISATION &&
-            (inputOutputTimesVectorCounter + 1 < CONST_SIZE_OF_VECTOR_FOR_VISUALIZATION)) {
+            (inputTime < CONST_MAX_TIME_FOR_VISUALIZATION)) {
             updateInputAndOutputTimesVector(inputTime, outputTime);
         }
 
@@ -80,4 +80,9 @@ void CarsStream::serviseRequests() {
     updateTheAvgDowntime(reqCountOfServed);
     updateActivateServiceModesCount();
 
+	// Write info about green light time for visualisation
+    if (CONST_OF_WRITING_INFO_FOR_VISUALISATION &&
+		(totalTime < CONST_MAX_TIME_FOR_VISUALIZATION)) {
+        updateGreenLightTimeVector();
+    }
 }

@@ -43,9 +43,16 @@ Stream::Stream() {
     activateServiceModesCount = 0.0;
     activateAllModesCount = 0.0;
 
-	// Update size of our vector of input and output times for viualisation
-    inputAndOutputTimesVector.resize(CONST_SIZE_OF_VECTOR_FOR_VISUALIZATION);
+	// Update size of our vector of input and output times for viualisation.
+	// We can do visualisation_size equal to max_time because liam < 1
+	// and modes duration > 1 sec
+    int visualisation_size = static_cast<int>(CONST_MAX_TIME_FOR_VISUALIZATION);
+    inputAndOutputTimesVector.resize(visualisation_size);
     inputOutputTimesVectorCounter = 0;
+
+	// Update size of our vector of green light time for viualisation
+    greenLightTimeVector.resize(visualisation_size);
+    greenLightTimeVectorCounter = 0;
 }
 
 Stream::~Stream() {
@@ -272,17 +279,31 @@ double Stream::getAvgDowntime() {
 }
 
 void Stream::writeInfoForVisualisation(std::string nameOfFile) {
-    std::ofstream VisualisationInfo;
-    VisualisationInfo.precision(2);
-    VisualisationInfo.setf(std::ios::fixed);
-    VisualisationInfo.open("../../tables_26.05/eksps_2021_3_potoks/" + nameOfFile + ".txt",
+    std::ofstream inputOutputTimeInfo;
+    inputOutputTimeInfo.precision(2);
+    inputOutputTimeInfo.setf(std::ios::fixed);
+    inputOutputTimeInfo.open("../../tables_26.05/eksps_2021_3_potoks/" + nameOfFile + "_io.txt",
                            std::ios::trunc);
 
 	uint16_t counter = 0;
-    while (counter + 1 < CONST_SIZE_OF_VECTOR_FOR_VISUALIZATION) {
-        VisualisationInfo << inputAndOutputTimesVector[counter++] << " ";
-        VisualisationInfo << inputAndOutputTimesVector[counter++] << "\n";
+    while (counter + 1 < inputOutputTimesVectorCounter) {
+        inputOutputTimeInfo << inputAndOutputTimesVector[counter++] << " ";
+        inputOutputTimeInfo << inputAndOutputTimesVector[counter++] << "\n";
     }
+    inputOutputTimeInfo.close();
+
+	std::ofstream greenLightTimeInfo;
+    greenLightTimeInfo.precision(2);
+    greenLightTimeInfo.setf(std::ios::fixed);
+    greenLightTimeInfo.open("../../tables_26.05/eksps_2021_3_potoks/" + nameOfFile + "_greenlight.txt",
+                             std::ios::trunc);
+
+	counter = 0;
+    while (counter + 1 < greenLightTimeVectorCounter) {
+        greenLightTimeInfo << greenLightTimeVector[counter++] << " ";
+        greenLightTimeInfo << greenLightTimeVector[counter++] << "\n";
+    }
+    greenLightTimeInfo.close();
 }
 
 uint16_t Stream::generatePoisson(int modeId) {
@@ -417,3 +438,9 @@ void Stream::updateInputAndOutputTimesVector(double inputTime, double outputTime
     inputAndOutputTimesVector[inputOutputTimesVectorCounter++] = inputTime;
     inputAndOutputTimesVector[inputOutputTimesVectorCounter++] = outputTime;
 }
+
+void Stream::updateGreenLightTimeVector() {
+    greenLightTimeVector[greenLightTimeVectorCounter++] = totalTime - modeDuration;
+    greenLightTimeVector[greenLightTimeVectorCounter++] = totalTime;
+}
+

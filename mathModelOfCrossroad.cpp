@@ -30,7 +30,7 @@ int main() {
     double parametersForAll[CONST_COUNT_OF_EXPERIMENTS][9] = {
         //    g  m  g  m  l    l_p  N  pe  H
 
-		{0, 1, 0, 1, 0.1, 0.1, 0, 30, 62},
+		{0, 1, 0, 1, 0.1, 0.1, 0, 30, 180},
     };
 
     // Cycle for all experiments
@@ -57,8 +57,8 @@ int main() {
             int tid = omp_get_thread_num();
 
             // Set duration of cars service modes
-            double firstCarsServiceModeDuration = 30.0;
-            double secondCarsServiceModeDuration = 30.0;
+            double firstCarsServiceModeDuration = 1.0;
+            double secondCarsServiceModeDuration = 1.0;
 
             if (tid == 0) {
                 std::cout << "Count of threads: " << omp_get_num_threads() << "\n\n";
