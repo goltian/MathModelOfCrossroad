@@ -67,18 +67,72 @@ new_not_round_my_raspr_vec = new_round_my_raspr_vec + dobavka
 ks.test(not_round_my_raspr_vec, "pgamma", shape = shape_value, rate = rate_value)
 
 
-## Предполагаем отр бином распредление, ищем параметры
-fitdistr( my_raspr, "negative binomial") -> ins.pois
-ins.pois
-size_value = 1.906463e+03
-size_value
-mu_value = 1.550397e+01
-mu_value
-## Генерируем отр бином распределение с найденными параметрыми. Это не оно
-x = rnbinom(count, size = size_value, mu = mu_value)
-y = x[x >= 13]
-y = y[y <= 20]
-table(x)
-table(y)
-hist(x, breaks = "Sturges")
-hist(y, breaks = "Sturges", xlim=c(13, 20))
+## Проверка на хи-квадрат. Разобъём на интервалы и сравним с вероятностями.
+## Тут не так важно, что у нас только целые числа.
+shape_value = 196.762749
+rate_value = 12.691071
+x = rgamma(count, shape = shape_value, rate = rate_value)
+
+my_breaks = c(-Inf, 13.2, 14.4, 15.6, 16.7, 17.5, 18.7, Inf)
+my_breaks
+ni = table(cut(my_raspr, breaks = my_breaks))
+ni
+## Создадим выборку и разобьём её на данные интервалы
+pr = table(cut(x, breaks = my_breaks))
+pr
+pr = pr / sum(pr)
+
+a = chisq.test(x=ni, p=pr)
+a$p.value
+
+max_p_value = -1
+best_shape_value = -1
+best_rate_value = -1
+shape_value = 192
+rate_value = 12
+
+cur_shape_value = shape_value
+cur_rate_value = rate_value
+for (i in 1:200) {
+  cur_shape_value = cur_shape_value + 0.05
+  for (j in 1:100) {
+    cur_rate_value = cur_rate_value + 0.01
+    x = rgamma(10000, shape = cur_shape_value, rate = cur_rate_value)
+    
+    pr = table(cut(x, breaks = my_breaks))
+    pr = pr / sum(pr)
+    
+    a = chisq.test(x=ni, p=pr)
+    cur_p_value = a$p.value
+    if (cur_p_value > max_p_value) {
+      max_p_value = cur_p_value
+      best_a = a
+      best_shape_value = cur_shape_value
+      best_rate_value = cur_rate_value
+      best_x = x
+    }
+  }
+  cur_rate_value = rate_value
+}
+
+print(max_p_value)
+print(best_shape_value)
+print(best_rate_value)
+print(best_a)
+
+shape_value = best_shape_value
+rate_value = best_rate_value
+x = rgamma(count, shape = shape_value, rate = rate_value)
+
+my_breaks = c(-Inf, 13.5:18.5, Inf)
+my_breaks
+ni = table(cut(my_raspr, breaks = my_breaks))
+ni
+## Создадим выборку и разобьём её на данные интервалы
+pr = table(cut(x, breaks = my_breaks))
+pr
+pr = pr / sum(pr)
+
+a = chisq.test(x=ni, p=pr)
+a
+a$p.value
