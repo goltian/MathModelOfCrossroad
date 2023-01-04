@@ -136,3 +136,39 @@ pr = pr / sum(pr)
 a = chisq.test(x=ni, p=pr)
 a
 a$p.value
+
+## Возьмём нашу выборку, сделаем непрерывной. Подберём параметры.
+par(mfrow = c(2, 1))
+## Смоделированная выборка из экспериментов
+ni <- c(45, 662, 1452, 1128, 541, 133, 36, 3)
+count = sum(ni)
+vals <- 13:20
+## Создали таблицу данных
+my_raspr <- rep( vals, ni )
+summary(my_raspr)
+table(my_raspr)
+hist(my_raspr, breaks = "Sturges", xlim=c(13, 20))
+
+dobavka = runif(count, min = -1.0, max = 1.0)
+not_round_my_raspr = my_raspr + dobavka
+hist(not_round_my_raspr, breaks = "Sturges", xlim=c(13, 20))
+den <- density(not_round_my_raspr)
+plot(den)
+
+den <- density(my_raspr)
+plot(den)
+
+par(mfrow = c(1, 1))
+plot(den, xlim = c(12, 20))
+x = seq(12, 20, by=0.1)
+my_shape = 155
+my_rate = my_shape / 15.5
+y = dgamma(x, shape = my_shape, rate = my_rate)
+lines(x, y)
+
+## Предполагаем гамма распредление, ищем параметры
+x = rgamma(count, shape = my_shape, rate = my_rate)
+hist(x, breaks = "Sturges", xlim=c(13, 20))
+
+y_vec <- as.vector(round_x)
+ks.test(not_round_my_raspr, "pgamma", shape = my_shape, rate = my_rate)
