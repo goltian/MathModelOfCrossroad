@@ -158,6 +158,7 @@ plot(den)
 den <- density(my_raspr)
 plot(den)
 
+## При таких данных действительно похожие плотности.
 par(mfrow = c(1, 1))
 plot(den, xlim = c(12, 20))
 x = seq(12, 20, by=0.1)
@@ -166,9 +167,38 @@ my_rate = my_shape / 15.5
 y = dgamma(x, shape = my_shape, rate = my_rate)
 lines(x, y)
 
-## Предполагаем гамма распредление, ищем параметры
-x = rgamma(count, shape = my_shape, rate = my_rate)
+## Предполагаем гамма распредление, ищем параметры. Проходит проверку на ks.test, но не chisq.test
+x = rgamma(100000, shape = my_shape, rate = my_rate)
 hist(x, breaks = "Sturges", xlim=c(13, 20))
-
-y_vec <- as.vector(round_x)
 ks.test(not_round_my_raspr, "pgamma", shape = my_shape, rate = my_rate)
+
+my_breaks = c(-Inf, 13.2, 14.4, 15.6, 16.7, 17.5, 18.7, Inf)
+my_breaks
+ni = table(cut(my_raspr, breaks = my_breaks))
+ni
+pr = table(cut(x, breaks = my_breaks))
+pr
+pr = pr / sum(pr)
+a = chisq.test(x=ni, p=pr)
+a$statistic
+a
+1 - pchisq(a$statistic, df = 6)
+
+## Проверка. Если создать две выборки гамма-распределений. Посчитать из них среднее, будет ли это выборкой с тем же распределением?
+## Всё работает. Но необходима сортировка данных.
+## Значит при моделировании мы можем складывать дискретные выборки и получать действительные величины.
+par(mfrow = c(2, 1))
+gamma_1 = rgamma(100000, shape = 155, rate = 10)
+gamma_1 = sort(gamma_1)
+hist(gamma_1)
+
+gamma_2 = rgamma(100000, shape = 155, rate = 10)
+gamma_2 = sort(gamma_2)
+hist(gamma_2)
+
+sum_of_gamma = (gamma_1 + gamma_2) / 2
+hist(gamma_1)
+hist(sum_of_gamma)
+summary(gamma_1)
+summary(gamma_2)
+summary(sum_of_gamma)
