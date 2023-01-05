@@ -15,7 +15,7 @@ constexpr int CONST_CRITICAL_REQ_COUNT = 1000;
 
 constexpr uint16_t CONST_SIZE_OF_RAND_VALUES_VECTOR = 1024;
 
-constexpr bool CONST_OF_WRITING_INFO_FOR_VISUALISATION = true;
+constexpr bool CONST_OF_WRITING_INFO_FOR_VISUALISATION = false;
 constexpr double CONST_MAX_TIME_FOR_VISUALIZATION = 600.0;
 
 class Stream {
