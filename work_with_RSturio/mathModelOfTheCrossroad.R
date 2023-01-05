@@ -81,25 +81,31 @@ print_two_histogram(discrete_data, round_gamma_data)
 check_simple_hypothesis(gamma_data, gamma_data_parameters)
 check_simple_hypothesis(round_gamma_data, gamma_data_parameters)
 
-## Function for getting continuous data from discrete data
-get_continuous_data = function(data, data_length) {
-  added_values = runif(data_length, min = -0.5, max = 0.5)
+## Function for getting continuous data from discrete data.
+## Generate gamma distribution and get fractional part of it,
+## and then add it to our data
+get_continuous_data = function(data, data_length, data_parameters) {
+  gamma_data = sort(genetate_gamma_distribution_data(data_length, data_parameters))
+  round_gamma_data = get_round_data(gamma_data)
+  added_values = gamma_data - round_gamma_data
+  data = sort(data)
+  
   continuous_data = data + added_values
   return (continuous_data)
 }
-continious_data = get_continuous_data(discrete_data, discrete_data_length)
+continious_data = get_continuous_data(discrete_data, discrete_data_length, discrete_data_parameters)
 print_two_histogram(continious_data, gamma_data)
-## Check that gamma data is gamma distribution, but continuous data is not!
+## Check that gamma data is gamma distribution, but continuous data is not! (Wrong parameters maybe)
 check_simple_hypothesis(gamma_data, gamma_data_parameters)
 check_simple_hypothesis(continious_data, gamma_data_parameters)
-## Check that continuous round gamma data is gamma distribution (it is not. we can't use runif for it)
-continuous_round_gamma_data = get_continuous_data(round_gamma_data, gamma_data_length)
+## Check that continuous round gamma data is gamma distribution.
+## It's proves that our method is work.
+continuous_round_gamma_data = get_continuous_data(round_gamma_data, gamma_data_length, gamma_data_parameters)
 print_two_histogram(gamma_data, continuous_round_gamma_data)
 check_simple_hypothesis(gamma_data, gamma_data_parameters)
 check_simple_hypothesis(continuous_round_gamma_data, gamma_data_parameters)
 
-## Stop here. Need more experiments with getting continuous round gamma data.
-## Maybe we need to plus added_values to our discrete data and it will be continuous.
+## Now we need to find correct parameters for our data
 
 x = seq(10, 22, by=0.1)
 y = dgamma(x, shape = gamma_data_parameters[1], rate = gamma_data_parameters[2])
