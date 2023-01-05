@@ -2,8 +2,8 @@ library( MASS )
 
 ## Function for getting data (it's discrete) from experiment with our model
 get_discrete_data = function() {
-  value_count <- c(45, 662, 1452, 1128, 541, 133, 36, 3)
-  values <- 13:20
+  value_count <- c(3, 275, 3210, 7195, 5869, 2637, 690, 107, 13, 1)
+  values <- 12:21
   data <- rep(values, value_count)
   return (data)
 }
@@ -127,7 +127,7 @@ print_densities = function(data, data_length, data_parameters) {
   return (c(continuous_data, gamma_data))
 }
 
-cur_data_shape = 170
+cur_data_shape = 210
 cur_data_rate = cur_data_shape / 15.5
 cur_data_parameters = c(cur_data_shape, cur_data_rate)
 dates = print_densities(discrete_data, discrete_data_length, cur_data_parameters)
