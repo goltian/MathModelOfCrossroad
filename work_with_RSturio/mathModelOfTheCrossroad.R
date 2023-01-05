@@ -1,47 +1,130 @@
 library( MASS )
 
-par(mfrow = c(2, 1))
-## Смоделированная выборка из экспериментов
-ni <- c(45, 662, 1452, 1128, 541, 133, 36, 3)
-count = sum(ni)
-vals <- 13:20
-## Создали таблицу данных
-my_raspr <- rep( vals, ni )
-table(my_raspr)
-hist(my_raspr, breaks = "Sturges", xlim=c(13, 20))
-## Предполагаем гамма распредление, ищем параметры
-fitdistr( my_raspr, "gamma", list(shape = 195, rate = 12.5)) -> ins.pois
-ins.pois
-shape_value = 196.762749
-rate_value = 12.691071
+## Function for getting data (it's discrete) from experiment with our model
+get_discrete_data = function() {
+  value_count <- c(45, 662, 1452, 1128, 541, 133, 36, 3)
+  values <- 13:20
+  data <- rep(values, value_count)
+  return (data)
+}
 
-## Проверяем простую гипотезу. Не даёт результата, поскольку у нас только дискретные значения
-my_raspr_vec <- as.vector(my_raspr)
-ks.test(my_raspr_vec, "pgamma", shape = shape_value, rate = rate_value)
+## Print histogram
+print_hist = function(data) {
+  min_border = floor(min(data))
+  max_border = ceiling(max(data))
+  data_breaks = c(min_border : max_border)
+  
+  hist(data, breaks = data_breaks)
+}
 
-## Генерируем гамма распределение с найденными параметрыми
-x = rgamma(count, shape = shape_value, rate = rate_value)
-round_x = round(x)
+## Print two histograms
+print_two_histogram = function(first_data, second_data) {
+  min_border = min( floor(min(first_data)), floor(min(second_data)) )
+  max_border = max( ceiling(max(first_data)), ceiling(max(second_data)) )
+  data_breaks = seq(min_border, max_border, 0.1)
+  data_xlim = c(min_border, max_border)
+  
+  par(mfrow = c(1, 1))
+  hist(first_data, breaks = data_breaks, col = "red", xlim = data_xlim)
+  hist(second_data, breaks = data_breaks, col = rgb(0.5, 0.5, 0.5, 0.5), add = TRUE)
+}
 
-y = round_x[round_x >= 13]
-obrezok = round_x[round_x < 13]
-obrezok
-y = y[y <= 20]
-y_count = length(y)
-##table(round_x)
-table(my_raspr)
-table(y)
-## Проводим визуальное сравнение
-hist(round_x, breaks = "Sturges")
-hist(my_raspr, breaks = "Sturges", xlim=c(13, 20))
-hist(y, breaks = "Sturges", xlim=c(13, 20))
+## Get discrete data
+discrete_data = get_discrete_data()
+discrete_data_length = length(discrete_data)
+## Print discrete data few ways
+table(discrete_data)
+print_hist(discrete_data)
 
-## Проверяем простую гипотезу. Гипотеза подтверждается
-ks.test(x, "pgamma", shape = shape_value, rate = rate_value)
+## Function for finding parameters for our data when we except that it's gamma distribution
+find_distibution_parameters = function(data) {
+  start_shape = 155
+  start_rate = start_shape / 15.5
+  
+  parameters = fitdistr(data, "gamma", list(shape = start_shape, rate = start_rate))
+  return (parameters$estimate)
+}
 
-## Проверяем простую гипотезу. Гипотеза не подтверждается, снова из-за округления, хотя мы точно знаем, что это гамма распределение
-y_vec <- as.vector(round_x)
-ks.test(y_vec, "pgamma", shape = shape_value, rate = rate_value)
+## Find parameters for discrete data
+discrete_data_parameters = find_distibution_parameters(discrete_data)
+discrete_data_shape = discrete_data_parameters[1]
+discrete_data_rate = discrete_data_parameters[2]
+
+## Function for checking a simple hypothesis with ks.test
+check_simple_hypothesis = function(data, data_parameteres) {
+  ks.test(data, "pgamma", shape = data_parameteres[1], rate = data_parameteres[2])
+}
+
+## Check a simple hypothesis with ks.test. Reject it (because of the discrete data)
+check_simple_hypothesis(discrete_data, discrete_data_parameters)
+
+## Generate vector of gamma distribution values
+genetate_gamma_distribution_data = function(data_length, data_parameteres) {
+  data = rgamma(data_length, shape = data_parameteres[1], rate = data_parameteres[2])
+}
+gamma_data_length = discrete_data_length
+gamma_data_parameters = discrete_data_parameters
+gamma_data = genetate_gamma_distribution_data(gamma_data_length, gamma_data_parameters)
+print_hist(gamma_data)
+
+## Print two histograms. Not good Graphics.
+## We need to round gamma distribution or to get continuous data 
+print_two_histogram(discrete_data, gamma_data)
+
+## Function for getting round data from continuous data
+get_round_data = function(data) {
+  return (round(data))
+}
+round_gamma_data = get_round_data(gamma_data)
+print_two_histogram(discrete_data, round_gamma_data)
+## Check that gamma data is gamma distribution, but round gamma data is not!
+check_simple_hypothesis(gamma_data, gamma_data_parameters)
+check_simple_hypothesis(round_gamma_data, gamma_data_parameters)
+
+## Function for getting continuous data from discrete data
+get_continuous_data = function(data, data_length) {
+  added_values = runif(data_length, min = -0.5, max = 0.5)
+  continuous_data = data + added_values
+  return (continuous_data)
+}
+continious_data = get_continuous_data(discrete_data, discrete_data_length)
+print_two_histogram(continious_data, gamma_data)
+## Check that gamma data is gamma distribution, but continuous data is not!
+check_simple_hypothesis(gamma_data, gamma_data_parameters)
+check_simple_hypothesis(continious_data, gamma_data_parameters)
+## Check that continuous round gamma data is gamma distribution (it is not. we can't use runif for it)
+continuous_round_gamma_data = get_continuous_data(round_gamma_data, gamma_data_length)
+print_two_histogram(gamma_data, continuous_round_gamma_data)
+check_simple_hypothesis(gamma_data, gamma_data_parameters)
+check_simple_hypothesis(continuous_round_gamma_data, gamma_data_parameters)
+
+## Stop here. Need more experiments with getting continuous round gamma data.
+## Maybe we need to plus added_values to our discrete data and it will be continuous.
+
+x = seq(10, 22, by=0.1)
+y = dgamma(x, shape = gamma_data_parameters[1], rate = gamma_data_parameters[2])
+y = y * gamma_data_length
+lines(x, y)
+
+print_two_histogram(gamma_data, continuous_round_gamma_data)
+dgamma(shape = gamma_data_parameters[1], rate = gamma_data_parameters[2])
+
+min_border = floor(min(gamma_data))
+max_border = ceiling(max(gamma_data))
+data_breaks = c(min_border : max_border)
+
+pr = table(cut(gamma_data, breaks = data_breaks))
+pr = pr / sum(pr)
+pr
+y = c(0.000001, 0.000311, 0.008429, 0.075242, 0.247332, 0.349463, 0.228986, 0.075266, 0.013556, 0.001331, 0.000079, 0.000004)
+x = c(10.5:21.5)
+plot(x, y)
+
+den = density(gamma_data)
+lines(den$x, den$y, col = "blue", add = TRUE)
+
+summary(gamma_data)
+summary(continuous_round_gamma_data)
 
 ## Что, если мы снова сделаем из целых чисел действительные. И снова проверим простую гипотезу.
 dobavka = runif(count, min = -0.5, max = 0.5)
@@ -154,10 +237,6 @@ not_round_my_raspr = my_raspr + dobavka
 hist(not_round_my_raspr, breaks = "Sturges", xlim=c(13, 20))
 den <- density(not_round_my_raspr)
 plot(den)
-
-den <- density(my_raspr)
-plot(den)
-
 ## При таких данных действительно похожие плотности.
 par(mfrow = c(1, 1))
 plot(den, xlim = c(12, 20))
