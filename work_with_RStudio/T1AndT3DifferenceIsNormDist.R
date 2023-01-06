@@ -133,12 +133,18 @@ optimize_data_sd = function(cur_data_sd) {
   cur_res = check_simple_hypothesis(cur_continuous_data, cur_data_parameters)
   return (cur_res$p.value)
 }
-optimize_result = optimize(optimize_data_sd, interval = c(1, 2), maximum = TRUE)
-optimize_result$maximum
+
+optimuze_result_vec = c()
+for (i in 1:100) {
+  optimize_result = optimize(optimize_data_sd, interval = c(1, 2), maximum = TRUE, tol = 0.0001)
+  optimuze_result_vec[i] = optimize_result$maximum
+}
+optimize_result = mean(optimuze_result_vec)
+optimize_result
 
 ## Use finding data_sd and check it
 cur_data_mean = 0
-cur_data_sd = optimize_result$maximum
+cur_data_sd = optimize_result
 cur_data_parameters = c(cur_data_mean, cur_data_sd)
 dates = print_densities(discrete_data, discrete_data_length, cur_data_parameters)
 cur_continuous_data = dates[1:discrete_data_length]

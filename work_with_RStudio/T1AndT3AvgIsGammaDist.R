@@ -2,8 +2,8 @@ library( MASS )
 
 ## Function for getting data (it's discrete) from experiment with our model
 get_discrete_data = function() {
-  value_count <- c(1, 123, 1653, 3562, 2937, 1314, 343, 61, 5, 1)
-  values <- 12:21
+  value_count <- c(17, 110, 560, 1343, 2028, 2223, 1762, 1143, 541, 197, 58, 14, 3, 1)
+  values <- seq(13, 19.5, 0.5)
   data <- rep(values, value_count)
   return (data)
 }
@@ -72,8 +72,12 @@ print_hist(gamma_data)
 print_two_histogram(discrete_data, gamma_data)
 
 ## Function for getting round data from continuous data
+## Need to round 13 13.5 14 14.5 15...
 get_round_data = function(data) {
-  return (round(data))
+  data_x2 = data * 2
+  round_data_x2 = round(data_x2)
+  round_data = round_data_x2 / 2.0
+  return (round_data)
 }
 round_gamma_data = get_round_data(gamma_data)
 print_two_histogram(discrete_data, round_gamma_data)
@@ -135,11 +139,17 @@ optimize_data_shape = function(cur_data_shape) {
   cur_res = check_simple_hypothesis(cur_continuous_data, cur_data_parameters)
   return (cur_res$p.value)
 }
-optimize_result = optimize(optimize_data_shape, interval = c(0, 300), maximum = TRUE)
-optimize_result$maximum
+
+optimuze_result_vec = c()
+for (i in 1:100) {
+  optimize_result = optimize(optimize_data_shape, interval = c(300, 320), maximum = TRUE, tol = 0.0001)
+  optimuze_result_vec[i] = optimize_result$maximum
+}
+optimize_result = mean(optimuze_result_vec)
+optimize_result
 
 ## Use finding data_shape and check it
-cur_data_shape = optimize_result$maximum
+cur_data_shape = optimize_result
 cur_data_rate = cur_data_shape / 15.5
 cur_data_parameters = c(cur_data_shape, cur_data_rate)
 dates = print_densities(discrete_data, discrete_data_length, cur_data_parameters)
@@ -147,7 +157,7 @@ cur_continuous_data = dates[1:discrete_data_length]
 cur_gamma_data = dates[(discrete_data_length + 1):(2 * discrete_data_length)]
 
 ## Check that gamma data is gamma distribution, but continuous data is not!
-## (Maybe we need to get not T1 or T3 or T1+T3 data, but (T1+T3) / 2. They are dependent random values)
+## It is better than ever, but p-value is still to small. 
 print_two_histogram(cur_continuous_data, cur_gamma_data)
 check_simple_hypothesis(cur_gamma_data, cur_data_parameters)
 check_simple_hypothesis(cur_continuous_data, cur_data_parameters)
