@@ -166,6 +166,15 @@ check_simple_hypothesis(cur_continuous_data, cur_data_parameters)
 print_two_histogram(discrete_data, round_gamma_data)
 ks.test(discrete_data, round_gamma_data)
 
+## Get much more values in round gamma data and check it
+length = 1000000
+larger_gamma_data = genetate_gamma_distribution_data(length, cur_data_parameters)
+round_larger_gamma_data = get_round_data(larger_gamma_data)
+ks.test(discrete_data, round_larger_gamma_data)
+
 ## Gamma dist and our continuous data have the same distribution
 print_two_histogram(cur_continuous_data, cur_gamma_data)
 ks.test(cur_continuous_data, cur_gamma_data)
+
+## Ñheck it with much more values in gamma data (not as bad as it could be)
+ks.test(cur_continuous_data, larger_gamma_data)
