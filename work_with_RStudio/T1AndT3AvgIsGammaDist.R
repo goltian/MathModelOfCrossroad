@@ -157,7 +157,15 @@ cur_continuous_data = dates[1:discrete_data_length]
 cur_gamma_data = dates[(discrete_data_length + 1):(2 * discrete_data_length)]
 
 ## Check that gamma data is gamma distribution, but continuous data is not!
-## It is better than ever, but p-value is still to small. 
+## It is better than ever, but p-value is still too small. 
 print_two_histogram(cur_continuous_data, cur_gamma_data)
 check_simple_hypothesis(cur_gamma_data, cur_data_parameters)
 check_simple_hypothesis(cur_continuous_data, cur_data_parameters)
+
+## Round gamma dist and our data have the same distribution
+print_two_histogram(discrete_data, round_gamma_data)
+ks.test(discrete_data, round_gamma_data)
+
+## Gamma dist and our continuous data have the same distribution
+print_two_histogram(cur_continuous_data, cur_gamma_data)
+ks.test(cur_continuous_data, cur_gamma_data)
