@@ -19,7 +19,6 @@ values
 frequencies
 
 ## Compute mean and sd
-parameters = fitdistr(data, "normal")
 mean = mean(data)
 sd = sd(data)
 mean
@@ -49,77 +48,8 @@ best_sd = optimize_result$maximum
 best_sd
 
 probs = pnorm(rightVals, 0, best_sd) - pnorm(leftVals, 0, best_sd)
-plot(x, probs, xlim=c(-5, 5), col="green", pch=4)
+plot(x, probs, col="green", pch=4)
 points(x, frequencies / data_length, col="blue", pch=20)
 
 ## With best sd and mean = 0 chisq test works
 chisq.test(frequencies, p=probs)
-
-##########################################################################
-## Function for getting data (it's discrete) from experiment with our model
-get_discrete_data = function() {
-  value_count <- c(17, 110, 560, 1343, 2028, 2223, 1762, 1143, 541, 197, 58, 18)
-  values <- seq(13, 18.5, 0.5)
-  data <- rep(values, value_count)
-  return (data)
-}
-## Get discrete data
-data = get_discrete_data()
-discrete_data_length = length(data)
-## Print discrete data few ways
-table = table(data)
-print_hist(data)
-parameters = fitdistr(data, "gamma")
-parameters = parameters$estimate
-shape = parameters[1]
-shape
-rate = parameters[2]
-rate
-names = as.numeric(names(table))
-values = as.numeric(table)
-names
-values
-mean(data)
-
-rightVals = c(seq(13.25, 18.25, 0.5), Inf)
-rightVals
-length(rightVals)
-leftVals = c(-Inf, seq(13.25, 18.25, 0.5))
-leftVals
-x = seq(13, 18.5, 0.5)
-length(x)
-length(z)
-z = pgamma(rightVals, shape, rate) - pgamma(leftVals, shape, rate)
-
-z
-plot(x, z, col="green", pch=4)
-freq = values / discrete_data_length
-points(x, freq, col="blue", pch=20)
-
-freq
-values
-z
-chisq.test(values, p=z)
-
-optimize_data_sd = function(cur_data_shape) {
-  cur_data_rate = cur_data_shape / 15.4969
-  z = pgamma(rightVals, cur_data_shape, cur_data_rate) - pgamma(leftVals, cur_data_shape, cur_data_rate)
-  cur_res = chisq.test(values, p=z)
-  return (cur_res$p.value)
-}
-
-optimize_result = optimize(optimize_data_sd, interval = c(300, 320), maximum = TRUE, tol = 0.0001)
-best_shape = optimize_result$maximum
-best_shape
-best_rate = best_shape / 15.4969
-
-z = pgamma(rightVals, best_shape, best_rate) - pgamma(leftVals, best_shape, best_rate)
-z
-plot(x, z, col="green", pch=4)
-points(x, freq, col="blue", pch=20)
-
-freq
-values
-z
-chisq.test(values, p=z)
-ks.test(freq, z)
