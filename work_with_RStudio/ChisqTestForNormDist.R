@@ -111,6 +111,33 @@ points(x, frequencies / data_length, col="blue", pch=20)
 ## With best sd and mean = 0 chisq test works
 chisq.test(frequencies, p=probs)
 
+
+############################################################################
+## Is it the same dist for 10 000 and 50 000 exps?
+probs = c(169, 1052, 4644, 11367, 15468, 11578, 4502, 1048, 172) / 50000
+
+## Function for getting data (it's discrete) from experiment with our model
+get_data = function() {
+  frequencies <- c(28, 211, 947, 2306, 3061, 2268, 902, 245, 31)
+  values <- -4:4
+  data <- rep(values, frequencies)
+  return (data)
+}
+
+## Get data
+data = get_data()
+data_length = length(data)
+table = table(data)
+values = as.numeric(names(table))
+frequencies = as.numeric(table)
+frequencies
+
+## Chisq test does not work with sample mean and sd
+chisq.test(frequencies, p=probs)
+x = c(-4:4)
+plot(x, probs, col="green", pch=4)
+points(x, frequencies / data_length, col="blue", pch=20)
+
 ############################################################################
 
 ## Same tests for Bartlett P1 and P2 flows

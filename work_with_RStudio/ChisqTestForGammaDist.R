@@ -123,6 +123,31 @@ points(x, frequencies / data_length, col="blue", pch=20)
 ## With best shape and sample mean chisq test does not work
 chisq.test(frequencies, p=probs)
 
+############################################################################
+## Is it the same dist for 10 000 and 50 000 exps?
+probs = c(71, 571, 2772, 6667, 10109, 11070, 8947, 5688, 2760, 1016, 255, 74) / 50000
+
+## Function for getting data (it's discrete) from experiment with our model
+get_data = function() {
+  frequencies <- c(17, 110, 560, 1343, 2028, 2223, 1762, 1143, 541, 197, 58, 18)
+  values <- seq(13, 18.5, 0.5)
+  data <- rep(values, frequencies)
+  return (data)
+}
+
+## Get data
+data = get_data()
+data_length = length(data)
+table = table(data)
+values = as.numeric(names(table))
+frequencies = as.numeric(table)
+frequencies
+
+## Chisq test does not work with sample mean and sd
+chisq.test(frequencies, p=probs)
+x = seq(13, 18.5, 0.5)
+plot(x, probs, col="green", pch=4)
+points(x, frequencies / data_length, col="blue", pch=20)
 
 ##########################################################################
 
