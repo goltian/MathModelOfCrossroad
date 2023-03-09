@@ -7,19 +7,19 @@
 #include "DataManager.h"
 #include "mathModelOfCrossroad.h"
 
-constexpr auto CONST_REPEATS_OF_ONE_EXPERIMENT = 1;
+constexpr auto CONST_REPEATS_OF_ONE_EXPERIMENT = 4;
 
 constexpr auto CONST_ORIENTATION_MODE = 3.0;
 
-constexpr auto CONST_COUNT_OF_EXPERIMENTS = 40000;
+constexpr auto CONST_COUNT_OF_EXPERIMENTS = 1;
 
-constexpr bool CONST_OF_USING_METHOD_OF_REDUCED_BROOT_FORCE = false;
+constexpr bool CONST_OF_USING_METHOD_OF_REDUCED_BROOT_FORCE = true;
 
 constexpr bool CONST_OF_WRITING_INFO_ABOUT_PARAMETER_N_EFFECT = false;
 
 constexpr bool CONST_OF_WRITING_INFO_ABOUT_GAMMA_AND_QUEUE = false;
 
-constexpr bool CONST_OF_WRITING_INFO_ABOUT_T1_T2_DURATIONS = true;
+constexpr bool CONST_OF_WRITING_INFO_ABOUT_T1_T2_DURATIONS = false;
 
 int main() {
     double start, end;
@@ -27,10 +27,10 @@ int main() {
     std::cout.setf(std::ios::fixed);
 
     // Our parameters for all experimnets
-    double parametersForAll[1][9] = {
+    double parametersForAll[CONST_COUNT_OF_EXPERIMENTS][9] = {
         //    g  m  g  m  l    l_p  N  pe  H
 
-		{0, 1, 0, 1, 0.1, 0.1, 0, 30, 45},
+		{0, 1, 0, 1, 0.1, 0.1, 0, 30, 180},
     };
 
     // Cycle for all experiments
@@ -38,13 +38,13 @@ int main() {
 
         start = omp_get_wtime();
 
-        double rowCount = parametersForAll[0][8];
-        double peopleServiceModeDuration = parametersForAll[0][7];
+        double rowCount = parametersForAll[numberOfExp][8];
+        double peopleServiceModeDuration = parametersForAll[numberOfExp][7];
 
         // We need to save parameters of stream for an experimnet
         std::vector<double> parametersForOne(7);
         for (int i = 0; i < 7; ++i) {
-            parametersForOne[i] = parametersForAll[0][i];
+            parametersForOne[i] = parametersForAll[numberOfExp][i];
         }
 
         // Create matrix using DataManager class
@@ -57,14 +57,11 @@ int main() {
             int tid = omp_get_thread_num();
 
             // Set duration of cars service modes
-            double firstCarsServiceModeDuration = 11.0;
-            double secondCarsServiceModeDuration = 11.0;
+            double firstCarsServiceModeDuration = 1.0;
+            double secondCarsServiceModeDuration = 1.0;
 
             if (tid == 0) {
-                if (numberOfExp % 1000 == 0) {
-                    std::cout << numberOfExp << "\n";
-				}
-                /*std::cout << "Count of threads: " << omp_get_num_threads() << "\n\n";*/
+                std::cout << "Count of threads: " << omp_get_num_threads() << "\n\n";
             }
 
             // Cycle for filling all matrix
@@ -72,10 +69,10 @@ int main() {
                 double row = firstCarsServiceModeDuration;
                 double column = secondCarsServiceModeDuration;
 
-                /*if (tid == 0) {
+                if (tid == 0) {
                     std::cout << "Exp: " << (numberOfExp + 1) << "\t";
                     std::cout << "Row: " << firstCarsServiceModeDuration << "\n";
-                }*/
+                }
 
                 // Cycle for filling one row
                 do {
@@ -117,10 +114,6 @@ int main() {
                                            firstCarsServiceModeDuration, rowCount, row, column);
                     }
 
-					if ((row > 22) || (column > 22)) {
-                        break;
-					}
-
                     // Fill one row
                 } while (row + column < rowCount);
 
@@ -132,10 +125,6 @@ int main() {
                     ++firstCarsServiceModeDuration;
                 }
 
-				if ((firstCarsServiceModeDuration > 22)) {
-                    break;
-                }
-
                 // Fill all matrix
             } while (firstCarsServiceModeDuration + secondCarsServiceModeDuration < rowCount);
             // Synchronization
@@ -145,7 +134,7 @@ int main() {
 
         end = omp_get_wtime();
         double timeOfWork = end - start;
-        /*std::cout << "Time: " << timeOfWork << "\n\n\n\n";*/
+        std::cout << "Time: " << timeOfWork << "\n\n\n\n";
 
         // Get file name
         std::string nameOfFile = getNameOfFile(parametersForOne, peopleServiceModeDuration);
