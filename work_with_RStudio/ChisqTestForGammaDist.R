@@ -54,8 +54,9 @@ optimize_rate
 
 probs = (pgamma(rightVals, optimize_shape, optimize_rate) 
          - pgamma(leftVals, optimize_shape, optimize_rate))
-plot(x, probs, col="green", pch=4)
-points(x, frequencies / data_length, col="blue", pch=20)
+plot(xlim = c(13, 18.5), ylim = c(0, 0.3), x = -1, y = -1)
+points(x, probs, col="red", pch=20, lwd = 10)
+points(x, frequencies / data_length, col="blue", pch=20, lwd = 2)
 
 ## With best shape and sample mean chisq test does not work
 chisq.test(frequencies, p=probs)
@@ -99,7 +100,7 @@ probs = pgamma(rightVals, shape, rate) - pgamma(leftVals, shape, rate)
 ## Chisq test does not work with sample shape and rate
 chisq.test(frequencies, p=probs)
 
-## Optimize p value and find best shape (sample mean = 15.4969)
+## Optimize p value and find best shape (sample mean = 15.49988)
 optimize_data_shape = function(cur_data_shape) {
   cur_data_rate = cur_data_shape / mean
   probs = (pgamma(rightVals, cur_data_shape, cur_data_rate) - 
@@ -117,8 +118,9 @@ optimize_rate
 
 probs = (pgamma(rightVals, optimize_shape, optimize_rate) 
          - pgamma(leftVals, optimize_shape, optimize_rate))
-plot(x, probs, col="green", pch=4)
-points(x, frequencies / data_length, col="blue", pch=20)
+plot(xlim = c(13, 18.5), ylim = c(0, 0.3), x = -1, y = -1)
+points(x, probs, col="red", pch=20, lwd = 10)
+points(x, frequencies / data_length, col="blue", pch=20, lwd = 2)
 
 ## With best shape and sample mean chisq test does not work
 chisq.test(frequencies, p=probs)
@@ -146,8 +148,9 @@ frequencies
 ## Chisq test does not work with sample mean and sd
 chisq.test(frequencies, p=probs)
 x = seq(13, 18.5, 0.5)
-plot(x, probs, col="green", pch=4)
-points(x, frequencies / data_length, col="blue", pch=20)
+plot(xlim = c(13, 18.5), ylim = c(0, 0.3), x = -1, y = -1)
+points(x, probs, col="red", pch=20, lwd = 10)
+points(x, frequencies / data_length, col="blue", pch=20, lwd = 2)
 
 ##########################################################################
 
@@ -190,7 +193,7 @@ probs = pgamma(rightVals, shape, rate) - pgamma(leftVals, shape, rate)
 ## Chisq test does not work with sample shape and rate
 chisq.test(frequencies, p=probs)
 
-## Optimize p value and find best shape (sample mean = 15.4969)
+## Optimize p value and find best shape (sample mean = 21.8212)
 optimize_data_shape = function(cur_data_shape) {
   cur_data_rate = cur_data_shape / mean
   probs = (pgamma(rightVals, cur_data_shape, cur_data_rate) - 
@@ -208,8 +211,9 @@ optimize_rate
 
 probs = (pgamma(rightVals, optimize_shape, optimize_rate) 
          - pgamma(leftVals, optimize_shape, optimize_rate))
-plot(x, probs, col="green", pch=4)
-points(x, frequencies / data_length, col="blue", pch=20)
+plot(xlim = c(17.5, 27), ylim = c(0, 0.3), x = -1, y = -1)
+points(x, probs, col="red", pch=20, lwd = 10)
+points(x, frequencies / data_length, col="blue", pch=20, lwd = 2)
 
 ## With best shape and sample mean chisq test does not work
 chisq.test(frequencies, p=probs)
