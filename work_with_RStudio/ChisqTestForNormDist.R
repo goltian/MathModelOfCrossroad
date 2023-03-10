@@ -33,9 +33,9 @@ probs = pnorm(rightVals, mean, sd) - pnorm(leftVals, mean, sd)
 ## Chisq test does not work with sample mean and sd
 chisq.test(frequencies, p=probs)
 
-## Optimize p value and find best sd (mean = 0)
+## Optimize p value and find best sd (mean = prev mean)
 optimize_data_sd = function(cur_data_sd) {
-  cur_data_mean = 0
+  cur_data_mean = mean
   probs = ( pnorm(rightVals, cur_data_mean, cur_data_sd) - 
     pnorm(leftVals, cur_data_mean, cur_data_sd) )
   cur_res = chisq.test(frequencies, p=probs)
@@ -47,11 +47,12 @@ optimize_result = optimize(optimize_data_sd,
 best_sd = optimize_result$maximum
 best_sd
 
-probs = pnorm(rightVals, 0, best_sd) - pnorm(leftVals, 0, best_sd)
-plot(x, probs, col="green", pch=4)
-points(x, frequencies / data_length, col="blue", pch=20)
+probs = pnorm(rightVals, mean, best_sd) - pnorm(leftVals, mean, best_sd)
+plot(xlim = c(-4, 4), ylim = c(0, 0.4), x = -1, y = -1)
+points(x, probs, col="red", pch=20, lwd = 10)
+points(x, frequencies / data_length, col="blue", pch=20, lwd = 2)
 
-## With best sd and mean = 0 chisq test works
+## With best sd and mean = prev mean chisq test works
 chisq.test(frequencies, p=probs)
 
 ############################################################################
@@ -90,9 +91,9 @@ probs = pnorm(rightVals, mean, sd) - pnorm(leftVals, mean, sd)
 ## Chisq test does not work with sample mean and sd
 chisq.test(frequencies, p=probs)
 
-## Optimize p value and find best sd (mean = 0)
+## Optimize p value and find best sd (mean = prev mean)
 optimize_data_sd = function(cur_data_sd) {
-  cur_data_mean = 0
+  cur_data_mean = mean
   probs = ( pnorm(rightVals, cur_data_mean, cur_data_sd) - 
               pnorm(leftVals, cur_data_mean, cur_data_sd) )
   cur_res = chisq.test(frequencies, p=probs)
@@ -104,11 +105,12 @@ optimize_result = optimize(optimize_data_sd,
 best_sd = optimize_result$maximum
 best_sd
 
-probs = pnorm(rightVals, 0, best_sd) - pnorm(leftVals, 0, best_sd)
-plot(x, probs, col="green", pch=4)
-points(x, frequencies / data_length, col="blue", pch=20)
+probs = pnorm(rightVals, mean, best_sd) - pnorm(leftVals, mean, best_sd)
+plot(xlim = c(-4, 4), ylim = c(0, 0.4), x = -1, y = -1)
+points(x, probs, col="red", pch=20, lwd = 10)
+points(x, frequencies / data_length, col="blue", pch=20, lwd = 2)
 
-## With best sd and mean = 0 chisq test works
+## With best sd and mean = prev mean chisq test works
 chisq.test(frequencies, p=probs)
 
 
@@ -135,8 +137,9 @@ frequencies
 ## Chisq test does not work with sample mean and sd
 chisq.test(frequencies, p=probs)
 x = c(-4:4)
-plot(x, probs, col="green", pch=4)
-points(x, frequencies / data_length, col="blue", pch=20)
+plot(xlim = c(-4, 4), ylim = c(0, 0.4), x = -1, y = -1)
+points(x, probs, col="red", pch=20, lwd = 10)
+points(x, frequencies / data_length, col="blue", pch=20, lwd = 2)
 
 ############################################################################
 
@@ -175,9 +178,9 @@ probs = pnorm(rightVals, mean, sd) - pnorm(leftVals, mean, sd)
 ## Chisq test does not work with sample mean and sd
 chisq.test(frequencies, p=probs)
 
-## Optimize p value and find best sd (mean = 0)
+## Optimize p value and find best sd (mean = prev mean)
 optimize_data_sd = function(cur_data_sd) {
-  cur_data_mean = 0.016
+  cur_data_mean = mean
   probs = ( pnorm(rightVals, cur_data_mean, cur_data_sd) - 
               pnorm(leftVals, cur_data_mean, cur_data_sd) )
   cur_res = chisq.test(frequencies, p=probs)
@@ -189,9 +192,10 @@ optimize_result = optimize(optimize_data_sd,
 best_sd = optimize_result$maximum
 best_sd
 
-probs = pnorm(rightVals, 0.016, best_sd) - pnorm(leftVals, 0.016, best_sd)
-points(x, probs, col="green", pch=4)
-plot(x, frequencies / data_length, col="blue", pch=20)
+probs = pnorm(rightVals, mean, best_sd) - pnorm(leftVals, mean, best_sd)
+plot(xlim = c(-7, 7), ylim = c(0, 0.4), x = -1, y = -1)
+points(x, probs, col="red", pch=20, lwd = 10)
+points(x, frequencies / data_length, col="blue", pch=20, lwd = 2)
 
-## With best sd and mean = 0 chisq test works
+## With best sd and mean = prev mean chisq test works
 chisq.test(frequencies, p=probs)
