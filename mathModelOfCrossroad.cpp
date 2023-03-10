@@ -7,13 +7,13 @@
 #include "DataManager.h"
 #include "mathModelOfCrossroad.h"
 
-constexpr auto CONST_REPEATS_OF_ONE_EXPERIMENT = 4;
+constexpr auto CONST_REPEATS_OF_ONE_EXPERIMENT = 1;
 
 constexpr auto CONST_ORIENTATION_MODE = 3.0;
 
 constexpr auto CONST_COUNT_OF_EXPERIMENTS = 1;
 
-constexpr bool CONST_OF_USING_METHOD_OF_REDUCED_BROOT_FORCE = true;
+constexpr bool CONST_OF_USING_METHOD_OF_REDUCED_BROOT_FORCE = false;
 
 constexpr bool CONST_OF_WRITING_INFO_ABOUT_PARAMETER_N_EFFECT = false;
 
@@ -57,8 +57,8 @@ int main() {
             int tid = omp_get_thread_num();
 
             // Set duration of cars service modes
-            double firstCarsServiceModeDuration = 1.0;
-            double secondCarsServiceModeDuration = 1.0;
+            double firstCarsServiceModeDuration = 15.0;
+            double secondCarsServiceModeDuration = 45.0;
 
             if (tid == 0) {
                 std::cout << "Count of threads: " << omp_get_num_threads() << "\n\n";
@@ -114,6 +114,10 @@ int main() {
                                            firstCarsServiceModeDuration, rowCount, row, column);
                     }
 
+					if ((row > 25) || (column > 75)) {
+                        break;
+					}
+
                     // Fill one row
                 } while (row + column < rowCount);
 
@@ -123,6 +127,10 @@ int main() {
                     ++secondCarsServiceModeDuration;
                 } else {
                     ++firstCarsServiceModeDuration;
+                }
+
+				if (firstCarsServiceModeDuration > 25) {
+                    break;
                 }
 
                 // Fill all matrix
