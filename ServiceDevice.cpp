@@ -19,7 +19,7 @@ ServiceDevice::ServiceDevice(std::vector<double> parametersOfSystem,
     streamPi3.setMathExpect(parametersOfSystem[3]);
 
     streamPi1.setLiam(parametersOfSystem[4]);
-    streamPi2.setLiam(0.3);
+    streamPi2.setLiam(parametersOfSystem[4]);
     streamPi3.setLiam(parametersOfSystem[5]);
 
     minReqCountToStartService = static_cast<int>(parametersOfSystem[6]);
