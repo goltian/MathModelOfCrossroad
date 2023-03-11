@@ -143,6 +143,65 @@ points(x, frequencies / data_length, col="blue", pch=20, lwd = 2)
 
 ############################################################################
 
+## Same tests for Poisson P1 and P2 flows with different intensity
+## Function for getting data (it's discrete) from experiment with our model
+get_data = function() {
+  frequencies <- c(29, 99, 261, 666, 1060, 1470, 1636, 1557,
+                   1150, 831, 587, 320, 189, 83, 35, 27)
+  values <- 29:44
+  data <- rep(values, frequencies)
+  return (data)
+}
+
+## Get data
+data = get_data()
+data_length = length(data)
+
+table = table(data)
+values = as.numeric(names(table))
+frequencies = as.numeric(table)
+values
+frequencies
+
+## Compute mean and sd
+mean = mean(data)
+sd = sd(data)
+mean
+sd
+
+## Get probabilities for the intervals
+rightVals = c(29.5:43.5, Inf)
+leftVals = c(-Inf, 29.5:43.5)
+x = c(29:44)
+probs = pnorm(rightVals, mean, sd) - pnorm(leftVals, mean, sd)
+
+## Chisq test does not work with sample mean and sd
+chisq.test(frequencies, p=probs)
+
+## Optimize p value and find best sd (mean = prev mean)
+optimize_data_sd = function(cur_data_sd) {
+  cur_data_mean = mean
+  probs = ( pnorm(rightVals, cur_data_mean, cur_data_sd) - 
+              pnorm(leftVals, cur_data_mean, cur_data_sd) )
+  cur_res = chisq.test(frequencies, p=probs)
+  return (cur_res$p.value)
+}
+
+optimize_result = optimize(optimize_data_sd, 
+                           interval = c(2.5, 3), maximum = TRUE, tol = 0.0001)
+best_sd = optimize_result$maximum
+best_sd
+
+probs = pnorm(rightVals, mean, best_sd) - pnorm(leftVals, mean, best_sd)
+plot(xlim = c(29, 44), ylim = c(0, 0.4), x = -1, y = -1)
+points(x, probs, col="red", pch=20, lwd = 10)
+points(x, frequencies / data_length, col="blue", pch=20, lwd = 2)
+
+## With best sd and mean = prev mean chisq test works
+chisq.test(frequencies, p=probs)
+
+############################################################################
+
 ## Same tests for Bartlett P1 and P2 flows
 ## Function for getting data (it's discrete) from experiment with our model
 get_data = function() {
